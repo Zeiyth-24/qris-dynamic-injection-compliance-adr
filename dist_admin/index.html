@@ -1,0 +1,3361 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Pengelola Operasional & Dasbor Transparansi - Beasiswa Alumni UPI</title>
+  
+  <!-- Favicon Browser Tab -->
+  <link rel="icon" type="image/png" href="activity.png">
+  <link rel="apple-touch-icon" href="activity.png">
+
+  <!-- Lucide Vector Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Typography: Microsoft Aptos Fonts Family (Local Assets via styles.css) -->
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              forest: '#1B3B2B',
+              hover: '#244F3A',
+              sage: '#2E5A44',
+              light: '#EAF2EC',
+              terracotta: '#D95D39',
+              terrahover: '#C24D2A'
+            },
+            surface: {
+              canvas: '#F9F8F4',
+              card: '#FFFFFF',
+              muted: '#F1EFEA',
+              border: '#E4E2DD'
+            }
+          },
+          fontFamily: {
+            sans: ['"Aptos"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            display: ['"Aptos Display"', '"Aptos"', '-apple-system', 'sans-serif'],
+            mono: ['"Aptos Mono"', 'monospace'],
+            serif: ['"Aptos Serif"', 'Georgia', 'serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- External Design System Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    /* Global Anti-Overflow & App-Shell Rules */
+    html, body {
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+    .min-w-0 { min-width: 0; }
+
+    /* Custom Admin Utility Styles */
+    .admin-nav-item.active {
+      background-color: #1B3B2B;
+      color: #FFFFFF;
+      font-weight: 700;
+    }
+    .admin-nav-item.active svg, .admin-nav-item.active span.icon {
+      color: #FFFFFF;
+    }
+    .admin-nav-item {
+      color: #52525B;
+      transition: all 0.2s ease;
+    }
+    .admin-nav-item:hover:not(.active) {
+      background-color: #F1EFEA;
+      color: #18181B;
+    }
+    .badge-counter {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 9999px;
+    }
+    .table-container {
+      overflow-x: auto;
+      -ms-overflow-style: none !important;
+      scrollbar-width: none !important;
+      width: 100%;
+      min-width: 0;
+    }
+    .table-container::-webkit-scrollbar,
+    .terminal-scroll::-webkit-scrollbar,
+    ::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+    html, body, *, *::before, *::after {
+      -ms-overflow-style: none !important;
+      scrollbar-width: none !important;
+    }
+    select.ui-form-control {
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      appearance: none !important;
+      background-position: right 18px center !important;
+      padding-right: 44px !important;
+      cursor: pointer;
+    }
+    @media (max-width: 640px) {
+      html {
+        font-size: 15px;
+      }
+      .ui-form-control {
+        height: 42px !important;
+        padding: 0 14px !important;
+        font-size: 13.5px !important;
+        border-radius: 10px !important;
+      }
+      select.ui-form-control {
+        background-position: right 14px center !important;
+        padding-right: 36px !important;
+      }
+      .bento-card {
+        border-radius: 14px !important;
+      }
+    }
+
+    @keyframes loginShake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .shake-animation {
+      animation: loginShake 0.4s ease-in-out;
+    }
+  </style>
+</head>
+
+<body class="h-screen w-screen overflow-hidden flex flex-col bg-[#F9F8F4] text-[#18181B] font-sans antialiased selection:bg-[#EAF2EC] selection:text-[#1B3B2B]">
+
+  <!-- =========================================================================
+       MODAL: KONFIRMASI LOGOUT PENGELOLA
+       ========================================================================= -->
+  <div id="modalConfirmLogout" class="fixed inset-0 bg-black/40 z-[9999] hidden flex items-center justify-center p-4 backdrop-blur-xs transition-opacity duration-200" onclick="if(event.target === this) closeLogoutModal()">
+    <div class="w-full max-w-sm bg-white rounded-3xl border border-[#E4E2DD] p-6 shadow-2xl space-y-4 text-center transform transition-transform">
+      <div class="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 mx-auto">
+        <i data-lucide="log-out" class="w-6 h-6 stroke-[2.2]"></i>
+      </div>
+      <div>
+        <h3 class="text-sm sm:text-base font-bold text-[#18181B]">Apakah anda yakin ingin keluar dari laman ini?</h3>
+        <p class="text-xs text-[#71717A] mt-1.5 leading-relaxed">Sesi kerja pengelola akan diakhiri dan dialihkan kembali ke layar login.</p>
+      </div>
+      <div class="flex items-center space-x-2.5 pt-2">
+        <button type="button" onclick="closeLogoutModal()" class="w-1/2 py-2.5 rounded-xl border border-[#E4E2DD] bg-white hover:bg-[#F1EFEA] text-xs font-bold text-[#52525B] transition">
+          Batal
+        </button>
+        <button type="button" onclick="confirmLogout()" class="w-1/2 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs transition">
+          Yakin
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       LAYAR LOGIN (SQUARE CARD, DUAL GRADIENT CIRCLES BACKGROUND, SMOOTH FADE)
+       ========================================================================= -->
+  <div id="adminLoginScreen" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#F9F8F4] transition-all duration-500 overflow-hidden">
+    
+    <!-- Lingkaran Gradient Hijau di Ujung Kanan Atas (Ukuran Lebih Besar) -->
+    <div class="absolute -top-24 -right-24 sm:-top-32 sm:-right-32 w-72 h-72 sm:w-[440px] sm:h-[440px] rounded-full bg-gradient-to-br from-emerald-500/25 via-emerald-700/15 to-transparent blur-3xl pointer-events-none"></div>
+
+    <!-- Lingkaran Gradient Oren di Ujung Kiri Bawah (Ukuran Berbeda / Lebih Kecil) -->
+    <div class="absolute -bottom-20 -left-20 sm:-bottom-28 sm:-left-28 w-60 h-60 sm:w-[340px] sm:h-[340px] rounded-full bg-gradient-to-tr from-amber-500/25 via-orange-400/20 to-transparent blur-3xl pointer-events-none"></div>
+
+    <!-- Kotak Login Berbentuk Persegi (Square Card dengan Shadow Tebal di Bawah) -->
+    <div id="adminLoginCard" class="w-full max-w-[390px] sm:max-w-[410px] bg-white/95 backdrop-blur-md rounded-3xl border border-[#E4E2DD] p-6 sm:p-8 flex flex-col justify-between shadow-[0_25px_60px_-15px_rgba(27,59,43,0.22),0_10px_25px_-5px_rgba(0,0,0,0.06)] transition-all duration-500 relative z-10">
+      
+      <!-- Header Kotak Login -->
+      <div class="text-center">
+        <img src="assets/upi logo.png" alt="Logo UPI" class="h-11 w-auto object-contain mx-auto mb-2.5">
+        <h1 class="text-base sm:text-lg font-bold text-[#1B3B2B] tracking-tight">Portal Pengelola Beasiswa</h1>
+        <p class="text-xs text-[#71717A] mt-0.5">Silakan masuk untuk mengelola donasi & kas</p>
+      </div>
+
+      <!-- Form Login -->
+      <form id="formAdminLogin" onsubmit="handleAdminLogin(event)" class="mt-5 space-y-3.5">
+        
+        <!-- Input Username -->
+        <div>
+          <label class="block text-xs font-bold text-[#1B3B2B] mb-1">Username</label>
+          <div class="relative">
+            <input type="text" id="loginUsername" autocomplete="username" placeholder="Masukkan username" class="w-full px-3.5 py-2.5 pl-9 rounded-xl border border-[#E4E2DD] bg-white text-xs text-[#18181B] focus:outline-none focus:border-[#1B3B2B] focus:ring-1 focus:ring-[#1B3B2B] transition">
+            <i data-lucide="user" class="w-4 h-4 text-[#71717A] absolute left-3 top-3"></i>
+          </div>
+          <p id="errUsernameEmpty" class="text-[11px] text-rose-600 font-semibold hidden mt-1">*kolom wajib diisi</p>
+        </div>
+
+        <!-- Input Password -->
+        <div>
+          <label class="block text-xs font-bold text-[#1B3B2B] mb-1">Password</label>
+          <div class="relative">
+            <input type="password" id="loginPassword" autocomplete="current-password" placeholder="Masukkan password" class="w-full px-3.5 py-2.5 pl-9 pr-9 rounded-xl border border-[#E4E2DD] bg-white text-xs text-[#18181B] focus:outline-none focus:border-[#1B3B2B] focus:ring-1 focus:ring-[#1B3B2B] transition">
+            <i data-lucide="lock" class="w-4 h-4 text-[#71717A] absolute left-3 top-3"></i>
+            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-2.5 text-[#71717A] hover:text-[#18181B] p-0.5" title="Tampilkan/Sembunyikan Password">
+              <i id="iconTogglePassword" data-lucide="eye" class="w-4 h-4"></i>
+            </button>
+          </div>
+          <p id="errPasswordEmpty" class="text-[11px] text-rose-600 font-semibold hidden mt-1">*kolom wajib diisi</p>
+        </div>
+
+        <!-- Pesan Error Kredensial Salah -->
+        <div id="loginErrorAlert" class="hidden text-center py-1">
+          <p class="text-xs font-semibold text-rose-600">*coba lagi</p>
+        </div>
+
+        <!-- Tombol Masuk -->
+        <button type="submit" id="btnLoginSubmit" class="w-full py-2.5 sm:py-3 rounded-xl bg-[#1B3B2B] hover:bg-[#244F3A] text-white font-bold text-xs sm:text-sm shadow-md transition-all duration-200 flex items-center justify-center space-x-2">
+          <span id="btnTextLogin">Masuk ke Dashboard</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 stroke-[2.2]"></i>
+        </button>
+      </form>
+
+      <!-- Indikator Default Kredensial -->
+      <div class="mt-4 pt-3.5 border-t border-[#F1EFEA] flex items-start space-x-2">
+        <i data-lucide="alert-circle" class="w-4 h-4 text-amber-600 shrink-0 mt-0.5"></i>
+        <p class="text-[11px] text-[#71717A] italic leading-relaxed">
+          default username dan password untuk laman ini: <span class="not-italic font-bold text-[#1B3B2B]">admin_beasiswa</span> / <span class="not-italic font-bold text-[#1B3B2B]">demo_admin_pass</span>
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       1. TOP MINIMALIST HEADER BAR (FLAT LINE, PROFESSIONAL, LOCKED AT TOP)
+       ========================================================================= -->
+  <header class="w-full bg-white/95 backdrop-blur-md border-b border-[#E4E2DD] shrink-0 z-40">
+    <div class="w-full px-3 sm:px-6 py-2 sm:py-2.5 flex items-center justify-between gap-2 sm:gap-3 min-w-0">
+      
+      <!-- Brand Left & Mobile Menu Toggle -->
+      <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+        <!-- Mobile Sidebar Toggle Button -->
+        <button type="button" onclick="toggleMobileSidebar()" class="lg:hidden p-1.5 rounded-lg border border-[#E4E2DD] text-[#52525B] hover:bg-[#F1EFEA] shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+
+        <!-- Brand Icon & Title -->
+        <a href="./" class="flex items-center space-x-2 group min-w-0">
+          <img src="assets/upi logo.png" alt="Logo UPI" class="h-7 sm:h-8 w-auto object-contain shrink-0 group-hover:scale-105 transition-transform">
+          <div class="min-w-0">
+            <div class="flex items-center space-x-1.5">
+              <span class="font-bold text-xs sm:text-sm tracking-tight text-[#1B3B2B] truncate max-w-[120px] xs:max-w-[160px] sm:max-w-none">Portal Admin IKA UPI</span>
+              <span class="px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 text-[9px] font-bold uppercase tracking-wider hidden md:inline">Admin Mode</span>
+            </div>
+            <span class="text-[10px] text-[#71717A] hidden lg:block">Sistem Automasi Donasi, Webhook Mutasi & Transparansi Beasiswa Mahasiswa</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Quick Actions Right -->
+      <div class="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
+        <!-- Live Clock -->
+        <div class="hidden md:flex items-center space-x-1.5 text-xs text-[#52525B] bg-[#F1EFEA] px-2.5 py-1.5 rounded-xl border border-[#E4E2DD]">
+          <i data-lucide="clock" class="w-3.5 h-3.5 text-[#52525B]"></i>
+          <span id="liveClockText" class="font-mono font-medium">00:00:00 WIB</span>
+        </div>
+
+        <!-- Connection Status Pill -->
+        <div id="connectionStatusBadge" class="flex items-center space-x-1 px-2 sm:px-3 py-1.5 rounded-xl bg-amber-50 text-amber-900 border border-amber-200 text-[10px] sm:text-xs font-semibold">
+          <span class="status-dot bg-amber-500 animate-pulse"></span>
+          <span id="connectionStatusText" class="hidden xs:inline">Local Sync</span>
+        </div>
+
+        <!-- DANA Auto-Detection Pill -->
+        <div class="hidden sm:flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-50 text-emerald-900 border border-emerald-200 text-[10px] sm:text-xs font-semibold" title="Auto-detection Email Mutasi DANA aktif di treasury-sandbox@example.org">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 radar-pulse"></span>
+          <span>DANA Auto-Detect: <strong class="text-emerald-800 font-mono">treasury-sandbox@example.org</strong></span>
+        </div>
+
+        <!-- Tombol Google Sheets Direct -->
+        <button type="button" onclick="openGoogleSheets()" class="hidden md:flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl bg-white hover:bg-emerald-50 border border-[#E4E2DD] hover:border-emerald-300 text-[#1B3B2B] text-xs font-semibold transition shadow-xs" title="Buka Spreadsheet Rekapitulasi Kas & Mutasi Google Sheets">
+          <i data-lucide="sheet" class="w-3.5 h-3.5 text-emerald-700"></i>
+          <span class="hidden lg:inline">Google </span><span>Sheets ↗</span>
+        </button>
+
+        <!-- Tombol Looker Studio Direct -->
+        <button type="button" onclick="openLookerStudio()" class="hidden md:flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl bg-white hover:bg-sky-50 border border-[#E4E2DD] hover:border-sky-300 text-[#18181B] text-xs font-semibold transition shadow-xs" title="Buka Dasbor Visualisasi BI Google Looker Studio">
+          <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-sky-700"></i>
+          <span class="hidden lg:inline">Looker </span><span>Studio ↗</span>
+        </button>
+
+        <!-- Settings Modal Trigger -->
+        <button type="button" onclick="openSettingsModal()" class="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-white hover:bg-[#F1EFEA] border border-[#E4E2DD] text-[#52525B] hover:text-[#18181B] text-xs font-semibold transition flex items-center space-x-1 shadow-xs" title="Pengaturan URL Google Apps Script & Mode">
+          <i data-lucide="settings" class="w-3.5 h-3.5 text-[#52525B]"></i>
+          <span class="hidden sm:inline">Endpoint</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       2. MAIN DASHBOARD WRAPPER (SIDEBAR + MAIN VIEWPORT)
+       ========================================================================= -->
+  <div class="flex-1 flex overflow-hidden w-full relative">
+
+    <!-- BACKDROP MOBILE SIDEBAR -->
+    <div id="mobileSidebarBackdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/40 z-40 hidden lg:hidden backdrop-blur-xs transition-opacity"></div>
+
+    <!-- =========================================================================
+         A. LEFT SIDEBAR (STRATUM SAAS MONITORING STYLE - INDEPENDENT SCROLL)
+         ========================================================================= -->
+    <aside id="adminSidebar" class="fixed lg:relative inset-y-0 lg:inset-auto left-0 h-full w-64 sm:w-72 bg-white border-r border-[#E4E2DD] z-50 lg:z-10 flex flex-col justify-between transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-in-out shrink-0 overflow-hidden">
+      
+      <!-- Top Section of Sidebar (Scrolls if sidebar height is smaller than items) -->
+      <div class="flex-1 p-4 sm:p-5 space-y-6 overflow-y-auto">
+        
+        <!-- User Profile & Logout Interactive Card -->
+        <button type="button" onclick="openLogoutModal()" class="w-full p-3 bg-[#F9F8F4] hover:bg-white border border-[#E4E2DD] hover:border-[#D1CFCA] rounded-2xl flex items-center justify-between text-left transition-all duration-200 group shadow-2xs cursor-pointer" title="Klik untuk keluar / Logout">
+          <div class="flex items-center space-x-3 overflow-hidden min-w-0">
+            <!-- Avatar with online indicator -->
+            <div class="relative shrink-0">
+              <div class="w-10 h-10 rounded-xl bg-[#1B3B2B] group-hover:bg-[#244F3A] flex items-center justify-center text-white shadow-xs transition-colors">
+                <i data-lucide="user" class="w-5 h-5 text-white stroke-[2.2]"></i>
+              </div>
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white absolute -bottom-0.5 -right-0.5 shadow-2xs"></span>
+            </div>
+            <!-- Username & Role -->
+            <div class="overflow-hidden min-w-0">
+              <span id="sidebarUsername" class="text-xs font-bold text-[#1B3B2B] truncate group-hover:text-[#18181B] transition-colors block">admin_beasiswa</span>
+              <p class="text-[10px] text-[#52525B] truncate">Administrator Kas</p>
+              <div class="flex items-center space-x-1 mt-0.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                <span class="text-[9px] text-emerald-800 font-semibold">Online</span>
+                <span class="text-[9px] text-[#71717A]">• Logout</span>
+              </div>
+            </div>
+          </div>
+          <!-- Logout Icon Action Hint -->
+          <div class="p-1.5 rounded-lg text-[#71717A] group-hover:text-rose-600 group-hover:bg-rose-50 transition shrink-0 ml-1">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+          </div>
+        </button>
+
+        <!-- Navigation Menu -->
+        <div class="space-y-1">
+          <p class="text-[11px] font-bold uppercase tracking-wider text-[#71717A] px-3 mb-2">Navigasi Pengelola</p>
+
+          <!-- 1. Overview & Rekonsiliasi Kas -->
+          <button type="button" onclick="switchAdminTab('tabOverview')" id="navTabOverview" class="admin-nav-item active w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-left">
+            <div class="flex items-center space-x-2.5">
+              <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+              <span>Overview & Kas</span>
+            </div>
+          </button>
+
+          <!-- 2. Mutasi Transaksi Lengkap -->
+          <button type="button" onclick="switchAdminTab('tabMutasi')" id="navTabMutasi" class="admin-nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-left">
+            <div class="flex items-center space-x-2.5">
+              <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+              <span>Mutasi Transaksi</span>
+            </div>
+            <span id="badgeCountTotal" class="badge-counter bg-slate-100 text-slate-700">0</span>
+          </button>
+
+          <!-- 3. Antrean Klaim Silent Donor -->
+          <button type="button" onclick="switchAdminTab('tabSilentDonor')" id="navTabSilentDonor" class="admin-nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-left">
+            <div class="flex items-center space-x-2.5">
+              <i data-lucide="search" class="w-4 h-4"></i>
+              <span>Antrean Silent Donor</span>
+            </div>
+            <span id="badgeCountUnclaimed" class="badge-counter bg-amber-100 text-amber-800 font-bold animate-pulse">0</span>
+          </button>
+
+          <!-- 4. Database Induk Alumni -->
+          <button type="button" onclick="switchAdminTab('tabAlumni')" id="navTabAlumni" class="admin-nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-left">
+            <div class="flex items-center space-x-2.5">
+              <i data-lucide="users" class="w-4 h-4"></i>
+              <span>Database Alumni</span>
+            </div>
+            <span id="badgeCountAlumni" class="badge-counter bg-emerald-50 text-emerald-800">25</span>
+          </button>
+
+          <!-- 5. Integrasi Gateway & Mutasi -->
+          <button type="button" onclick="switchAdminTab('tabSimulator')" id="navTabSimulator" class="admin-nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-left">
+            <div class="flex items-center space-x-2.5">
+              <i data-lucide="settings" class="w-4 h-4"></i>
+              <span>Integrasi & Mutasi</span>
+            </div>
+            <span id="badgeCountPending" class="badge-counter bg-rose-100 text-rose-800 font-bold">0</span>
+          </button>
+        </div>
+
+        <!-- Integrasi Eksternal: Google Sheets & Looker Studio -->
+        <div class="space-y-1.5 pt-1">
+          <p class="text-[11px] font-bold uppercase tracking-wider text-[#71717A] px-3 mb-1">Integrasi Cloud & BI</p>
+
+          <!-- Direct Google Sheets Button -->
+          <button type="button" onclick="openGoogleSheets()" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-left border border-[#E4E2DD] bg-white hover:bg-emerald-50 hover:border-emerald-300 text-[#1B3B2B] transition shadow-xs group" title="Buka Spreadsheet Rekapitulasi Kas & Mutasi Google Sheets">
+            <div class="flex items-center space-x-2.5 min-w-0">
+              <div class="w-7 h-7 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-800 shrink-0">
+                <i data-lucide="sheet" class="w-4 h-4"></i>
+              </div>
+              <div class="min-w-0">
+                <span class="block truncate font-bold text-[#1B3B2B]">Google Sheets</span>
+                <span class="text-[10px] text-[#71717A] block truncate">Buku Kas & Mutasi Live</span>
+              </div>
+            </div>
+            <i data-lucide="external-link" class="w-3.5 h-3.5 text-[#71717A] group-hover:text-emerald-800 shrink-0"></i>
+          </button>
+
+          <!-- Direct Looker Studio Button -->
+          <button type="button" onclick="openLookerStudio()" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-left border border-[#E4E2DD] bg-white hover:bg-sky-50 hover:border-sky-300 text-[#18181B] transition shadow-xs group" title="Buka Dasbor Visualisasi BI Google Looker Studio">
+            <div class="flex items-center space-x-2.5 min-w-0">
+              <div class="w-7 h-7 rounded-lg bg-sky-100 flex items-center justify-center text-sky-800 shrink-0">
+                <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+              </div>
+              <div class="min-w-0">
+                <span class="block truncate font-bold text-[#18181B]">Looker Studio</span>
+                <span class="text-[10px] text-[#71717A] block truncate">Dasbor Eksekutif BI</span>
+              </div>
+            </div>
+            <i data-lucide="external-link" class="w-3.5 h-3.5 text-[#71717A] group-hover:text-sky-800 shrink-0"></i>
+          </button>
+        </div>
+
+        <!-- Quick Action Box: Pencatatan Mutasi Manual -->
+        <div class="p-3 bg-[#EAF2EC] border border-[#2E5A44]/20 rounded-2xl space-y-2">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-[#1B3B2B]"></i>
+            <span class="text-xs font-bold text-[#1B3B2B]">Penerimaan Mutasi Bank</span>
+          </div>
+          <p class="text-[11px] text-[#2E5A44] leading-relaxed">
+            Catat mutasi transfer langsung di rekening bank yang belum teridentifikasi nomor tagihannya.
+          </p>
+          <button type="button" onclick="injectRandomSilentDonor()" class="w-full py-2 px-3 rounded-xl bg-[#D95D39] hover:bg-[#C24D2A] text-white text-xs font-bold transition flex items-center justify-center space-x-1.5 shadow-xs">
+            <i data-lucide="banknote" class="w-3.5 h-3.5"></i>
+            <span>+ Catat Mutasi Bank</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Bottom of Sidebar: Realtime Sync Indicator -->
+      <div class="shrink-0 p-4 border-t border-[#E4E2DD] bg-[#F9F8F4] space-y-2.5">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 radar-pulse"></span>
+            <span class="text-xs font-bold text-[#1B3B2B]">Sinkronisasi Realtime</span>
+          </div>
+          <span class="text-[10px] text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full font-semibold">Tersambung</span>
+        </div>
+        <p class="text-[10px] text-[#71717A] leading-tight">
+          Status verifikasi dan penerimaan dana tersinkronisasi langsung antar-layanan.
+        </p>
+        <button type="button" onclick="resetDatabaseDemo()" class="w-full py-1.5 rounded-lg border border-[#E4E2DD] hover:bg-white text-[11px] font-semibold text-[#52525B] transition flex items-center justify-center space-x-1.5">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+          <span>Reset Data Awal</span>
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- =========================================================================
+         B. MAIN VIEWPORT AREA (ROUTED DYNAMICALLY - INDEPENDENT SCROLL)
+         ========================================================================= -->
+    <main class="flex-1 h-full min-w-0 overflow-y-auto p-4 sm:p-5 lg:p-6 space-y-4 sm:space-y-5 lg:space-y-6 bg-[#F9F8F4]">
+
+      <!-- =====================================================================
+           VIEW 1: OVERVIEW & KAS REKONSILIASI
+           ===================================================================== -->
+      <section id="viewTabOverview" class="space-y-4 sm:space-y-5 lg:space-y-6">
+        
+        <!-- Welcome Banner & Title -->
+        <div class="bg-white p-4 sm:p-5 rounded-xl sm:rounded-2xl border border-[#E4E2DD] shadow-xs space-y-3 sm:space-y-3.5">
+          
+          <!-- Judul & Keterangan Dasbor -->
+          <div class="space-y-1.5 min-w-0">
+            <div class="flex items-center space-x-2.5">
+              <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#EAF2EC] text-[#1B3B2B] flex items-center justify-center shrink-0">
+                <i data-lucide="bar-chart-3" class="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#1B3B2B]"></i>
+              </span>
+              <h1 class="text-base sm:text-xl font-bold tracking-tight text-[#18181B] leading-snug">
+                Ringkasan Kas & Penerimaan Beasiswa
+              </h1>
+            </div>
+            <p class="text-[11.5px] sm:text-[13px] font-normal text-[#52525B] leading-relaxed pl-0 sm:pl-10.5 max-w-3xl">
+              Monitoring transaksi donasi masuk, status verifikasi bank, dan rekonsiliasi kas beasiswa mahasiswa.
+            </p>
+          </div>
+
+          <!-- Action Toolbar -->
+          <div class="pt-2.5 sm:pt-3 border-t border-[#F1EFEA] flex flex-col md:flex-row md:items-center justify-between gap-2.5">
+            <!-- Aksi Utama Navigasi Internal -->
+            <div class="w-full md:w-auto">
+              <button type="button" onclick="switchAdminTab('tabMutasi')" class="w-full md:w-auto px-3.5 py-2 sm:py-1.5 rounded-xl bg-[#1B3B2B] hover:bg-[#244F3A] text-xs font-bold text-white transition flex items-center justify-center space-x-1.5 shadow-xs">
+                <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 shrink-0"></i>
+                <span>Buku Besar Mutasi Lengkap</span>
+              </button>
+            </div>
+
+            <!-- Aksi Utility & Integrasi Cloud (Segarkan, Google Sheets, Looker Studio) -->
+            <div class="grid grid-cols-3 gap-1.5 sm:gap-2 md:flex md:items-center w-full md:w-auto">
+              <button type="button" onclick="handleManualRefresh()" class="w-full md:w-auto px-2 sm:px-3 py-1.5 rounded-xl border border-[#E4E2DD] hover:bg-[#F1EFEA] text-[11px] sm:text-xs font-bold text-[#1B3B2B] transition flex items-center justify-center space-x-1 sm:space-x-1.5 bg-white shadow-xs" title="Segarkan data lokal & cloud">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5 shrink-0"></i>
+                <span>Segarkan</span>
+              </button>
+              <button type="button" onclick="openGoogleSheets()" class="w-full md:w-auto px-2 sm:px-3 py-1.5 rounded-xl border border-[#E4E2DD] hover:bg-emerald-50 hover:border-emerald-300 text-[11px] sm:text-xs font-bold text-emerald-800 transition flex items-center justify-center space-x-1 sm:space-x-1.5 bg-white shadow-xs" title="Buka Spreadsheet Rekapitulasi Kas & Mutasi Google Sheets">
+                <i data-lucide="sheet" class="w-3.5 h-3.5 text-emerald-700 shrink-0"></i>
+                <span class="truncate"><span class="hidden sm:inline">Google </span>Sheets ↗</span>
+              </button>
+              <button type="button" onclick="openLookerStudio()" class="w-full md:w-auto px-2 sm:px-3 py-1.5 rounded-xl border border-[#E4E2DD] hover:bg-sky-50 hover:border-sky-300 text-[11px] sm:text-xs font-bold text-sky-800 transition flex items-center justify-center space-x-1 sm:space-x-1.5 bg-white shadow-xs" title="Buka Dasbor Visualisasi BI Google Looker Studio">
+                <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-sky-700 shrink-0"></i>
+                <span class="truncate">Looker<span class="hidden sm:inline"> Studio</span> ↗</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 KPI SCORECARDS (STRATUM STYLE - FLUID 2X2 ON MOBILE, 4 COLS ON DESKTOP) -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 lg:gap-6">
+          
+          <!-- Card 1: Total Dana Terhimpun -->
+          <div class="bg-white p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-[#E4E2DD] shadow-xs flex flex-col justify-between min-w-0">
+            <div class="space-y-2 sm:space-y-3">
+              <div class="flex items-center justify-between text-[10px] sm:text-xs font-bold text-[#71717A]">
+                <span class="truncate">TOTAL TERHIMPUN</span>
+                <span class="p-1 sm:p-1.5 bg-[#EAF2EC] text-[#1B3B2B] rounded-lg flex items-center justify-center">
+                  <i data-lucide="coins" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#1B3B2B]"></i>
+                </span>
+              </div>
+              <div>
+                <div id="kpiTotalDana" class="text-base xs:text-lg sm:text-2xl font-bold font-mono tracking-tight text-[#1B3B2B] truncate">Rp 0</div>
+                <div class="flex items-center justify-between text-[9px] sm:text-[11px] text-[#52525B] mt-0.5 sm:mt-1">
+                  <span class="truncate">Target 50 Jt</span>
+                  <span id="kpiPercentTarget" class="font-bold text-[#1B3B2B]">0%</span>
+                </div>
+              </div>
+            </div>
+            <!-- Bottom Footer Area -->
+            <div class="pt-2 sm:pt-3 space-y-1.5 border-t border-[#E4E2DD] mt-3">
+              <div class="w-full bg-[#F1EFEA] rounded-full h-1.5 sm:h-2 overflow-hidden">
+                <div id="kpiProgressBarTarget" class="bg-[#1B3B2B] h-1.5 sm:h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+              <p class="text-[9px] sm:text-[10px] text-[#71717A] italic truncate">Akumulasi donasi lunas</p>
+            </div>
+          </div>
+
+          <!-- Card 2: Dana Cair Rekening Bendahara (SETTLED Transfer Bank) -->
+          <div class="bg-white p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-[#E4E2DD] shadow-xs flex flex-col justify-between min-w-0">
+            <div class="space-y-2 sm:space-y-3">
+              <div class="flex items-center justify-between text-[10px] sm:text-xs font-bold text-[#71717A]">
+                <span class="truncate">KAS BENDAHARA</span>
+                <span class="p-1 sm:p-1.5 bg-emerald-50 text-emerald-800 rounded-lg flex items-center justify-center">
+                  <i data-lucide="landmark" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-800"></i>
+                </span>
+              </div>
+              <div>
+                <div id="kpiKasBendahara" class="text-base xs:text-lg sm:text-2xl font-bold font-mono tracking-tight text-emerald-800 truncate">Rp 0</div>
+                <div class="text-[9px] sm:text-[11px] text-[#52525B] mt-0.5 sm:mt-1 flex items-center justify-between">
+                  <span class="truncate">BSI + Jago</span>
+                  <span class="px-1 py-0.2 rounded-full bg-emerald-100 text-emerald-800 text-[8px] sm:text-[9px] font-bold">SETTLED</span>
+                </div>
+              </div>
+            </div>
+            <!-- Bottom Footer Area -->
+            <div class="text-[9px] sm:text-[10px] space-y-0.5 pt-2 sm:pt-3 border-t border-[#E4E2DD] text-[#52525B] mt-3">
+              <div class="flex justify-between">
+                <span>BSI:</span>
+                <span id="kpiKasBSI" class="font-mono font-bold truncate">Rp 0</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Jago:</span>
+                <span id="kpiKasJago" class="font-mono font-bold truncate">Rp 0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Dana Mengendap Gateway (PENDING SETTLEMENT QRIS) -->
+          <div class="bg-white p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-[#E4E2DD] shadow-xs flex flex-col justify-between min-w-0">
+            <div class="space-y-2 sm:space-y-3">
+              <div class="flex items-center justify-between text-[10px] sm:text-xs font-bold text-[#71717A]">
+                <span class="truncate">DI GATEWAY</span>
+                <span class="p-1 sm:p-1.5 bg-amber-50 text-amber-800 rounded-lg flex items-center justify-center">
+                  <i data-lucide="hourglass" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-800"></i>
+                </span>
+              </div>
+              <div>
+                <div id="kpiKasGateway" class="text-base xs:text-lg sm:text-2xl font-bold font-mono tracking-tight text-amber-800 truncate">Rp 0</div>
+                <div class="text-[9px] sm:text-[11px] text-[#52525B] mt-0.5 sm:mt-1 flex items-center justify-between">
+                  <span class="truncate">QRIS (H+1)</span>
+                  <span class="px-1 py-0.2 rounded-full bg-amber-100 text-amber-800 text-[8px] sm:text-[9px] font-bold">PENDING</span>
+                </div>
+              </div>
+            </div>
+            <!-- Bottom Footer Area -->
+            <div class="text-[9px] sm:text-[10px] space-y-0.5 pt-2 sm:pt-3 border-t border-[#E4E2DD] text-[#52525B] mt-3">
+              <div class="flex justify-between">
+                <span>Auto-cair:</span>
+                <span class="font-semibold text-[#1B3B2B] truncate">Besok 09:00</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Rekening Penampung:</span>
+                <span class="font-semibold text-[#1B3B2B] truncate">Bank Jago (5000 0000 0001)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4: Transaksi Perlu Tindakan (Unclaimed & Pending) -->
+          <div onclick="switchAdminTab('tabSilentDonor')" class="bg-white p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-[#E4E2DD] shadow-xs flex flex-col justify-between min-w-0 cursor-pointer hover:border-amber-400 hover:shadow-sm transition-all group" title="Buka Antrean Rekonsiliasi Silent Donor & Transaksi Pending">
+            <div class="space-y-2 sm:space-y-3">
+              <div class="flex items-center justify-between text-[10px] sm:text-xs font-bold text-[#71717A]">
+                <span class="truncate group-hover:text-amber-900 transition-colors">PERLU TINDAKAN</span>
+                <span class="p-1 sm:p-1.5 bg-rose-50 text-rose-800 rounded-lg flex items-center justify-center">
+                  <i data-lucide="alert-triangle" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-rose-800"></i>
+                </span>
+              </div>
+              <div>
+                <div id="kpiNeedActionCount" class="text-base xs:text-lg sm:text-2xl font-bold font-mono tracking-tight text-rose-700">0</div>
+                <div class="text-[9px] sm:text-[11px] text-[#52525B] mt-0.5 sm:mt-1 flex items-center justify-between">
+                  <span class="truncate">Antrean</span>
+                  <span class="px-1 py-0.2 rounded-full bg-rose-100 text-rose-800 text-[8px] sm:text-[9px] font-bold">ACTION</span>
+                </div>
+              </div>
+            </div>
+            <!-- Bottom Footer Area -->
+            <div class="text-[9px] sm:text-[10px] space-y-0.5 pt-2 sm:pt-3 border-t border-[#E4E2DD] text-[#52525B] mt-3">
+              <div class="flex justify-between">
+                <span class="text-amber-800 font-semibold truncate">Silent:</span>
+                <span id="kpiCountSilent" class="font-bold text-amber-800">0</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-rose-800 font-semibold truncate">Pending:</span>
+                <span id="kpiCountPending" class="font-bold text-rose-800">0</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- CHARTS & SEGMENTATION BREAKDOWN (2 COLUMNS) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3.5 sm:gap-4 lg:gap-6 items-stretch">
+          
+          <!-- Column 1: Leaderboard Perolehan per Fakultas UPI (8 Fakultas) -->
+          <div class="bg-white p-4 sm:p-5 rounded-xl sm:rounded-2xl border border-[#E4E2DD] shadow-xs flex flex-col justify-between h-full">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between border-b border-[#E4E2DD] pb-3">
+                <div>
+                  <h3 class="text-sm font-bold text-[#1B3B2B]">Leaderboard Perolehan Donasi per Fakultas</h3>
+                  <p class="text-[11px] text-[#52525B]">Kontribusi 8 Fakultas UPI untuk Dana Abadi Beasiswa</p>
+                </div>
+                <span class="text-xs px-2.5 py-1 bg-[#F1EFEA] rounded-lg font-bold text-[#52525B]">8 Fakultas</span>
+              </div>
+
+              <!-- List Bars per Fakultas -->
+              <div id="facultyBreakdownList" class="space-y-2 sm:space-y-2.5">
+                <!-- Rendered via JavaScript -->
+              </div>
+            </div>
+
+            <!-- Visual Graph: Diagram Batang Komparasi Distribusi Donasi Antar-Fakultas -->
+            <div class="pt-3.5 sm:pt-4 border-t border-[#E4E2DD] space-y-2 sm:space-y-2.5 mt-3 sm:mt-4 flex-1 flex flex-col justify-between min-h-0">
+              <div class="flex items-center justify-between gap-1.5 sm:gap-2">
+                <span class="font-bold text-[#1B3B2B] flex items-center space-x-1 sm:space-x-1.5 min-w-0 text-[10.5px] xs:text-[11.5px] sm:text-xs">
+                  <i data-lucide="bar-chart-2" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#1B3B2B] shrink-0"></i>
+                  <span class="truncate"><span class="sm:hidden">Komparasi Antar-Fakultas</span><span class="hidden sm:inline">Grafik Komparasi Distribusi Donasi Antar-Fakultas</span></span>
+                </span>
+                <span class="text-[8.5px] sm:text-[10px] text-[#71717A] font-semibold bg-[#F1EFEA] px-1.5 py-0.5 sm:px-2 rounded-md whitespace-nowrap shrink-0 leading-none border border-[#E4E2DD]/60">Diagram Batang</span>
+              </div>
+
+              <!-- Mini Bar Chart Container (8 vertical columns with percentage & code) -->
+              <div id="facultyMiniChart" class="flex-1 min-h-[130px] sm:min-h-[150px] lg:min-h-[190px] bg-[#F9F8F4] rounded-xl p-2.5 sm:p-3 border border-[#E4E2DD] flex items-stretch justify-between gap-1 sm:gap-1.5 overflow-hidden my-0.5">
+                <!-- Rendered dynamically via JavaScript -->
+              </div>
+
+              <!-- Executive Insight Footer Box -->
+              <div class="p-2 sm:p-2.5 bg-[#EAF2EC] rounded-xl border border-[#2E5A44]/15 flex items-center justify-between text-[11px] text-[#1B3B2B] shrink-0">
+                <div class="flex items-center space-x-2 min-w-0">
+                  <span class="px-1.5 py-0.5 rounded-md bg-[#1B3B2B] text-white font-bold text-[9px] uppercase tracking-wider shrink-0">TOP 1</span>
+                  <span id="facultyTopInsightText" class="truncate font-medium">Memuat kontributor tertinggi...</span>
+                </div>
+                <span class="text-[10px] font-bold text-emerald-800 shrink-0 ml-2 hidden xs:inline">100% Tercatat</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2: Kanal Pembayaran & Jalur Segmentasi Donatur -->
+          <div class="flex flex-col justify-between gap-3.5 sm:gap-4 lg:gap-6 h-full">
+            
+            <!-- Kanal Pembayaran -->
+            <div class="bg-white p-4 sm:p-5 rounded-xl sm:rounded-2xl border border-[#E4E2DD] shadow-xs flex-1 flex flex-col justify-between">
+              <div class="flex items-center justify-between border-b border-[#E4E2DD] pb-3">
+                <div>
+                  <h3 class="text-sm font-bold text-[#1B3B2B]">Proporsi Kanal Pembayaran</h3>
+                  <p class="text-[11px] text-[#52525B]">Metode pembayaran yang digunakan donatur</p>
+                </div>
+                <i data-lucide="credit-card" class="w-4 h-4 text-[#52525B]"></i>
+              </div>
+
+              <div id="paymentChannelsBreakdown" class="space-y-2.5 sm:space-y-3 my-auto py-1">
+                <!-- Rendered via JavaScript -->
+              </div>
+            </div>
+
+            <!-- Jalur Masuk Donatur (Segmentation) -->
+            <div class="bg-white p-4 sm:p-5 rounded-xl sm:rounded-2xl border border-[#E4E2DD] shadow-xs flex-1 flex flex-col justify-between">
+              <div class="flex items-center justify-between border-b border-[#E4E2DD] pb-3">
+                <div>
+                  <h3 class="text-sm font-bold text-[#1B3B2B]">Segmentasi Jalur Donatur</h3>
+                  <p class="text-[11px] text-[#52525B]">Distribusi asal donasi berdasarkan kategori identitas</p>
+                </div>
+                <i data-lucide="tag" class="w-4 h-4 text-[#52525B]"></i>
+              </div>
+
+              <div id="inflowPathsBreakdown" class="space-y-2 sm:space-y-2.5 my-auto py-2">
+                <!-- Rendered via JavaScript -->
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- RECENT ACTIVITY FEED (5 LATEST VERIFIED TRANSACTIONS) -->
+        <div class="bg-white p-4 sm:p-5 rounded-xl sm:rounded-2xl border border-[#E4E2DD] shadow-xs space-y-4">
+          <div class="flex items-center justify-between border-b border-[#E4E2DD] pb-3">
+            <div>
+              <h3 class="text-sm font-bold text-[#1B3B2B]">5 Transaksi Terverifikasi Terbaru</h3>
+              <p class="text-[11px] text-[#52525B]">Mutasi pembayaran yang baru saja lunas dan tercatat di buku kas</p>
+            </div>
+            <button type="button" onclick="switchAdminTab('tabMutasi')" class="text-xs text-[#1B3B2B] hover:underline font-bold">
+              Lihat Semua Transaksi →
+            </button>
+          </div>
+
+          <div id="recentTransactionsList" class="space-y-2.5">
+            <!-- Rendered via JavaScript -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- =====================================================================
+           VIEW 2: MUTASI TRANSAKSI LENGKAP (raw_donations)
+           ===================================================================== -->
+      <section id="viewTabMutasi" class="space-y-4 sm:space-y-5 lg:space-y-6 hidden">
+        
+        <!-- Header & Action Bar -->
+        <div class="bg-white p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-[#E4E2DD] shadow-xs flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
+          <div class="space-y-1 sm:space-y-1.5 min-w-0">
+            <div class="flex items-center space-x-2.5">
+              <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#EAF2EC] text-[#1B3B2B] flex items-center justify-center shrink-0">
+                <i data-lucide="file-spreadsheet" class="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#1B3B2B]"></i>
+              </span>
+              <h1 class="text-base sm:text-xl font-bold tracking-tight text-[#18181B] leading-snug">
+                Buku Besar Mutasi Transaksi Lengkap (<span class="font-mono text-xs sm:text-sm">raw_donations</span>)
+              </h1>
+            </div>
+            <p class="text-[11.5px] sm:text-[13px] font-normal text-[#52525B] leading-relaxed pl-0 sm:pl-10.5 max-w-3xl">
+              Data teknis internal tanpa sensor, memuat kode unik, string mutasi bank mentah, nomor WhatsApp, dan status kas.
+            </p>
+          </div>
+
+          <div class="w-full md:w-auto shrink-0">
+            <button type="button" onclick="exportTransactionsToCSV()" class="w-full md:w-auto px-3.5 py-2 sm:py-1.5 rounded-xl bg-[#1B3B2B] hover:bg-[#244F3A] text-white text-xs font-bold transition flex items-center justify-center space-x-1.5 shadow-xs">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span>Export ke File CSV</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter & Search Controls -->
+        <div class="bg-white p-4 sm:p-5 rounded-xl sm:rounded-2xl border border-[#E4E2DD] shadow-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 lg:gap-6">
+          
+          <!-- Search Box -->
+          <div class="sm:col-span-2">
+            <label for="filterSearchInput" class="ui-form-label uppercase">Cari Transaksi / Donatur</label>
+            <div class="relative">
+              <input type="text" id="filterSearchInput" oninput="applyTransactionFilters()" placeholder="Cari nama, NIM, ID transaksi, no WA, string bank..." class="ui-form-control pr-9">
+              <i data-lucide="search" class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-[#71717A] pointer-events-none"></i>
+            </div>
+          </div>
+
+          <!-- Filter Status -->
+          <div>
+            <label for="filterStatusSelect" class="ui-form-label uppercase">Status Pembayaran</label>
+            <select id="filterStatusSelect" onchange="applyTransactionFilters()" class="ui-form-control">
+              <option value="ALL">Semua Status</option>
+              <option value="PAID">SETTLED / PAID (Lunas)</option>
+              <option value="PENDING">PENDING (Menunggu Bayar)</option>
+              <option value="UNCLAIMED_DIRECT_TRANSFER">UNCLAIMED (Silent Donor)</option>
+              <option value="EXPIRED">EXPIRED (Kedaluwarsa)</option>
+            </select>
+          </div>
+
+          <!-- Filter Fakultas -->
+          <div>
+            <label for="filterFacultySelect" class="ui-form-label uppercase">Fakultas Donatur</label>
+            <select id="filterFacultySelect" onchange="applyTransactionFilters()" class="ui-form-control">
+              <option value="ALL">Semua Fakultas</option>
+              <option value="FIP">FIP</option>
+              <option value="FPIPS">FPIPS</option>
+              <option value="FPBS">FPBS</option>
+              <option value="FPMIPA">FPMIPA</option>
+              <option value="FPTK">FPTK</option>
+              <option value="FPOK">FPOK</option>
+              <option value="FPEB">FPEB</option>
+              <option value="FPSD">FPSD</option>
+              <option value="NON_UPI">Umum / Non-Fakultas</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Table Count Summary -->
+        <div class="flex items-center justify-between text-xs text-[#52525B] px-1">
+          <div>
+            Menampilkan <span id="filteredRowCount" class="font-bold text-[#1B3B2B]">0</span> dari <span id="totalRowCount" class="font-bold">0</span> total transaksi.
+          </div>
+          <div class="text-[11px] text-[#71717A]">
+            *Data diperbarui secara real-time dari LocalStorage & BroadcastChannel
+          </div>
+        </div>
+
+        <!-- Full Technical Data Table -->
+        <div class="bg-white rounded-2xl border border-[#E4E2DD] shadow-xs overflow-hidden">
+          <div class="table-container max-h-[640px] overflow-y-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead class="bg-[#F1EFEA] text-[#1B3B2B] font-bold sticky top-0 z-10 border-b border-[#E4E2DD] text-[11px]">
+                <tr>
+                  <th class="p-3 whitespace-nowrap">ID Transaksi</th>
+                  <th class="p-3 whitespace-nowrap">Waktu</th>
+                  <th class="p-3 whitespace-nowrap">Jalur Masuk</th>
+                  <th class="p-3 whitespace-nowrap">NIM</th>
+                  <th class="p-3 whitespace-nowrap">Nama Donatur</th>
+                  <th class="p-3 whitespace-nowrap">No WhatsApp (Utuh)</th>
+                  <th class="p-3 whitespace-nowrap">Fakultas / Prodi</th>
+                  <th class="p-3 whitespace-nowrap text-right">Nominal Pokok</th>
+                  <th class="p-3 whitespace-nowrap text-center">Kode Unik</th>
+                  <th class="p-3 whitespace-nowrap text-right">Total Transfer</th>
+                  <th class="p-3 whitespace-nowrap">Kanal Pembayaran</th>
+                  <th class="p-3 whitespace-nowrap text-center">Bukti Screenshot</th>
+                  <th class="p-3 whitespace-nowrap">String Bank (Mutasi Mentah)</th>
+                  <th class="p-3 whitespace-nowrap">Tier Validasi</th>
+                  <th class="p-3 whitespace-nowrap">Status</th>
+                  <th class="p-3 whitespace-nowrap text-center">Status Verifikasi</th>
+                </tr>
+              </thead>
+              <tbody id="transactionsTableBody" class="divide-y divide-[#E4E2DD]">
+                <!-- Rendered dynamically via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- =====================================================================
+           VIEW 3: ANTREAN KLAIM SILENT DONOR (UNCLAIMED DIRECT TRANSFERS)
+           ===================================================================== -->
+      <section id="viewTabSilentDonor" class="space-y-4 sm:space-y-5 lg:space-y-6 hidden">
+        
+        <!-- Header Box Antrean Mutasi Langsung -->
+        <div class="bg-amber-50 p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-amber-200 shadow-xs space-y-3">
+          <div class="flex items-center justify-between flex-wrap gap-2.5">
+            <div class="flex items-center space-x-2.5">
+              <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-amber-100 text-amber-900 flex items-center justify-center shrink-0">
+                <i data-lucide="search" class="w-4 h-4 sm:w-4.5 sm:h-4.5 text-amber-950"></i>
+              </span>
+              <div>
+                <h1 class="text-base sm:text-xl font-bold tracking-tight leading-snug text-amber-950">Antrean Rekonsiliasi Donasi Masuk Langsung</h1>
+                <p class="text-[11.5px] sm:text-[13px] font-normal text-amber-800 leading-relaxed mt-0.5 sm:mt-1">
+                  Daftar mutasi transfer rekening bank yang belum terhubung dengan nomor tagihan sistem.
+                </p>
+              </div>
+            </div>
+            <button type="button" onclick="injectRandomSilentDonor()" class="w-full sm:w-auto px-3.5 py-2 sm:py-1.5 rounded-xl bg-[#D95D39] hover:bg-[#C24D2A] text-white text-xs font-bold transition flex items-center justify-center space-x-1.5 shadow-xs shrink-0">
+              <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+              <span>+ Catat Mutasi Bank</span>
+            </button>
+          </div>
+          <p class="text-[11px] sm:text-xs text-amber-900/80 leading-relaxed pt-1 border-t border-amber-200/60">
+            Sistem secara otomatis membaca mutasi rekening koran bank. Dana yang masuk tanpa kode unik transaksi web tetap tercatat di kas bendahara dengan status <span class="font-mono font-bold bg-amber-100 px-1 py-0.5 rounded">UNCLAIMED_DIRECT_TRANSFER</span>. Pengelola dapat memverifikasi dan mencocokkan mutasi tersebut dengan profil alumni di bawah ini.
+          </p>
+        </div>
+
+        <!-- Silent Donor Queue Table -->
+        <div class="bg-white rounded-2xl border border-[#E4E2DD] shadow-xs overflow-hidden space-y-4 p-5">
+          <div class="flex items-center justify-between border-b border-[#E4E2DD] pb-3">
+            <div>
+              <h2 class="text-sm font-bold text-[#1B3B2B]">Daftar Mutasi Bank Menunggu Verifikasi Pengelola</h2>
+              <p class="text-[11px] text-[#52525B]">Klik tombol "Cocokkan" untuk menetapkan mutasi kepada alumni yang bersangkutan</p>
+            </div>
+            <span id="unclaimedQueueBadge" class="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full">0 Mutasi</span>
+          </div>
+
+          <div class="table-container max-h-[420px] overflow-y-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead class="bg-[#F1EFEA] text-[#1B3B2B] font-bold sticky top-0 z-10 border-b border-[#E4E2DD] text-[11px] shadow-2xs">
+                <tr>
+                  <th class="p-3">ID Mutasi</th>
+                  <th class="p-3">Waktu Masuk</th>
+                  <th class="p-3">Bank Tujuan</th>
+                  <th class="p-3 text-right">Nominal Masuk</th>
+                  <th class="p-3">String Mutasi Mentah Bank</th>
+                  <th class="p-3">Dugaan Nama Pengirim</th>
+                  <th class="p-3">Status</th>
+                  <th class="p-3 text-center">Aksi Rekonsiliasi</th>
+                </tr>
+              </thead>
+              <tbody id="unclaimedTableBody" class="divide-y divide-[#E4E2DD]">
+                <!-- Rendered dynamically via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Pending Transactions Table Waiting for Payment -->
+        <div class="bg-white rounded-2xl border border-[#E4E2DD] shadow-xs overflow-hidden p-5 space-y-4">
+          <div class="flex items-center justify-between border-b border-[#E4E2DD] pb-3 flex-wrap gap-2">
+            <div>
+              <h2 class="text-sm font-bold text-[#1B3B2B]">Daftar Transaksi Menunggu Pembayaran (<span class="font-mono text-xs text-amber-700 font-bold">STATUS: PENDING</span>)</h2>
+              <p class="text-[11px] text-[#52525B]">Transaksi yang baru saja dibuat di portal donatur akan langsung muncul di sini secara real-time.</p>
+            </div>
+            <span id="pendingSimulatorBadge" class="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full">0 Transaksi Pending</span>
+          </div>
+
+          <div class="table-container max-h-[420px] overflow-y-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead class="bg-[#F1EFEA] text-[#1B3B2B] font-bold sticky top-0 z-10 border-b border-[#E4E2DD] text-[11px] shadow-2xs">
+                <tr>
+                  <th class="p-3">ID Transaksi</th>
+                  <th class="p-3">Waktu Buat</th>
+                  <th class="p-3">Nama Donatur</th>
+                  <th class="p-3">Metode Bayar</th>
+                  <th class="p-3 text-center">Kode Unik</th>
+                  <th class="p-3 text-right">Total Tagihan</th>
+                  <th class="p-3 text-center">Aksi Pelunasan Instan (Simulasi Cloud)</th>
+                </tr>
+              </thead>
+              <tbody id="pendingSimulatorTableBody" class="divide-y divide-[#E4E2DD]">
+                <!-- Rendered dynamically via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- =====================================================================
+           VIEW 4: DATABASE INDUK ALUMNI (master_alumni)
+           ===================================================================== -->
+      <section id="viewTabAlumni" class="space-y-4 sm:space-y-5 lg:space-y-6 hidden">
+        
+        <!-- Header Box -->
+        <div class="bg-white p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-[#E4E2DD] shadow-xs flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
+          <div class="space-y-1 sm:space-y-1.5 min-w-0">
+            <div class="flex items-center space-x-2.5">
+              <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#EAF2EC] text-[#1B3B2B] flex items-center justify-center shrink-0">
+                <i data-lucide="users" class="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#1B3B2B]"></i>
+              </span>
+              <h1 class="text-base sm:text-xl font-bold tracking-tight text-[#18181B] leading-snug">
+                Database Induk Alumni Terdata (<span class="font-mono text-xs sm:text-sm">master_alumni</span>)
+              </h1>
+            </div>
+            <p class="text-[11.5px] sm:text-[13px] font-normal text-[#52525B] leading-relaxed pl-0 sm:pl-10.5 max-w-3xl">
+              Terkoneksi ke SIAK UPI & PD-Dikti untuk validasi otomatis NIM pada Laman Donatur (Step 1).
+            </p>
+          </div>
+          <div class="text-[11.5px] sm:text-xs text-[#52525B] bg-[#F1EFEA] px-3.5 py-1.5 sm:py-2 rounded-xl border border-[#E4E2DD] shrink-0">
+            Total Alumni Terdaftar: <span id="totalAlumniCount" class="font-bold text-[#1B3B2B]">25 Orang</span>
+          </div>
+        </div>
+
+        <!-- Search & Filter Bar -->
+        <div class="bg-white p-4 rounded-2xl border border-[#E4E2DD] shadow-xs grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="sm:col-span-2">
+            <input type="text" id="alumniSearchInput" oninput="filterAlumniDatabase()" placeholder="Cari berdasarkan NIM, Nama Alumni, Program Studi, atau Email UPI..." class="ui-form-control">
+          </div>
+          <div>
+            <select id="alumniFacultySelect" onchange="filterAlumniDatabase()" class="ui-form-control">
+              <option value="ALL">Semua Fakultas (8 Fakultas)</option>
+              <option value="FIP">FIP</option>
+              <option value="FPIPS">FPIPS</option>
+              <option value="FPBS">FPBS</option>
+              <option value="FPMIPA">FPMIPA</option>
+              <option value="FPTK">FPTK</option>
+              <option value="FPOK">FPOK</option>
+              <option value="FPEB">FPEB</option>
+              <option value="FPSD">FPSD</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Alumni Table -->
+        <div class="bg-white rounded-2xl border border-[#E4E2DD] shadow-xs overflow-hidden">
+          <div class="table-container max-h-[600px] overflow-y-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead class="bg-[#F1EFEA] text-[#1B3B2B] font-bold sticky top-0 z-10 border-b border-[#E4E2DD] text-[11px]">
+                <tr>
+                  <th class="p-3">NIM</th>
+                  <th class="p-3">Nama Lengkap</th>
+                  <th class="p-3">Fakultas</th>
+                  <th class="p-3">Program Studi</th>
+                  <th class="p-3 text-center">Angkatan</th>
+                  <th class="p-3">Email Resmi UPI</th>
+                  <th class="p-3">WhatsApp</th>
+                  <th class="p-3 text-right">Total Donasi Tercatat</th>
+                  <th class="p-3 text-center">Aksi Hubungi</th>
+                </tr>
+              </thead>
+              <tbody id="alumniTableBody" class="divide-y divide-[#E4E2DD]">
+                <!-- Rendered dynamically via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- =====================================================================
+           VIEW 5: WEBHOOK & EMAIL PARSER SIMULATOR (TESTING TOOL)
+           ===================================================================== -->
+      <section id="viewTabSimulator" class="space-y-4 sm:space-y-5 lg:space-y-6 hidden">
+        
+        <!-- Header Banner -->
+        <div class="bg-white p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-[#E4E2DD] shadow-xs flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
+          <div class="space-y-1 sm:space-y-1.5 min-w-0">
+            <div class="flex items-center space-x-2.5">
+              <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#EAF2EC] text-[#1B3B2B] flex items-center justify-center shrink-0">
+                <i data-lucide="settings" class="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#1B3B2B]"></i>
+              </span>
+              <h1 class="text-base sm:text-xl font-bold tracking-tight text-[#18181B] leading-snug">
+                Integrasi Webhook & Verifikasi Mutasi Otomatis
+              </h1>
+            </div>
+            <p class="text-[11.5px] sm:text-[13px] font-normal text-[#52525B] leading-relaxed pl-0 sm:pl-10.5 max-w-3xl">
+              Panel pengujian webhook pembayaran payment gateway dan verifikasi mutasi rekening koran bank.
+            </p>
+          </div>
+
+          <!-- Quick Action Buttons -->
+          <div class="grid grid-cols-2 sm:flex sm:items-center gap-2 shrink-0 w-full sm:w-auto">
+            <button type="button" onclick="injectRandomSilentDonor()" class="w-full sm:w-auto px-3.5 py-2 sm:py-1.5 rounded-xl bg-[#D95D39] hover:bg-[#C24D2A] text-white text-xs font-bold transition flex items-center justify-center space-x-1.5 shadow-xs">
+              <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+              <span>+ Catat Mutasi Bank</span>
+            </button>
+            <button type="button" onclick="resetDatabaseDemo()" class="w-full sm:w-auto px-3.5 py-2 sm:py-1.5 rounded-xl border border-[#E4E2DD] hover:bg-[#F1EFEA] text-xs font-bold text-[#1B3B2B] transition flex items-center justify-center space-x-1.5 bg-white shadow-xs">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+              <span>Reset Data Awal</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Info Banner Navigasi ke Antrean Silent Donor -->
+        <div class="bg-[#F9F8F4] p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-[#E4E2DD] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div class="flex items-center space-x-2.5 text-[#52525B]">
+            <i data-lucide="info" class="w-4 h-4 text-[#1B3B2B] shrink-0"></i>
+            <span>Daftar transaksi menunggu pembayaran (<span class="font-mono font-bold text-amber-800">STATUS: PENDING</span>) kini dikelola langsung pada tab <strong>Antrean Silent Donor</strong>.</span>
+          </div>
+          <button type="button" onclick="switchAdminTab('tabSilentDonor')" class="px-3 py-1.5 rounded-xl bg-[#1B3B2B] hover:bg-[#244F3A] text-white text-xs font-bold transition shrink-0 inline-flex items-center space-x-1.5 shadow-xs">
+            <span>Buka Antrean Silent Donor</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+
+        <!-- LOG AKTIVITAS & INTEGRASI GATEWAY -->
+        <div class="bg-white rounded-xl sm:rounded-2xl border border-[#E4E2DD] shadow-xs p-4 sm:p-5 space-y-3 w-full min-w-0">
+          <div class="flex items-center justify-between border-b border-[#F1EFEA] pb-3 gap-2">
+            <div class="flex items-center space-x-2.5 min-w-0">
+              <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#EAF2EC] text-[#1B3B2B] flex items-center justify-center shrink-0">
+                <i data-lucide="activity" class="w-4 h-4 text-[#1B3B2B]"></i>
+              </span>
+              <div>
+                <h2 class="text-xs sm:text-sm font-bold text-[#18181B]">Log Aktivitas & Audit Integrasi</h2>
+                <p class="text-[10px] sm:text-[11px] text-[#71717A]">Pencatatan riwayat webhook dan mutasi rekening real-time</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 shrink-0">
+              <button type="button" onclick="clearTerminalLogs()" class="px-2.5 py-1.5 rounded-xl border border-[#E4E2DD] hover:bg-[#F1EFEA] text-[11px] font-bold text-[#52525B] transition flex items-center space-x-1.5 bg-white shadow-xs">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                <span>Bersihkan Log</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Log Content Area -->
+          <div id="terminalLogConsole" class="terminal-scroll max-h-[260px] sm:max-h-[300px] overflow-y-auto space-y-2 text-[11px] font-mono leading-relaxed pr-1 break-words">
+            <div class="p-2.5 rounded-xl bg-[#F9F8F4] border border-[#E4E2DD] text-[#52525B] flex items-center justify-between">
+              <span>[SISTEM] Layanan Monitoring & Notifikasi Transaksi diinisialisasi</span>
+              <span class="text-[10px] text-[#71717A] bg-white px-2 py-0.5 rounded-md border border-[#E4E2DD] font-semibold shrink-0 ml-2">INIT</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center justify-between">
+              <span>[KONEKSI] Kanal Sinkronisasi Real-Time aktif dan siap memproses transaksi</span>
+              <span class="text-[10px] text-emerald-700 bg-white px-2 py-0.5 rounded-md border border-emerald-200 font-bold shrink-0 ml-2">AKTIF</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-sky-50 border border-sky-200 text-sky-800 flex items-center justify-between">
+              <span>[MODUL] Integrasi Webhook QRIS dan Rekonsiliasi Rekening Bank (BSI & Jago) siap</span>
+              <span class="text-[10px] text-sky-700 bg-white px-2 py-0.5 rounded-md border border-sky-200 font-bold shrink-0 ml-2">SIAP</span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- =========================================================================
+           FOOTER: IDENTITAS SISTEM & PENGEMBANG
+           ========================================================================= -->
+      <footer class="w-full pt-6 pb-4 border-t border-[#E4E2DD] text-center text-xs text-[#71717A] mt-6 shrink-0 no-print">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-2.5">
+          <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-center sm:text-left">
+            <span>© 2026 Ikatan Alumni Universitas Pendidikan Indonesia (IKA UPI).</span>
+            <span class="hidden sm:inline">•</span>
+            <span class="font-medium text-[#18181B]">Pengembang: <strong class="font-bold text-[#1B3B2B]">Zufar Ahmad Maulidy</strong></span>
+          </div>
+          <div class="text-[11px] text-[#71717A]">
+            <span>Portal Monitoring & Rekonsiliasi Kas Beasiswa</span>
+          </div>
+        </div>
+      </footer>
+
+    </main>
+
+  </div>
+
+  <!-- =========================================================================
+       3. MODAL: PENCOCOKAN ANTREAN SILENT DONOR DENGAN ALUMNI
+       ========================================================================= -->
+  <div id="matchSilentDonorModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-3 sm:p-4" style="background-color: rgba(15, 23, 42, 0.65); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);" onclick="if(event.target === this) closeMatchSilentDonorModal()">
+    <div class="bg-white rounded-2xl sm:rounded-3xl max-w-lg w-full p-4 sm:p-6 shadow-2xl border border-[#E4E2DD] space-y-3 sm:space-y-4 max-h-[92vh] overflow-y-auto flex flex-col" style="background-color: #FFFFFF !important;" onclick="event.stopPropagation()">
+      
+      <div class="flex items-center justify-between border-b border-[#E4E2DD] pb-2.5 sm:pb-3">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="search" class="w-4 h-4 sm:w-5 sm:h-5 text-[#1B3B2B]"></i>
+          <h3 class="text-sm sm:text-base font-bold text-[#1B3B2B]">Cocokkan Mutasi dengan Alumni</h3>
+        </div>
+        <button type="button" onclick="closeMatchSilentDonorModal()" class="text-[#71717A] hover:text-[#18181B] p-1 rounded-lg transition" title="Tutup Modal">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Detail Transfer Unclaimed -->
+      <div class="p-3 sm:p-3.5 bg-amber-50 rounded-xl sm:rounded-2xl border border-amber-200 text-xs space-y-1 sm:space-y-1.5">
+        <div class="flex justify-between">
+          <span class="text-amber-800 font-semibold">ID Mutasi Bank:</span>
+          <span id="modalMatchTxId" class="font-mono font-bold text-amber-950">-</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-amber-800 font-semibold">Total Nominal Masuk:</span>
+          <span id="modalMatchAmount" class="font-mono font-bold text-emerald-800 text-sm">Rp 0</span>
+        </div>
+        <div>
+          <span class="text-amber-800 font-semibold block">String Mutasi Bank Asli:</span>
+          <span id="modalMatchRawString" class="font-mono text-[10px] sm:text-[11px] text-slate-800 bg-white/80 p-1.5 rounded block mt-0.5 border border-amber-200 break-all">-</span>
+        </div>
+      </div>
+
+      <!-- Pilih Alumni yang Cocok -->
+      <div class="space-y-1.5 sm:space-y-2">
+        <label for="modalAlumniSearchInput" class="ui-form-label">Cari & Pilih Alumni Pemilik Donasi Ini:</label>
+        <input type="text" id="modalAlumniSearchInput" oninput="filterModalAlumniList()" placeholder="Ketik nama atau NIM alumni..." class="ui-form-control">
+        
+        <div id="modalAlumniListContainer" class="max-h-40 sm:max-h-48 overflow-y-auto space-y-1.5 border border-[#E4E2DD] rounded-xl p-2 bg-[#F9F8F4]">
+          <!-- Rendered dynamically -->
+        </div>
+        <div id="modalMatchErrorMsg" class="field-error-msg">
+          <i data-lucide="alert-circle" class="w-3.5 h-3.5 shrink-0"></i>
+          <span class="error-text">Silakan pilih salah satu alumni pemilik donasi terlebih dahulu.</span>
+        </div>
+      </div>
+
+      <!-- Catatan Rekonsiliasi -->
+      <div>
+        <label for="modalMatchNotesInput" class="ui-form-label">Catatan Rekonsiliasi Pengelola:</label>
+        <input type="text" id="modalMatchNotesInput" value="Dikonfirmasi & Dicocokkan oleh Pengelola Operasional" class="ui-form-control">
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center justify-end space-x-2 pt-2 border-t border-[#E4E2DD]">
+        <button type="button" onclick="closeMatchSilentDonorModal()" class="px-3.5 sm:px-4 py-2 rounded-xl border border-[#E4E2DD] text-xs font-bold text-[#52525B] hover:bg-[#F1EFEA]">
+          Batal
+        </button>
+        <button type="button" onclick="submitSilentDonorMatch()" class="px-3.5 sm:px-4 py-2 rounded-xl bg-[#1B3B2B] hover:bg-[#244F3A] text-white text-xs font-bold shadow-xs">
+          <span class="inline-flex items-center space-x-1.5">
+            <i data-lucide="check" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+            <span>Tetapkan & SETTLED</span>
+          </span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: LIHAT BUKTI SCREENSHOT PEMBAYARAN (GOOGLE DRIVE PREVIEW)
+       ========================================================================= -->
+  <div id="proofImageModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-3 sm:p-4" style="background-color: rgba(15, 23, 42, 0.7); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);" onclick="if(event.target === this) closeProofModal()">
+    <div class="bg-white rounded-2xl sm:rounded-3xl max-w-lg w-full p-4 sm:p-6 shadow-2xl border border-[#E4E2DD] space-y-3 sm:space-y-4 max-h-[92vh] overflow-y-auto flex flex-col" style="background-color: #FFFFFF !important;" onclick="event.stopPropagation()">
+      
+      <!-- Header -->
+      <div class="flex items-center justify-between border-b border-[#E4E2DD] pb-2.5 sm:pb-3">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-9 h-9 rounded-xl bg-emerald-100/70 text-[#1B3B2B] flex items-center justify-center">
+            <i data-lucide="image" class="w-5 h-5 text-[#1B3B2B]"></i>
+          </div>
+          <div>
+            <h3 class="text-sm sm:text-base font-bold text-[#1B3B2B]">Screenshot Bukti Pembayaran</h3>
+            <span class="text-[10.5px] text-[#71717A]">Tersimpan di Google Drive Resmi IKA UPI</span>
+          </div>
+        </div>
+        <button type="button" onclick="closeProofModal()" class="text-[#71717A] hover:text-[#18181B] p-1 rounded-lg transition" title="Tutup Modal">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Info Transaksi -->
+      <div class="p-3 bg-[#F9F8F4] rounded-xl border border-[#E4E2DD] text-xs space-y-1.5">
+        <div class="flex justify-between items-center">
+          <span class="text-[#71717A]">ID Transaksi:</span>
+          <span id="proofModalTxId" class="font-mono font-bold text-[#1B3B2B]">-</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-[#71717A]">Nama Donatur:</span>
+          <span id="proofModalDonorName" class="font-bold text-[#18181B]">-</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-[#71717A]">Nominal Donasi:</span>
+          <span id="proofModalAmount" class="font-mono font-bold text-emerald-800 text-sm">Rp 0</span>
+        </div>
+      </div>
+
+      <!-- Image Preview Container -->
+      <div id="proofModalPreviewWrapper" class="relative bg-slate-900 rounded-xl overflow-hidden border border-[#E4E2DD] min-h-[220px] max-h-[420px] flex items-center justify-center group">
+        <!-- Direct High-Res Image Preview -->
+        <img id="proofModalImg" src="" alt="Bukti Pembayaran" class="max-h-[420px] w-auto max-w-full object-contain mx-auto transition-opacity duration-300">
+        
+        <!-- Iframe Preview Fallback (Google Drive Native Embed) -->
+        <iframe id="proofModalIframe" class="hidden w-full h-[360px] border-0 rounded-xl bg-white" allow="autoplay"></iframe>
+
+        <!-- Box Diagnostic Error Khusus DRIVE_ERROR (Izin DriveApp Belum Aktif) -->
+        <div id="proofModalDriveAuthAlert" class="hidden w-full p-4 sm:p-5 bg-amber-50 text-amber-950 flex flex-col items-center justify-center text-center space-y-2.5">
+          <div class="w-10 h-10 rounded-full bg-amber-100 border border-amber-300 text-amber-700 flex items-center justify-center shrink-0">
+            <i data-lucide="shield-alert" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-xs sm:text-sm text-amber-900">Izin Google Drive Belum Diaktifkan</h4>
+            <p class="text-[11px] text-amber-800 mt-1 max-w-sm leading-relaxed">
+              Google Apps Script pada akun <strong>treasury-sandbox@example.org</strong> memerlukan otorisasi <code>DriveApp</code> agar dapat menyimpan file struk bukti ke Google Drive.
+            </p>
+          </div>
+          <div class="bg-white/90 border border-amber-200 rounded-xl p-3 text-left text-[11px] space-y-1 w-full max-w-sm text-slate-800 shadow-2xs">
+            <span class="font-bold text-[#1B3B2B] block text-[11.5px]">Langkah Cepat Aktivasi (Hanya 1 Menit):</span>
+            <ol class="list-decimal list-inside space-y-0.5 text-slate-700 text-[10.5px]">
+              <li>Buka Google Sheets &rarr; Menu <strong>Ekstensi &gt; Apps Script</strong>.</li>
+              <li>Pilih fungsi <strong>testOtorisasiGoogleDrive</strong> &rarr; Klik <strong>Jalankan</strong>.</li>
+              <li>Klik <strong>Tinjau Izin</strong> &rarr; Pilih akun &rarr; <strong>Izinkan (Allow)</strong>.</li>
+              <li>Klik <strong>Terapkan &gt; Kelola Penerapan &gt; Edit &gt; Versi Baru &gt; Terapkan</strong>.</li>
+            </ol>
+          </div>
+          <a id="proofModalSpreadsheetLink" href="https://docs.google.com/spreadsheets/d/1Z0aUEUGVPAe_5Rf3j9TKD53tRkCp-xIaS6oNJRrEMIM/edit" target="_blank" class="px-3.5 py-1.5 rounded-lg bg-[#1B3B2B] hover:bg-[#2E5A44] text-white font-bold text-xs transition inline-flex items-center space-x-1.5 shadow-xs">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            <span>Buka Google Sheets & Apps Script ↗</span>
+          </a>
+        </div>
+
+        <!-- Drive Error Fallback (Generic link issue) -->
+        <div id="proofModalDriveError" class="hidden absolute inset-0 bg-slate-900/90 text-white p-4 flex flex-col items-center justify-center text-center space-y-2">
+          <i data-lucide="alert-triangle" class="w-8 h-8 text-amber-400"></i>
+          <p class="text-xs">Gambar bukti transfer di Google Drive tidak dapat dimuat langsung sebagai preview gambar.</p>
+          <a id="proofModalFallbackLink" href="#" target="_blank" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition">
+            Buka Langsung di Google Drive ↗
+          </a>
+        </div>
+      </div>
+
+      <!-- Action Footer -->
+      <div class="flex items-center justify-between pt-2 border-t border-[#E4E2DD] gap-2">
+        <a id="proofModalDirectLink" href="#" target="_blank" class="px-3.5 py-2 rounded-xl bg-[#EAF2EC] hover:bg-[#D5E6D8] text-[#1B3B2B] text-xs font-bold inline-flex items-center space-x-1.5 transition">
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          <span>Buka di Google Drive</span>
+        </a>
+        <button type="button" onclick="closeProofModal()" class="px-4 py-2 rounded-xl bg-[#1B3B2B] hover:bg-[#244F3A] text-white text-xs font-bold shadow-xs">
+          Tutup
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       4. MODAL: PENGATURAN ENDPOINT GOOGLE APPS SCRIPT & CLOUD MODE (SOLID & ELEGANT)
+       ========================================================================= -->
+  <div id="settingsModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-3 sm:p-4" style="background-color: rgba(15, 23, 42, 0.65); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);" onclick="if(event.target === this) closeSettingsModal()">
+    <div class="bg-white rounded-2xl sm:rounded-3xl max-w-lg w-full p-5 sm:p-7 shadow-2xl border border-[#E4E2DD] max-h-[90vh] overflow-y-auto flex flex-col space-y-4 sm:space-y-5" style="background-color: #FFFFFF !important;" onclick="event.stopPropagation()">
+      
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between border-b border-[#E4E2DD] pb-3.5 gap-3">
+        <div class="flex items-center space-x-3 min-w-0">
+          <div class="w-10 h-10 rounded-2xl bg-[#EAF2EC] border border-[#2E5A44]/20 flex items-center justify-center text-[#1B3B2B] shrink-0">
+            <i data-lucide="sliders" class="w-5 h-5 stroke-[2.2]"></i>
+          </div>
+          <div class="min-w-0">
+            <h3 class="text-base sm:text-lg font-bold text-[#1B3B2B] leading-tight">Pengaturan Endpoint & Mode</h3>
+            <p class="text-xs text-[#71717A] mt-0.5">Konfigurasi arsitektur data & integrasi Google Apps Script</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeSettingsModal()" class="text-[#71717A] hover:text-[#18181B] p-1.5 rounded-xl hover:bg-[#F1EFEA] transition shrink-0" title="Tutup Modal">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Segmented Mode Switcher (Sangat Jelas, Tidak Abstrak) -->
+      <div class="space-y-2">
+        <label class="ui-form-label flex items-center justify-between mb-0">
+          <span>Pilih Mode Operasional:</span>
+          <span id="settingsActiveModeBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+            Mode Demo Aktif
+          </span>
+        </label>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <!-- Opsi 1: Mode Demo Interaktif -->
+          <button type="button" id="btnModeLocal" onclick="selectSettingsMode('local')" class="p-3 rounded-2xl border-2 text-left transition flex items-start space-x-2.5 relative border-[#1B3B2B] bg-[#EAF2EC]/70 shadow-xs">
+            <div class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+              <i data-lucide="zap" class="w-4 h-4 stroke-[2.5]"></i>
+            </div>
+            <div class="min-w-0">
+              <strong class="text-xs font-bold text-[#1B3B2B] block">Mode Demo Interaktif</strong>
+              <span class="text-[11px] text-[#52525B] leading-tight block mt-0.5">LocalStorage & Broadcast lokal antar-tab.</span>
+            </div>
+          </button>
+
+          <!-- Opsi 2: Mode Cloud Google Apps Script -->
+          <button type="button" id="btnModeCloud" onclick="selectSettingsMode('cloud')" class="p-3 rounded-2xl border-2 text-left transition flex items-start space-x-2.5 relative border-[#E4E2DD] bg-white hover:border-[#D1CFCA]">
+            <div class="w-7 h-7 rounded-lg bg-sky-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+              <i data-lucide="cloud" class="w-4 h-4 stroke-[2.5]"></i>
+            </div>
+            <div class="min-w-0">
+              <strong class="text-xs font-bold text-[#18181B] block">Mode Cloud (GAS)</strong>
+              <span class="text-[11px] text-[#52525B] leading-tight block mt-0.5">Sinkronisasi Google Sheets & Mutasi live.</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Form Inputs Area -->
+      <div class="space-y-3.5">
+        
+        <!-- Input 1: URL Deployment GAS -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between">
+            <label for="settingGasUrlInput" class="ui-form-label mb-0">URL Web App Google Apps Script:</label>
+            <button type="button" onclick="testGasConnection()" id="btnTestGasPing" class="text-[11px] font-bold text-[#1B3B2B] hover:text-[#2E5A44] hover:underline flex items-center space-x-1">
+              <i data-lucide="activity" class="w-3.5 h-3.5"></i>
+              <span>Uji Koneksi (Ping)</span>
+            </button>
+          </div>
+          <div class="relative">
+            <input type="url" id="settingGasUrlInput" placeholder="https://script.google.com/macros/s/AKfycb.../exec" class="ui-form-control font-mono text-xs pr-10" oninput="onGasUrlInputChange()">
+            <div class="absolute right-3 top-1/2 -translate-y-1/2 text-[#71717A] pointer-events-none">
+              <i data-lucide="link" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <!-- Ping result badge -->
+          <div id="gasPingResult" class="hidden text-[11px] font-medium py-1.5 px-2.5 rounded-lg border"></div>
+          <p class="text-[11px] text-[#71717A] leading-relaxed">
+            Biarkan kosong jika ingin menjalankan <strong>Mode Demo</strong> (untuk demonstrasi sidang tanpa internet/cloud).
+          </p>
+        </div>
+
+        <!-- Input 2: Target Beasiswa Semester -->
+        <div class="space-y-1.5">
+          <label for="settingTargetAmountInput" class="ui-form-label mb-0">Target Pengumpulan Beasiswa Semester (Rp):</label>
+          <div class="relative">
+            <div class="absolute left-3.5 top-1/2 -translate-y-1/2 font-bold text-xs text-[#52525B] pointer-events-none">Rp</div>
+            <input type="number" id="settingTargetAmountInput" value="50000000" min="1000000" step="1000000" class="ui-form-control font-mono text-xs pl-10" oninput="updateTargetPreview()">
+          </div>
+          <div class="flex items-center justify-between text-[11px]">
+            <span id="settingTargetPreviewText" class="text-emerald-800 font-semibold">Rp 50.000.000 (Target Aktif)</span>
+            <!-- Quick preset buttons -->
+            <div class="flex items-center space-x-1.5">
+              <button type="button" onclick="setPresetTarget(25000000)" class="px-2 py-0.5 rounded-md bg-[#F1EFEA] hover:bg-[#E4E2DD] text-[10px] font-bold text-[#52525B]">25 Jt</button>
+              <button type="button" onclick="setPresetTarget(50000000)" class="px-2 py-0.5 rounded-md bg-[#F1EFEA] hover:bg-[#E4E2DD] text-[10px] font-bold text-[#52525B]">50 Jt</button>
+              <button type="button" onclick="setPresetTarget(100000000)" class="px-2 py-0.5 rounded-md bg-[#F1EFEA] hover:bg-[#E4E2DD] text-[10px] font-bold text-[#52525B]">100 Jt</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input 3 & 4: URL Google Sheets & Looker Studio -->
+        <div class="p-3.5 bg-[#F9F8F4] rounded-2xl border border-[#E4E2DD] space-y-2.5">
+          <span class="text-xs font-bold text-[#1B3B2B] flex items-center space-x-1.5">
+            <i data-lucide="external-link" class="w-3.5 h-3.5 text-[#1B3B2B]"></i>
+            <span>Tautan Langsung Google Sheets & Looker Studio:</span>
+          </span>
+          <div class="grid grid-cols-1 gap-2.5">
+            <div>
+              <label for="settingSheetsUrlInput" class="text-[11px] font-semibold text-[#52525B] block mb-1">URL Google Sheets (Buku Kas & Mutasi):</label>
+              <input type="url" id="settingSheetsUrlInput" placeholder="https://docs.google.com/spreadsheets/d/.../edit" class="ui-form-control font-mono text-xs">
+            </div>
+            <div>
+              <label for="settingLookerUrlInput" class="text-[11px] font-semibold text-[#52525B] block mb-1">URL Google Looker Studio (Dasbor BI):</label>
+              <input type="url" id="settingLookerUrlInput" placeholder="https://lookerstudio.google.com/reporting/..." class="ui-form-control font-mono text-xs">
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Status Sinkronisasi Real-Time -->
+        <div class="p-3.5 bg-[#F9F8F4] rounded-2xl border border-[#E4E2DD] space-y-2 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-[#1B3B2B] flex items-center space-x-1.5">
+              <i data-lucide="radio" class="w-3.5 h-3.5 text-emerald-600 animate-pulse"></i>
+              <span>Status Sinkronisasi Sistem:</span>
+            </span>
+            <span id="settingsChannelBadge" class="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+              BroadcastChannel Online
+            </span>
+          </div>
+          <p id="settingsModeDescription" class="text-[11px] text-[#52525B] leading-relaxed">
+            Data tersinkronisasi otomatis secara instan antara portal Donatur dan portal Pengelola ini.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons Footer -->
+      <div class="flex items-center justify-end space-x-2.5 pt-3 border-t border-[#E4E2DD]">
+        <button type="button" onclick="closeSettingsModal()" class="px-4 py-2.5 rounded-xl border border-[#E4E2DD] text-xs font-bold text-[#52525B] hover:bg-[#F1EFEA] hover:text-[#18181B] transition">
+          Batal
+        </button>
+        <button type="button" onclick="saveSettingsConfig()" class="px-5 py-2.5 rounded-xl bg-[#1B3B2B] hover:bg-[#244F3A] text-white text-xs font-bold shadow-xs transition flex items-center space-x-1.5">
+          <i data-lucide="check" class="w-4 h-4 stroke-[2.5]"></i>
+          <span>Simpan & Terapkan Konfigurasi</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       5. JAVASCRIPT ENGINE (ADMIN CONTROLLER & REALTIME SYNC)
+       ========================================================================= -->
+  <!-- 1. Konfigurasi Endpoint Global -->
+  <script src="config.js"></script>
+
+  <!-- 2. Database Default Seed (25 Alumni & 30 Transaksi) -->
+  <script src="seed_data.js"></script>
+
+  <!-- 3. Admin Dashboard Script -->
+  <script>
+    /**
+     * PORTAL PENGELOLA OPERASIONAL IKA UPI (ADMIN CONTROLLER)
+     * Sinkronisasi Real-Time dengan index.html via LocalStorage & BroadcastChannel
+     */
+    const STORAGE_KEY_DB = 'UPI_BEASISWA_DB';
+    const interTabChannel = ('BroadcastChannel' in window) ? new BroadcastChannel('UPI_DONASI_CHANNEL') : null;
+
+    let adminState = {
+      activeTab: 'tabOverview',
+      filterSearch: '',
+      filterStatus: 'ALL',
+      filterFaculty: 'ALL',
+      alumniSearch: '',
+      alumniFaculty: 'ALL',
+      activeMatchTxId: null,
+      selectedAlumniForMatch: null
+    };
+
+    // =========================================================================
+    // SISTEM OTENTIKASI PENGELOLA (LOGIN & LOGOUT)
+    // =========================================================================
+    const DEFAULT_ADMIN_USER = 'admin_beasiswa';
+    const DEFAULT_ADMIN_PASS = 'demo_admin_pass';
+    const AUTH_STORAGE_KEY = 'UPI_ADMIN_AUTH_TOKEN';
+    const AUTH_USER_KEY = 'UPI_ADMIN_CURRENT_USER';
+
+    function checkAuthStatus() {
+      const isAuth = sessionStorage.getItem(AUTH_STORAGE_KEY) === 'true';
+      const loginScreen = document.getElementById('adminLoginScreen');
+      const sidebarUser = document.getElementById('sidebarUsername');
+      const savedUser = sessionStorage.getItem(AUTH_USER_KEY) || DEFAULT_ADMIN_USER;
+
+      if (sidebarUser) {
+        sidebarUser.textContent = savedUser;
+      }
+
+      if (isAuth) {
+        if (loginScreen) {
+          loginScreen.classList.add('hidden');
+        }
+      } else {
+        if (loginScreen) {
+          loginScreen.classList.remove('hidden');
+          resetLoginFormState();
+        }
+      }
+
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+    }
+
+    function handleAdminLogin(event) {
+      if (event) event.preventDefault();
+
+      const userInput = document.getElementById('loginUsername');
+      const passInput = document.getElementById('loginPassword');
+      const errUserEmpty = document.getElementById('errUsernameEmpty');
+      const errPassEmpty = document.getElementById('errPasswordEmpty');
+      const errLoginFailed = document.getElementById('loginErrorAlert');
+      const loginCard = document.getElementById('adminLoginCard');
+      const btnSubmit = document.getElementById('btnLoginSubmit');
+      const btnText = document.getElementById('btnTextLogin');
+
+      if (!userInput || !passInput) return;
+
+      // Reset prior states
+      userInput.classList.remove('border-rose-500', 'ring-2', 'ring-rose-200', 'bg-rose-50/20');
+      passInput.classList.remove('border-rose-500', 'ring-2', 'ring-rose-200', 'bg-rose-50/20');
+      if (errUserEmpty) errUserEmpty.classList.add('hidden');
+      if (errPassEmpty) errPassEmpty.classList.add('hidden');
+      if (errLoginFailed) errLoginFailed.classList.add('hidden');
+      if (loginCard) loginCard.classList.remove('shake-animation');
+
+      const uVal = userInput.value.trim();
+      const pVal = passInput.value;
+
+      let hasEmpty = false;
+      if (!uVal) {
+        userInput.classList.add('border-rose-500', 'ring-2', 'ring-rose-200', 'bg-rose-50/20');
+        if (errUserEmpty) errUserEmpty.classList.remove('hidden');
+        hasEmpty = true;
+      }
+
+      if (!pVal) {
+        passInput.classList.add('border-rose-500', 'ring-2', 'ring-rose-200', 'bg-rose-50/20');
+        if (errPassEmpty) errPassEmpty.classList.remove('hidden');
+        hasEmpty = true;
+      }
+
+      if (hasEmpty) {
+        if (!uVal) userInput.focus();
+        else if (!pVal) passInput.focus();
+        return;
+      }
+
+      // Validasi kredensial (admin_beasiswa / demo_admin_pass atau alternatif praktis admin / admin123)
+      const isMatch = (uVal.toLowerCase() === DEFAULT_ADMIN_USER.toLowerCase() && pVal === DEFAULT_ADMIN_PASS) ||
+                      (uVal.toLowerCase() === 'admin' && (pVal === 'demo_admin_pass' || pVal === 'admin123'));
+
+      if (isMatch) {
+        // Berhasil login
+        if (btnText) btnText.textContent = 'Berhasil! Mengalihkan...';
+        if (btnSubmit) {
+          btnSubmit.classList.remove('bg-[#1B3B2B]', 'hover:bg-[#244F3A]');
+          btnSubmit.classList.add('bg-emerald-600');
+        }
+
+        sessionStorage.setItem(AUTH_STORAGE_KEY, 'true');
+        sessionStorage.setItem(AUTH_USER_KEY, uVal);
+
+        const sidebarUser = document.getElementById('sidebarUsername');
+        if (sidebarUser) sidebarUser.textContent = uVal;
+
+        // Animasi transisi smooth
+        const loginScreen = document.getElementById('adminLoginScreen');
+        if (loginCard) loginCard.classList.add('opacity-0', 'scale-95');
+        if (loginScreen) loginScreen.classList.add('opacity-0');
+
+        setTimeout(() => {
+          if (loginScreen) {
+            loginScreen.classList.add('hidden');
+            loginScreen.classList.remove('opacity-0');
+          }
+          if (loginCard) {
+            loginCard.classList.remove('opacity-0', 'scale-95');
+          }
+          if (btnText) btnText.textContent = 'Masuk ke Dashboard';
+          if (btnSubmit) {
+            btnSubmit.classList.remove('bg-emerald-600');
+            btnSubmit.classList.add('bg-[#1B3B2B]', 'hover:bg-[#244F3A]');
+          }
+          showModernToast('Selamat datang kembali, ' + uVal + '!', 'success');
+          if (window.lucide && typeof window.lucide.createIcons === 'function') {
+            window.lucide.createIcons();
+          }
+        }, 450);
+
+      } else {
+        // Gagal login: otomatis menghapus dan outline menjadi merah dengan tulisan kecil *coba lagi
+        userInput.value = '';
+        passInput.value = '';
+        userInput.classList.add('border-rose-500', 'ring-2', 'ring-rose-200', 'bg-rose-50/20');
+        passInput.classList.add('border-rose-500', 'ring-2', 'ring-rose-200', 'bg-rose-50/20');
+        if (errLoginFailed) errLoginFailed.classList.remove('hidden');
+
+        if (loginCard) {
+          loginCard.classList.add('shake-animation');
+          setTimeout(() => loginCard.classList.remove('shake-animation'), 450);
+        }
+        userInput.focus();
+      }
+    }
+
+    function resetLoginFormState() {
+      const userInput = document.getElementById('loginUsername');
+      const passInput = document.getElementById('loginPassword');
+      const errUserEmpty = document.getElementById('errUsernameEmpty');
+      const errPassEmpty = document.getElementById('errPasswordEmpty');
+      const errLoginFailed = document.getElementById('loginErrorAlert');
+
+      if (userInput) {
+        userInput.value = '';
+        userInput.classList.remove('border-rose-500', 'ring-2', 'ring-rose-200', 'bg-rose-50/20');
+      }
+      if (passInput) {
+        passInput.value = '';
+        passInput.classList.remove('border-rose-500', 'ring-2', 'ring-rose-200', 'bg-rose-50/20');
+      }
+      if (errUserEmpty) errUserEmpty.classList.add('hidden');
+      if (errPassEmpty) errPassEmpty.classList.add('hidden');
+      if (errLoginFailed) errLoginFailed.classList.add('hidden');
+    }
+
+    function togglePasswordVisibility() {
+      const passInput = document.getElementById('loginPassword');
+      const icon = document.getElementById('iconTogglePassword');
+      if (!passInput) return;
+      if (passInput.type === 'password') {
+        passInput.type = 'text';
+        if (icon) icon.setAttribute('data-lucide', 'eye-off');
+      } else {
+        passInput.type = 'password';
+        if (icon) icon.setAttribute('data-lucide', 'eye');
+      }
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+    }
+
+    function openLogoutModal() {
+      const modal = document.getElementById('modalConfirmLogout');
+      if (modal) {
+        modal.classList.remove('hidden');
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+          window.lucide.createIcons();
+        }
+      }
+    }
+
+    function closeLogoutModal() {
+      const modal = document.getElementById('modalConfirmLogout');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function confirmLogout() {
+      sessionStorage.removeItem(AUTH_STORAGE_KEY);
+      sessionStorage.removeItem(AUTH_USER_KEY);
+      closeLogoutModal();
+
+      const loginScreen = document.getElementById('adminLoginScreen');
+      if (loginScreen) {
+        resetLoginFormState();
+        loginScreen.classList.remove('hidden');
+        loginScreen.classList.add('opacity-0');
+        setTimeout(() => loginScreen.classList.remove('opacity-0'), 10);
+      }
+      showModernToast('Sesi pengelola telah berakhir.', 'info');
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+    }
+
+    // Inisialisasi Saat Dokumen Siap
+    document.addEventListener('DOMContentLoaded', function() {
+      checkAuthStatus();
+      ensureDatabaseInitialized();
+      setupClockTimer();
+      setupBroadcastListener();
+      updateConnectionBadge();
+      refreshAdminData();
+      setupCloudSync();
+
+      // Listener input field login agar outline merah hilang saat diketik
+      ['loginUsername', 'loginPassword'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('input', () => {
+            el.classList.remove('border-rose-500', 'ring-2', 'ring-rose-200', 'bg-rose-50/20');
+            const errEmpty = id === 'loginUsername' ? document.getElementById('errUsernameEmpty') : document.getElementById('errPasswordEmpty');
+            if (errEmpty) errEmpty.classList.add('hidden');
+            const errLoginFailed = document.getElementById('loginErrorAlert');
+            if (errLoginFailed) errLoginFailed.classList.add('hidden');
+          });
+        }
+      });
+    });
+
+    /**
+     * Memastikan database lokal terisi seed_data.js jika belum ada
+     */
+    function ensureDatabaseInitialized() {
+      const existing = localStorage.getItem(STORAGE_KEY_DB);
+      if (!existing && window.DEFAULT_SEED_DATABASE) {
+        localStorage.setItem(STORAGE_KEY_DB, JSON.stringify(window.DEFAULT_SEED_DATABASE));
+        appendTerminalLog('[INIT] Database lokal disiapkan dengan 5 kasus representatif (1 per skenario).', 'info');
+      } else if (existing) {
+        try {
+          const parsed = JSON.parse(existing);
+          if (parsed && Array.isArray(parsed.raw_donations)) {
+            const hasOldBulk = parsed.raw_donations.some(r => 
+              r.transactionId && (r.transactionId.startsWith("TX-20261101-") || 
+                                  r.transactionId.startsWith("TX-20261102-") || 
+                                  r.transactionId.startsWith("TX-20261103-") || 
+                                  r.transactionId.startsWith("TX-20261104-") || 
+                                  r.transactionId.startsWith("TX-20261105-") || 
+                                  r.transactionId.startsWith("TX-20261106-") || 
+                                  r.transactionId.startsWith("TX-DIRECT-20261105-") || 
+                                  r.transactionId.startsWith("TX-DIRECT-20261106-"))
+            );
+            if (hasOldBulk && window.DEFAULT_SEED_DATABASE) {
+              parsed.raw_donations = window.DEFAULT_SEED_DATABASE.raw_donations;
+              localStorage.setItem(STORAGE_KEY_DB, JSON.stringify(parsed));
+              appendTerminalLog('[UPGRADE] Data dummy lama digantikan oleh 5 kasus representatif.', 'info');
+            }
+          }
+        } catch (e) {
+          console.warn(e);
+        }
+      }
+    }
+
+    function getLocalDatabase() {
+      ensureDatabaseInitialized();
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY_DB));
+      } catch (e) {
+        return window.DEFAULT_SEED_DATABASE || { master_alumni: [], raw_donations: [] };
+      }
+    }
+
+    function saveLocalDatabase(db) {
+      localStorage.setItem(STORAGE_KEY_DB, JSON.stringify(db));
+    }
+
+    /**
+     * Real-Time BroadcastChannel Event Listener & Multi-Tab Sync
+     */
+    function setupBroadcastListener() {
+      if (interTabChannel) {
+        interTabChannel.onmessage = function(event) {
+          const msg = event.data;
+          if (!msg) return;
+
+          if (msg.type === 'TRANSACTION_CREATED') {
+            appendTerminalLog(`[INCOMING] Transaksi baru dibuat di Portal Donatur! ID: ${msg.payload.transactionId} (${formatRupiah(msg.payload.totalTransferAmount)})`, 'success');
+            refreshAdminData();
+          } else if (msg.type === 'TRANSACTION_PAID') {
+            appendTerminalLog(`[PAID] Transaksi ${msg.payload.transactionId} terkonfirmasi LUNAS!`, 'success');
+            refreshAdminData();
+          } else if (msg.type === 'POST_CORRECTION') {
+            appendTerminalLog(`[UPDATE] Donatur memperbarui kontak WA untuk ${msg.payload.transactionId}`, 'info');
+            refreshAdminData();
+          } else if (msg.type === 'DIRECT_TRANSFER_CLAIMED') {
+            appendTerminalLog(`[CLAIMED] Mutasi langsung diklaim oleh donatur: ${msg.payload.transactionId}`, 'success');
+            refreshAdminData();
+          } else if (msg.type === 'DB_RESET') {
+            appendTerminalLog('[RESET] Database reset event received from another tab.', 'warn');
+            refreshAdminData();
+          }
+        };
+      } else {
+        appendTerminalLog('[WARN] BroadcastChannel is not supported in this browser. Falling back to LocalStorage polling.', 'warn');
+      }
+
+      // Storage Event Listener (Mendeteksi perubahan transaksi di LocalStorage dari tab lain secara instan)
+      window.addEventListener('storage', function(e) {
+        if (e.key === STORAGE_KEY_DB) {
+          refreshAdminData();
+          appendTerminalLog('[LOCAL-SYNC] Terdeteksi perubahan database dari tab portal donatur.', 'info');
+        }
+      });
+
+      // Window Focus Listener (Segarkan tampilan saat admin membuka kembali tab ini)
+      window.addEventListener('focus', function() {
+        refreshAdminData();
+        syncCloudDatabase();
+      });
+    }
+
+    let cloudSyncIntervalId = null;
+
+    function setupCloudSync() {
+      syncCloudDatabase();
+      if (cloudSyncIntervalId) clearInterval(cloudSyncIntervalId);
+      // Interval auto-detect dipercepat ke 2.5 detik untuk respon real-time instan
+      cloudSyncIntervalId = setInterval(syncCloudDatabase, 2500);
+    }
+
+    /**
+     * Sinkronisasi Dua Arah Cloud GAS (Google Sheets) & LocalStorage (Full Real-Time Auto-Detection)
+     */
+    async function syncCloudDatabase() {
+      const gasUrl = (window.APP_CONFIG && window.APP_CONFIG.GAS_DEPLOYMENT_URL) || localStorage.getItem('UPI_GAS_URL');
+      if (!gasUrl || gasUrl.trim() === '') return;
+
+      try {
+        const query = new URLSearchParams({ action: 'getAllTransactions' }).toString();
+        const response = await fetch(`${gasUrl}?${query}`, { method: 'GET' });
+        if (!response.ok) return;
+        const data = await response.json();
+
+        if (data && data.status === 'SUCCESS' && Array.isArray(data.transactions) && data.transactions.length > 0) {
+          const localDb = getLocalDatabase();
+          const localMap = new Map();
+          (localDb.raw_donations || []).forEach(tx => localMap.set(tx.transactionId, tx));
+
+          let newFromCloudCount = 0;
+          let updatedCount = 0;
+
+          data.transactions.forEach(cloudTx => {
+            if (!localMap.has(cloudTx.transactionId)) {
+              localDb.raw_donations.push(cloudTx);
+              localMap.set(cloudTx.transactionId, cloudTx);
+              newFromCloudCount++;
+            } else {
+              const localTx = localMap.get(cloudTx.transactionId);
+              const isCloudPaid = cloudTx.paymentStatus === 'PAID' || cloudTx.paymentStatus === 'SETTLED';
+              const wasLocalPending = localTx.paymentStatus === 'PENDING';
+
+              if (isCloudPaid && wasLocalPending) {
+                localTx.paymentStatus = 'PAID';
+                localTx.settlementStatus = cloudTx.settlementStatus || 'SETTLED_DANA_QRIS';
+                if (cloudTx.proofImageUrl) {
+                  localTx.proofImageUrl = cloudTx.proofImageUrl;
+                }
+                const realAmount = Number(cloudTx.totalTransferAmount || cloudTx.realAmount || cloudTx.real_amount || cloudTx.baseAmount || 0);
+                if (realAmount > 0) {
+                  localTx.totalTransferAmount = realAmount;
+                  localTx.baseAmount = realAmount;
+                }
+                localTx.bankSenderRaw = cloudTx.bankSenderRaw || 'DANA QRIS (treasury-sandbox@example.org)';
+                localTx.notes = cloudTx.notes || 'Auto-approved by scanGmailAndGenerateReceipts via treasury-sandbox@example.org';
+                updatedCount++;
+
+                // Broadcast ke index.html agar Laman Donatur seketika beralih ke E-Receipt!
+                if (interTabChannel) {
+                  interTabChannel.postMessage({ type: 'TRANSACTION_PAID', payload: localTx });
+                }
+
+                showModernToast(`🔔 Mutasi Baru DANA: ${formatRupiah(localTx.totalTransferAmount)} telah masuk otomatis ke kas!`, 'success', 6000);
+                appendTerminalLog(`[DANA-AUTO-DETECT] Transaksi ${localTx.transactionId} otomatis LUNAS dari mutasi DANA (${formatRupiah(localTx.totalTransferAmount)}) via treasury-sandbox@example.org!`, 'success');
+              } else if (isCloudPaid && cloudTx.totalTransferAmount > 0 && localTx.totalTransferAmount !== cloudTx.totalTransferAmount) {
+                localTx.totalTransferAmount = cloudTx.totalTransferAmount;
+                localTx.baseAmount = cloudTx.baseAmount || cloudTx.totalTransferAmount;
+                updatedCount++;
+              }
+
+              if (cloudTx.proofImageUrl && (!localTx.proofImageUrl || localTx.proofImageUrl !== cloudTx.proofImageUrl)) {
+                localTx.proofImageUrl = cloudTx.proofImageUrl;
+                updatedCount++;
+              }
+            }
+          });
+
+          if (newFromCloudCount > 0 || updatedCount > 0) {
+            saveLocalDatabase(localDb);
+            refreshAdminData();
+            if (newFromCloudCount > 0) {
+              appendTerminalLog(`[CLOUD-SYNC] Menemukan ${newFromCloudCount} transaksi baru dari Google Sheets.`, 'info');
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('[CLOUD-SYNC-WARN]', err);
+      }
+    }
+
+    async function handleManualRefresh() {
+      refreshAdminData();
+      showModernToast('Menyinkronkan data lokal & Google Sheets...', 'info');
+      await syncCloudDatabase();
+      showModernToast('Data donasi berhasil disinkronkan!', 'success');
+    }
+
+    async function syncTransactionStatusToCloud(transactionId, settlementStatus, amount) {
+      const gasUrl = (window.APP_CONFIG && window.APP_CONFIG.GAS_DEPLOYMENT_URL) || localStorage.getItem('UPI_GAS_URL');
+      if (!gasUrl || gasUrl.trim() === '') return;
+
+      try {
+        const payload = {
+          action: 'webhookPaymentGateway',
+          transactionId: transactionId,
+          settlementStatus: settlementStatus || 'SETTLED',
+          amount: amount || 0
+        };
+        const response = await fetch(gasUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        if (response.ok) {
+          const res = await response.json();
+          if (res && res.status === 'SUCCESS') {
+            appendTerminalLog(`[CLOUD-SYNC] Status transaksi ${transactionId} berhasil dicatat di Google Sheets sebagai PAID!`, 'success');
+          }
+        }
+      } catch (err) {
+        appendTerminalLog(`[CLOUD-WARN] Gagal update Google Sheets: ${err.message}`, 'warn');
+      }
+    }
+
+    /**
+     * Jam Real-time di Header
+     */
+    function setupClockTimer() {
+      const clockEl = document.getElementById('liveClockText');
+      function updateClock() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('id-ID', { hour12: false }) + ' WIB';
+        if (clockEl) clockEl.textContent = timeStr;
+      }
+      updateClock();
+      setInterval(updateClock, 1000);
+    }
+
+    /**
+     * Status Koneksi (GAS vs Local)
+     */
+    function updateConnectionBadge() {
+      const gasUrl = (window.APP_CONFIG && window.APP_CONFIG.GAS_DEPLOYMENT_URL) || localStorage.getItem('UPI_GAS_URL');
+      const badge = document.getElementById('connectionStatusBadge');
+      const text = document.getElementById('connectionStatusText');
+
+      if (gasUrl && gasUrl.trim() !== '') {
+        badge.className = 'flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-900 border border-emerald-200 text-xs font-semibold';
+        text.textContent = 'Cloud GAS Connected';
+      } else {
+        badge.className = 'flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-amber-50 text-amber-900 border border-amber-200 text-xs font-semibold';
+        text.textContent = 'Local Sync Active';
+      }
+    }
+
+    /**
+     * Navigasi Antar Tab di Admin Dashboard
+     */
+    function switchAdminTab(targetTabId) {
+      adminState.activeTab = targetTabId;
+
+      const tabs = ['tabOverview', 'tabMutasi', 'tabSilentDonor', 'tabAlumni', 'tabSimulator'];
+      tabs.forEach(tab => {
+        const viewEl = document.getElementById('view' + tab.charAt(0).toUpperCase() + tab.slice(1));
+        const navEl = document.getElementById('nav' + tab.charAt(0).toUpperCase() + tab.slice(1));
+
+        if (tab === targetTabId) {
+          if (viewEl) viewEl.classList.remove('hidden');
+          if (navEl) navEl.classList.add('active');
+        } else {
+          if (viewEl) viewEl.classList.add('hidden');
+          if (navEl) navEl.classList.remove('active');
+        }
+      });
+
+      // Close mobile sidebar if open
+      const sidebar = document.getElementById('adminSidebar');
+      const backdrop = document.getElementById('mobileSidebarBackdrop');
+      if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
+        sidebar.classList.add('-translate-x-full');
+        if (backdrop) backdrop.classList.add('hidden');
+      }
+
+      refreshAdminData();
+    }
+
+    function toggleMobileSidebar() {
+      const sidebar = document.getElementById('adminSidebar');
+      const backdrop = document.getElementById('mobileSidebarBackdrop');
+      if (!sidebar) return;
+
+      const isClosed = sidebar.classList.contains('-translate-x-full');
+      if (isClosed) {
+        sidebar.classList.remove('-translate-x-full');
+        if (backdrop) backdrop.classList.remove('hidden');
+      } else {
+        sidebar.classList.add('-translate-x-full');
+        if (backdrop) backdrop.classList.add('hidden');
+      }
+    }
+
+    /**
+     * Memuat ulang data dan memperbarui seluruh komponen visual
+     */
+    function refreshAdminData() {
+      const db = getLocalDatabase();
+      const rawDonations = db.raw_donations || [];
+      const masterAlumni = db.master_alumni || [];
+
+      // Update Badges di Sidebar
+      const pendingCount = rawDonations.filter(t => t.paymentStatus === 'PENDING').length;
+      const unclaimedCount = rawDonations.filter(t => t.verificationTier === 'UNCLAIMED_DIRECT_TRANSFER' || t.inflowPath === 'DIRECT_TRANSFER_UNCLAIMED').length;
+
+      document.getElementById('badgeCountTotal').textContent = rawDonations.length;
+      document.getElementById('badgeCountPending').textContent = pendingCount;
+      document.getElementById('badgeCountUnclaimed').textContent = unclaimedCount;
+      document.getElementById('badgeCountAlumni').textContent = masterAlumni.length;
+
+      // Update View Tertentu
+      renderOverviewKPIs(rawDonations);
+      renderFacultyBreakdown(rawDonations);
+      renderPaymentChannelsBreakdown(rawDonations);
+      renderInflowPathsBreakdown(rawDonations);
+      renderRecentTransactions(rawDonations);
+      renderTransactionsTable(rawDonations);
+      renderUnclaimedQueue(rawDonations);
+      renderAlumniDatabase(masterAlumni, rawDonations);
+      renderPendingSimulator(rawDonations);
+
+      // Re-initialize Lucide Icons across dynamically rendered components
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+    }
+
+    /**
+     * 1. Render Scorecards KPI & Rekonsiliasi Kas (View Overview)
+     */
+    function renderOverviewKPIs(donations) {
+      const targetAmount = (window.APP_CONFIG && window.APP_CONFIG.TARGET_SEMESTER_AMOUNT) || 50000000;
+
+      // Hitung Total Dana Terhimpun (Hanya yang lunas / settled)
+      const settledDonations = donations.filter(t => t.paymentStatus === 'PAID' || t.paymentStatus === 'SETTLED');
+      const totalTerkumpul = settledDonations.reduce((sum, t) => sum + (Number(t.totalTransferAmount) || 0), 0);
+
+      // Hitung Kas Cair di Rekening Bendahara (Transfer Bank BSI, Jago & DANA Kas yang lunas)
+      const bsiDonations = settledDonations.filter(t => String(t.paymentChannel || '').toUpperCase().includes('BSI'));
+      const jagoDonations = settledDonations.filter(t => String(t.paymentChannel || '').toUpperCase().includes('JAGO'));
+      const danaDonations = settledDonations.filter(t => String(t.settlementStatus || '').toUpperCase().includes('DANA') || String(t.paymentChannel || '').toUpperCase().includes('DANA'));
+      
+      const totalBSI = bsiDonations.reduce((sum, t) => sum + (Number(t.totalTransferAmount) || 0), 0);
+      const totalJago = jagoDonations.reduce((sum, t) => sum + (Number(t.totalTransferAmount) || 0), 0);
+      const totalDana = danaDonations.reduce((sum, t) => sum + (Number(t.totalTransferAmount) || 0), 0);
+      const totalKasBendahara = totalBSI + totalJago + totalDana;
+
+      // Hitung Kas Mengendap di Payment Gateway (QRIS standar selain DANA langsung)
+      const qrisDonations = settledDonations.filter(t => String(t.paymentChannel || '').toUpperCase().includes('QRIS') && !String(t.settlementStatus || '').toUpperCase().includes('DANA'));
+      const totalKasGateway = qrisDonations.reduce((sum, t) => sum + (Number(t.totalTransferAmount) || 0), 0);
+
+      // Transaksi Perlu Tindakan (Pending + Unclaimed)
+      const pendingTxs = donations.filter(t => t.paymentStatus === 'PENDING');
+      const unclaimedTxs = donations.filter(t => t.verificationTier === 'UNCLAIMED_DIRECT_TRANSFER' || t.inflowPath === 'DIRECT_TRANSFER_UNCLAIMED');
+      const totalNeedAction = pendingTxs.length + unclaimedTxs.length;
+
+      // Persentase Capaian
+      const percent = Math.min(100, ((totalTerkumpul / targetAmount) * 100)).toFixed(1);
+
+      // Set ke Elemen UI
+      document.getElementById('kpiTotalDana').textContent = formatRupiah(totalTerkumpul);
+      document.getElementById('kpiPercentTarget').textContent = percent + '%';
+      document.getElementById('kpiProgressBarTarget').style.width = percent + '%';
+
+      document.getElementById('kpiKasBendahara').textContent = formatRupiah(totalKasBendahara);
+      document.getElementById('kpiKasBSI').textContent = formatRupiah(totalBSI);
+      document.getElementById('kpiKasJago').textContent = formatRupiah(totalJago);
+
+      document.getElementById('kpiKasGateway').textContent = formatRupiah(totalKasGateway);
+
+      document.getElementById('kpiNeedActionCount').textContent = totalNeedAction;
+      document.getElementById('kpiCountSilent').textContent = unclaimedTxs.length;
+      document.getElementById('kpiCountPending').textContent = pendingTxs.length;
+    }
+
+    /**
+     * 2. Leaderboard Perolehan per Fakultas (8 Fakultas) & Visual Graph Komparasi
+     */
+    function renderFacultyBreakdown(donations) {
+      const container = document.getElementById('facultyBreakdownList');
+      if (!container) return;
+
+      const faculties = [
+        { code: 'FIP', name: 'Fakultas Ilmu Pendidikan' },
+        { code: 'FPIPS', name: 'Fak. Pendidikan Ilmu Pengetahuan Sosial' },
+        { code: 'FPBS', name: 'Fak. Pendidikan Bahasa dan Sastra' },
+        { code: 'FPMIPA', name: 'Fak. Pendidikan Mat & Ilmu Pengetahuan Alam' },
+        { code: 'FPTK', name: 'Fak. Pendidikan Teknologi dan Kejuruan' },
+        { code: 'FPOK', name: 'Fak. Pendidikan Olahraga dan Kesehatan' },
+        { code: 'FPEB', name: 'Fakultas Pendidikan Ekonomi dan Bisnis' },
+        { code: 'FPSD', name: 'Fakultas Pendidikan Seni dan Desain' }
+      ];
+
+      const settled = donations.filter(t => t.paymentStatus === 'PAID' || t.paymentStatus === 'SETTLED');
+      const grandTotal = settled.reduce((sum, t) => sum + (Number(t.totalTransferAmount) || 0), 0) || 1;
+
+      const stats = faculties.map(f => {
+        const facultyTxs = settled.filter(t => t.faculty === f.code);
+        const totalAmount = facultyTxs.reduce((sum, t) => sum + (Number(t.totalTransferAmount) || 0), 0);
+        const percentage = ((totalAmount / grandTotal) * 100).toFixed(1);
+        return { ...f, count: facultyTxs.length, totalAmount, percentage: Number(percentage) };
+      });
+
+      // Urutkan dari perolehan tertinggi
+      stats.sort((a, b) => b.totalAmount - a.totalAmount);
+      const maxAmount = Math.max(...stats.map(s => s.totalAmount), 1);
+
+      // 1. Render 8 Baris Horizontal
+      container.innerHTML = stats.map((item, idx) => `
+        <div class="space-y-1">
+          <div class="flex items-center justify-between text-xs">
+            <div class="flex items-center space-x-2 min-w-0">
+              <span class="w-5 h-5 rounded-md ${idx === 0 ? 'bg-[#1B3B2B]' : idx === 1 ? 'bg-[#2E5A44]' : idx === 2 ? 'bg-[#4B6B59]' : 'bg-[#71717A]'} text-white flex items-center justify-center font-bold text-[10px] shrink-0">${idx + 1}</span>
+              <span class="font-bold text-[#1B3B2B] shrink-0">${item.code}</span>
+              <span class="text-[#71717A] text-[11px] hidden sm:inline truncate max-w-[160px]">${item.name}</span>
+            </div>
+            <div class="text-right shrink-0">
+              <span class="font-mono font-bold text-[#18181B]">${formatRupiah(item.totalAmount)}</span>
+              <span class="text-[10px] text-[#71717A] ml-1">(${item.percentage}%)</span>
+            </div>
+          </div>
+          <div class="w-full bg-[#F1EFEA] rounded-full h-1.5 overflow-hidden">
+            <div class="${idx === 0 ? 'bg-[#1B3B2B]' : 'bg-[#2E5A44]'} h-1.5 rounded-full transition-all duration-300" style="width: ${item.percentage}%"></div>
+          </div>
+        </div>
+      `).join('');
+
+      // 2. Render Visual Mini Bar Chart (8 Vertical Columns)
+      const miniChartContainer = document.getElementById('facultyMiniChart');
+      if (miniChartContainer) {
+        miniChartContainer.innerHTML = stats.map((item, idx) => {
+          const barHeight = item.totalAmount > 0 
+            ? Math.max(14, Math.round((item.totalAmount / maxAmount) * 100))
+            : 8;
+          
+          const barColor = idx === 0 
+            ? 'bg-[#1B3B2B] hover:bg-[#142B20]' 
+            : idx === 1 
+              ? 'bg-[#2E5A44] hover:bg-[#244837]' 
+              : idx === 2 
+                ? 'bg-[#4B6B59] hover:bg-[#3B5446]' 
+                : 'bg-[#94A3B8] hover:bg-[#64748B]';
+
+          return `
+            <div class="flex-1 flex flex-col items-center justify-between h-full group relative cursor-pointer" title="${item.code} (${item.name}): ${formatRupiah(item.totalAmount)} (${item.percentage}%)">
+              <span class="text-[8px] sm:text-[9px] font-mono font-bold text-[#52525B] shrink-0 leading-none mb-1 opacity-90">${item.percentage}%</span>
+              <div class="w-full flex-1 flex items-end justify-center min-h-0 py-0.5">
+                <div class="w-full max-w-[24px] sm:max-w-[28px] ${barColor} rounded-t-md transition-all duration-300 shadow-2xs" style="height: ${barHeight}%;"></div>
+              </div>
+              <span class="text-[8.5px] xs:text-[9.5px] sm:text-[10px] font-bold tracking-tight text-[#18181B] shrink-0 leading-tight mt-1 text-center truncate max-w-full">${item.code}</span>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // 3. Render Top Contributor Insight Text
+      const insightEl = document.getElementById('facultyTopInsightText');
+      if (insightEl && stats.length > 0) {
+        const top = stats[0];
+        insightEl.innerHTML = `<strong>${top.code}</strong> memimpin dengan perolehan <strong>${formatRupiah(top.totalAmount)}</strong> (${top.percentage}% dari total donasi).`;
+      }
+    }
+
+    /**
+     * 3. Breakdown Kanal Pembayaran
+     */
+    function renderPaymentChannelsBreakdown(donations) {
+      const container = document.getElementById('paymentChannelsBreakdown');
+      if (!container) return;
+
+      const settled = donations.filter(t => t.paymentStatus === 'PAID' || t.paymentStatus === 'SETTLED');
+      const grandTotal = settled.reduce((sum, t) => sum + (Number(t.totalTransferAmount) || 0), 0) || 1;
+
+      const qrisTotal = settled.filter(t => String(t.paymentChannel || '').toUpperCase().includes('QRIS')).reduce((s, t) => s + Number(t.totalTransferAmount || 0), 0);
+      const bsiTotal = settled.filter(t => String(t.paymentChannel || '').toUpperCase().includes('BSI')).reduce((s, t) => s + Number(t.totalTransferAmount || 0), 0);
+      const jagoTotal = settled.filter(t => String(t.paymentChannel || '').toUpperCase().includes('JAGO')).reduce((s, t) => s + Number(t.totalTransferAmount || 0), 0);
+
+      const channels = [
+        { 
+          name: 'QRIS Dinamis', 
+          desc: 'Midtrans Payment Gateway', 
+          amount: qrisTotal, 
+          color: 'bg-amber-600', 
+          badgeBg: 'bg-amber-50 text-amber-900 border border-amber-200/60',
+          icon: 'qr-code' 
+        },
+        { 
+          name: 'Bank Syariah Indonesia (BSI)', 
+          desc: 'Rekening Kas Utama Bendahara', 
+          amount: bsiTotal, 
+          color: 'bg-emerald-700', 
+          badgeBg: 'bg-emerald-50 text-emerald-900 border border-emerald-200/60',
+          icon: 'landmark' 
+        },
+        { 
+          name: 'Bank Jago', 
+          desc: 'Rekening Kas Operasional', 
+          amount: jagoTotal, 
+          color: 'bg-indigo-600', 
+          badgeBg: 'bg-indigo-50 text-indigo-900 border border-indigo-200/60',
+          icon: 'building-2' 
+        }
+      ];
+
+      container.innerHTML = channels.map(c => {
+        const pct = ((c.amount / grandTotal) * 100).toFixed(1);
+        return `
+          <div class="p-2.5 sm:p-3 rounded-xl bg-[#F9F8F4] border border-[#E4E2DD] space-y-2">
+            <div class="flex items-center justify-between gap-2.5 text-xs">
+              <div class="flex items-center space-x-2.5 min-w-0">
+                <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg ${c.badgeBg} flex items-center justify-center shrink-0">
+                  <i data-lucide="${c.icon}" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+                </span>
+                <div class="min-w-0">
+                  <div class="font-bold text-[#1B3B2B] text-xs sm:text-[13px] truncate leading-tight">${c.name}</div>
+                  <div class="text-[10px] sm:text-[11px] text-[#71717A] truncate leading-tight mt-0.5">${c.desc}</div>
+                </div>
+              </div>
+              <div class="text-right shrink-0">
+                <div class="font-mono font-bold text-[#18181B] text-xs sm:text-[13px] leading-tight">${formatRupiah(c.amount)}</div>
+                <div class="inline-block px-1.5 py-0.5 rounded text-[9.5px] sm:text-[10px] font-mono font-bold ${c.badgeBg} mt-0.5 leading-none">${pct}%</div>
+              </div>
+            </div>
+            <div class="w-full bg-[#E4E2DD] rounded-full h-1.5 overflow-hidden">
+              <div class="${c.color} h-1.5 rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+    }
+
+    /**
+     * 4. Breakdown Jalur Segmentasi Donatur
+     */
+    function renderInflowPathsBreakdown(donations) {
+      const container = document.getElementById('inflowPathsBreakdown');
+      if (!container) return;
+
+      const settled = donations.filter(t => t.paymentStatus === 'PAID' || t.paymentStatus === 'SETTLED');
+      const totalCount = settled.length || 1;
+
+      const jalur1 = settled.filter(t => t.inflowPath === 'PATH_1_VERIFIED' || t.inflowPath === 'ALUMNI_TERDATA').length;
+      const jalur2 = settled.filter(t => t.inflowPath === 'PATH_2_SENIOR' || t.inflowPath === 'ALUMNI_SENIOR').length;
+      const jalur3 = settled.filter(t => t.inflowPath === 'PATH_3_EXPRESS' || t.inflowPath === 'DONATUR_CEPAT').length;
+      const silent = settled.filter(t => t.inflowPath === 'DIRECT_TRANSFER_UNCLAIMED').length;
+
+      const paths = [
+        { name: 'Jalur 1: Alumni Terdata (2016-2024)', count: jalur1, desc: 'Verifikasi Otomatis NIM SIAK' },
+        { name: 'Jalur 2: Alumni Senior (< 2016)', count: jalur2, desc: 'Kurasi Data Pengurus IKA' },
+        { name: 'Jalur 3: Donatur Cepat / Umum', count: jalur3, desc: 'Hamba Allah & Simpatisan' },
+        { name: 'Direct Mutation (Silent Donor)', count: silent, desc: 'Transfer Bank Otomatis' }
+      ];
+
+      container.innerHTML = paths.map(p => {
+        const pct = ((p.count / totalCount) * 100).toFixed(1);
+        return `
+          <div class="flex items-center justify-between p-2 sm:p-2.5 rounded-xl bg-[#F9F8F4] border border-[#E4E2DD] text-xs gap-2">
+            <div class="min-w-0">
+              <span class="font-bold text-[#1B3B2B] block truncate leading-tight">${p.name}</span>
+              <span class="text-[10px] sm:text-[11px] text-[#71717A] block truncate leading-tight mt-0.5">${p.desc}</span>
+            </div>
+            <div class="text-right shrink-0">
+              <span class="font-mono font-bold text-[#18181B] block leading-tight">${p.count} Donasi</span>
+              <span class="text-[10px] text-[#71717A] block leading-tight mt-0.5">(${pct}%)</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /**
+     * 5. 5 Transaksi Terverifikasi Terbaru (View Overview)
+     */
+    function renderRecentTransactions(donations) {
+      const container = document.getElementById('recentTransactionsList');
+      if (!container) return;
+
+      const settled = donations
+        .filter(t => t.paymentStatus === 'PAID' || t.paymentStatus === 'SETTLED')
+        .slice(-5)
+        .reverse();
+
+      if (settled.length === 0) {
+        container.innerHTML = '<div class="text-xs text-center py-4 text-[#71717A]">Belum ada donasi terverifikasi.</div>';
+        return;
+      }
+
+      container.innerHTML = settled.map(t => `
+        <div class="flex items-center justify-between p-2.5 sm:p-3 rounded-xl bg-[#F9F8F4] border border-[#E4E2DD] text-xs gap-2.5 sm:gap-3 transition-colors hover:bg-[#F4F2EC]">
+          <!-- Sisi Kiri: Icon + Identitas Donatur -->
+          <div class="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
+            <span class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
+              <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
+            </span>
+            <div class="min-w-0">
+              <div class="flex items-center space-x-1.5 min-w-0">
+                <span class="font-bold text-[#1B3B2B] text-xs sm:text-[13px] truncate leading-tight">${escapeHtml(t.donorName || 'Hamba Allah')}</span>
+                <span class="px-1.5 py-0.5 rounded text-[9.5px] font-mono bg-white border border-[#E4E2DD] text-[#52525B] shrink-0 leading-none">${t.faculty || 'UPI'}</span>
+              </div>
+              <div class="text-[10px] sm:text-[11px] text-[#71717A] truncate leading-tight mt-0.5">
+                <span>${t.timestamp || '-'}</span>
+                <span class="mx-1">•</span>
+                <span class="font-medium text-[#52525B]">${t.paymentChannel}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sisi Kanan: Nominal (No-Wrap) & Badge SETTLED Rapi & Presisi -->
+          <div class="text-right shrink-0 flex flex-col items-end justify-center">
+            <span class="font-mono font-bold text-[#1B3B2B] text-xs sm:text-[13px] whitespace-nowrap leading-tight">${formatRupiah(t.totalTransferAmount)}</span>
+            <div class="inline-flex items-center gap-1 mt-1">
+              <span class="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-emerald-100/80 text-emerald-900 border border-emerald-300/70 text-[9.5px] sm:text-[10px] font-bold leading-none shadow-2xs">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 inline-block shrink-0"></span>
+                <span>SETTLED</span>
+              </span>
+              ${t.proofImageUrl ? `
+                <button type="button" onclick="openProofModal('${encodeURIComponent(t.proofImageUrl)}', '${escapeHtml(t.transactionId)}', '${formatRupiah(t.totalTransferAmount)}', '${escapeHtml(t.donorName || 'Hamba Allah')}')" class="p-1 rounded bg-[#1B3B2B] text-white hover:bg-[#2E5A44] text-[9.5px] transition shadow-xs cursor-pointer" title="Lihat Screenshot Bukti Pembayaran">
+                  <i data-lucide="image" class="w-3 h-3"></i>
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+    }
+
+    /**
+     * 6. Tabel Master Transaksi Lengkap (View Mutasi)
+     */
+    function renderTransactionsTable(donations) {
+      const tbody = document.getElementById('transactionsTableBody');
+      const rowCountEl = document.getElementById('filteredRowCount');
+      const totalCountEl = document.getElementById('totalRowCount');
+      if (!tbody) return;
+
+      let filtered = [...donations];
+
+      // Filter Search
+      if (adminState.filterSearch) {
+        const q = adminState.filterSearch.toLowerCase();
+        filtered = filtered.filter(t => 
+          (t.transactionId && t.transactionId.toLowerCase().includes(q)) ||
+          (t.donorName && t.donorName.toLowerCase().includes(q)) ||
+          (t.nim && t.nim.toLowerCase().includes(q)) ||
+          (t.whatsApp && t.whatsApp.toLowerCase().includes(q)) ||
+          (t.bankSenderRaw && t.bankSenderRaw.toLowerCase().includes(q))
+        );
+      }
+
+      // Filter Status
+      if (adminState.filterStatus !== 'ALL') {
+        filtered = filtered.filter(t => {
+          if (adminState.filterStatus === 'PAID') return t.paymentStatus === 'PAID' || t.paymentStatus === 'SETTLED';
+          if (adminState.filterStatus === 'PENDING') return t.paymentStatus === 'PENDING';
+          if (adminState.filterStatus === 'UNCLAIMED_DIRECT_TRANSFER') return t.verificationTier === 'UNCLAIMED_DIRECT_TRANSFER';
+          if (adminState.filterStatus === 'EXPIRED') return t.paymentStatus === 'EXPIRED';
+          return true;
+        });
+      }
+
+      // Filter Faculty
+      if (adminState.filterFaculty !== 'ALL') {
+        filtered = filtered.filter(t => t.faculty === adminState.filterFaculty);
+      }
+
+      rowCountEl.textContent = filtered.length;
+      totalCountEl.textContent = donations.length;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="16" class="p-6 text-center text-xs text-[#71717A]">Tidak ada transaksi yang cocok dengan filter pencarian.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.slice().reverse().map(t => {
+        let statusBadge = '';
+        if (t.paymentStatus === 'PAID' || t.paymentStatus === 'SETTLED') {
+          statusBadge = `<span class="pill-status pill-status-paid"><span class="status-dot"></span> VERIFIED / PAID</span>`;
+        } else if (t.paymentStatus === 'PENDING') {
+          statusBadge = `<span class="pill-status pill-status-pending"><span class="status-dot"></span> PENDING</span>`;
+        } else if (t.verificationTier === 'UNCLAIMED_DIRECT_TRANSFER') {
+          statusBadge = `<span class="pill-status pill-status-unclaimed"><span class="status-dot"></span> UNCLAIMED</span>`;
+        } else {
+          statusBadge = `<span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold">EXPIRED</span>`;
+        }
+
+        const waLink = t.whatsApp ? `https://wa.me/62${t.whatsApp.replace(/^0+/, '')}` : '#';
+
+        return `
+          <tr class="hover:bg-[#F9F8F4] transition-colors">
+            <td class="p-3 font-mono font-bold text-[#1B3B2B] whitespace-nowrap">${t.transactionId}</td>
+            <td class="p-3 text-[#52525B] whitespace-nowrap">${t.timestamp || '-'}</td>
+            <td class="p-3 whitespace-nowrap"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-semibold">${t.inflowPath || '-'}</span></td>
+            <td class="p-3 font-mono whitespace-nowrap">${t.nim || '-'}</td>
+            <td class="p-3 font-bold text-[#18181B] whitespace-nowrap">${escapeHtml(t.donorName || 'Hamba Allah')}</td>
+            <td class="p-3 font-mono whitespace-nowrap">
+              ${t.whatsApp ? `<a href="${waLink}" target="_blank" class="text-emerald-700 hover:underline inline-flex items-center space-x-1"><i data-lucide="message-circle" class="w-3.5 h-3.5 shrink-0"></i><span>${t.whatsApp}</span></a>` : '-'}
+            </td>
+            <td class="p-3 whitespace-nowrap">${t.faculty || '-'}${t.department ? ' / ' + t.department : ''}</td>
+            <td class="p-3 text-right font-mono">${t.baseAmount > 0 ? formatRupiah(t.baseAmount) : (t.paymentStatus === 'PENDING' ? 'Sukarela' : formatRupiah(t.totalTransferAmount))}</td>
+            <td class="p-3 text-center font-mono font-bold text-amber-700">${t.uniqueCode ? '#' + String(t.uniqueCode).padStart(3, '0') : '-'}</td>
+            <td class="p-3 text-right font-mono font-bold text-[#1B3B2B]">${t.totalTransferAmount > 0 ? formatRupiah(t.totalTransferAmount) : '<span class="text-amber-800 font-semibold italic text-[11px]">Bebas / Sukarela</span>'}</td>
+            <td class="p-3 whitespace-nowrap">${t.paymentChannel || '-'}</td>
+            <td class="p-3 text-center whitespace-nowrap">
+              ${t.proofImageUrl ? `
+                <button type="button" onclick="openProofModal('${encodeURIComponent(t.proofImageUrl)}', '${escapeHtml(t.transactionId)}', '${formatRupiah(t.totalTransferAmount)}', '${escapeHtml(t.donorName || 'Hamba Allah')}')" class="px-2.5 py-1 rounded-lg bg-[#1B3B2B] text-white hover:bg-[#2E5A44] text-[10.5px] font-bold inline-flex items-center space-x-1 transition shadow-xs cursor-pointer" title="Buka Screenshot Bukti Pembayaran">
+                  <i data-lucide="image" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <span>Lihat Bukti</span>
+                </button>
+              ` : `
+                <span class="text-[10px] text-[#A1A1AA] italic">Auto-Mutasi</span>
+              `}
+            </td>
+            <td class="p-3 font-mono text-[11px] text-slate-700 max-w-[200px] truncate" title="${escapeHtml(t.bankSenderRaw || '-')}">${escapeHtml(t.bankSenderRaw || '-')}</td>
+            <td class="p-3 whitespace-nowrap"><span class="text-[10px] font-semibold text-slate-600">${t.verificationTier || '-'}</span></td>
+            <td class="p-3 whitespace-nowrap">${statusBadge}</td>
+            <td class="p-3 text-center whitespace-nowrap">
+              ${t.paymentStatus === 'PENDING' ? `
+                <span class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-amber-50 text-amber-900 border border-amber-200 text-[10.5px] font-semibold" title="Sistem menunggu email mutasi DANA otomatis di treasury-sandbox@example.org">
+                  <span class="w-2 h-2 rounded-full bg-amber-500 radar-pulse"></span>
+                  <span>Auto-detect DANA...</span>
+                </span>
+              ` : `
+                <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10.5px] font-bold">
+                  <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-600"></i>
+                  <span>Terverifikasi Lunas</span>
+                </span>
+              `}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function applyTransactionFilters() {
+      adminState.filterSearch = document.getElementById('filterSearchInput').value;
+      adminState.filterStatus = document.getElementById('filterStatusSelect').value;
+      adminState.filterFaculty = document.getElementById('filterFacultySelect').value;
+      refreshAdminData();
+    }
+
+    /**
+     * 7. Export Transaksi ke CSV (RFC 4180 Format)
+     */
+    function exportTransactionsToCSV() {
+      const db = getLocalDatabase();
+      const rows = db.raw_donations || [];
+
+      if (rows.length === 0) {
+        showAdminToast('Tidak ada transaksi untuk diexport.', 'warn');
+        return;
+      }
+
+      const headers = [
+        'Transaction_ID', 'Timestamp', 'Inflow_Path', 'NIM', 'Donor_Name', 
+        'WhatsApp_Number', 'Faculty', 'Department', 'Batch_Year', 'Base_Amount', 
+        'Unique_Code', 'Total_Transfer_Amount', 'Payment_Channel', 'Bank_Sender_Raw', 
+        'Verification_Tier', 'Payment_Status', 'Settlement_Status', 'Notes', 'Proof_Image_Url'
+      ];
+
+      const csvRows = [headers.join(',')];
+
+      rows.forEach(r => {
+        const values = [
+          r.transactionId || '',
+          r.timestamp || '',
+          r.inflowPath || '',
+          r.nim || '',
+          `"${(r.donorName || '').replace(/"/g, '""')}"`,
+          r.whatsApp || '',
+          r.faculty || '',
+          `"${(r.department || '').replace(/"/g, '""')}"`,
+          r.batchYear || '',
+          r.baseAmount || 0,
+          r.uniqueCode || 0,
+          r.totalTransferAmount || 0,
+          r.paymentChannel || '',
+          `"${(r.bankSenderRaw || '').replace(/"/g, '""')}"`,
+          r.verificationTier || '',
+          r.paymentStatus || '',
+          r.settlementStatus || '',
+          `"${(r.notes || '').replace(/"/g, '""')}"`,
+          `"${(r.proofImageUrl || '').replace(/"/g, '""')}"`
+        ];
+        csvRows.push(values.join(','));
+      });
+
+      const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `rekap_donasi_beasiswa_upi_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      appendTerminalLog('[EXPORT] CSV exported successfully for ' + rows.length + ' transactions.', 'success');
+    }
+
+    /**
+     * 8. Render Antrean Silent Donor (View Antrean)
+     */
+    function renderUnclaimedQueue(donations) {
+      const tbody = document.getElementById('unclaimedTableBody');
+      const badge = document.getElementById('unclaimedQueueBadge');
+      if (!tbody) return;
+
+      const unclaimed = donations.filter(t => t.verificationTier === 'UNCLAIMED_DIRECT_TRANSFER' || t.inflowPath === 'DIRECT_TRANSFER_UNCLAIMED');
+      badge.textContent = `${unclaimed.length} Mutasi Menunggu`;
+
+      if (unclaimed.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-xs text-[#71717A]">Tidak ada antrean Silent Donor saat ini. Seluruh mutasi bank telah terverifikasi.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = unclaimed.map(t => {
+        // Regex ekstraksi nama pengirim dari raw string
+        const match = (t.bankSenderRaw || '').match(/(?:DARI|A\/N|CR)\s+([A-Z\s]+?)(?:\s+VIA|\s*$)/i);
+        const guessedName = match ? match[1].trim() : 'Nama Tidak Terdeteksi';
+
+        return `
+          <tr class="hover:bg-amber-50/50 transition-colors">
+            <td class="p-3 font-mono font-bold text-[#1B3B2B]">${t.transactionId}</td>
+            <td class="p-3 text-[#52525B]">${t.timestamp}</td>
+            <td class="p-3 font-semibold text-[#1B3B2B]">${t.paymentChannel}</td>
+            <td class="p-3 text-right font-mono font-bold text-emerald-800">${formatRupiah(t.totalTransferAmount)}</td>
+            <td class="p-3 font-mono text-[11px] text-slate-800 bg-amber-50/70 rounded">${escapeHtml(t.bankSenderRaw || '-')}</td>
+            <td class="p-3 font-bold text-amber-900">${escapeHtml(guessedName)}</td>
+            <td class="p-3"><span class="pill-status pill-status-unclaimed"><span class="status-dot"></span> UNCLAIMED</span></td>
+            <td class="p-3 text-center">
+              <button type="button" onclick="openMatchSilentDonorModal('${t.transactionId}')" class="px-3 py-1.5 rounded-xl bg-[#1B3B2B] hover:bg-[#244F3A] text-white font-bold text-xs shadow-xs transition inline-flex items-center space-x-1.5">
+                <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                <span>Cocokkan Alumni</span>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    /**
+     * 9. Modal Pencocokan Silent Donor
+     */
+    function openMatchSilentDonorModal(txId) {
+      const db = getLocalDatabase();
+      const tx = (db.raw_donations || []).find(t => t.transactionId === txId);
+      if (!tx) return;
+
+      adminState.activeMatchTxId = txId;
+      adminState.selectedAlumniForMatch = null;
+
+      document.getElementById('modalMatchTxId').textContent = tx.transactionId;
+      document.getElementById('modalMatchAmount').textContent = formatRupiah(tx.totalTransferAmount);
+      document.getElementById('modalMatchRawString').textContent = tx.bankSenderRaw || '-';
+      document.getElementById('modalAlumniSearchInput').value = '';
+
+      renderModalAlumniList(db.master_alumni || []);
+      const modal = document.getElementById('matchSilentDonorModal');
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+    }
+
+    function closeMatchSilentDonorModal() {
+      const modal = document.getElementById('matchSilentDonorModal');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+      adminState.activeMatchTxId = null;
+      adminState.selectedAlumniForMatch = null;
+    }
+
+    function renderModalAlumniList(alumniList) {
+      const container = document.getElementById('modalAlumniListContainer');
+      if (!container) return;
+
+      if (alumniList.length === 0) {
+        container.innerHTML = '<div class="text-xs text-center py-2 text-[#71717A]">Tidak ada alumni ditemukan.</div>';
+        return;
+      }
+
+      container.innerHTML = alumniList.map((a, idx) => `
+        <label class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white border border-transparent hover:border-[#E4E2DD] cursor-pointer transition text-xs">
+          <input type="radio" name="selectedMatchAlumniRadio" value="${a.nim}" onchange="selectAlumniForMatch('${a.nim}')" class="text-[#1B3B2B] focus:ring-[#1B3B2B]">
+          <div class="overflow-hidden">
+            <span class="font-bold text-[#1B3B2B] block truncate">${escapeHtml(a.namaLengkap)} (${a.nim})</span>
+            <span class="text-[10px] text-[#71717A]">${a.fakultas} - ${a.programStudi} (${a.angkatan})</span>
+          </div>
+        </label>
+      `).join('');
+    }
+
+    function filterModalAlumniList() {
+      const query = document.getElementById('modalAlumniSearchInput').value.toLowerCase();
+      const db = getLocalDatabase();
+      const filtered = (db.master_alumni || []).filter(a => 
+        a.namaLengkap.toLowerCase().includes(query) ||
+        a.nim.toLowerCase().includes(query) ||
+        a.fakultas.toLowerCase().includes(query) ||
+        a.programStudi.toLowerCase().includes(query)
+      );
+      renderModalAlumniList(filtered);
+    }
+
+    function selectAlumniForMatch(nim) {
+      const db = getLocalDatabase();
+      adminState.selectedAlumniForMatch = (db.master_alumni || []).find(a => a.nim === nim);
+      const err = document.getElementById('modalMatchErrorMsg');
+      if (err) err.classList.remove('show');
+    }
+
+    function submitSilentDonorMatch() {
+      if (!adminState.selectedAlumniForMatch) {
+        const err = document.getElementById('modalMatchErrorMsg');
+        const list = document.getElementById('modalAlumniListContainer');
+        if (err) err.classList.add('show');
+        if (list) {
+          list.classList.remove('shake-error');
+          void list.offsetWidth;
+          list.classList.add('shake-error');
+        }
+        return;
+      }
+
+      const db = getLocalDatabase();
+      const tx = (db.raw_donations || []).find(t => t.transactionId === adminState.activeMatchTxId);
+      if (!tx) return;
+
+      const alumni = adminState.selectedAlumniForMatch;
+      const notes = document.getElementById('modalMatchNotesInput').value;
+
+      // Update Mutasi menjadi SETTLED & terverifikasi
+      tx.nim = alumni.nim;
+      tx.donorName = alumni.namaLengkap;
+      tx.faculty = alumni.fakultas;
+      tx.department = alumni.programStudi;
+      tx.batchYear = alumni.angkatan;
+      tx.whatsApp = alumni.noWA;
+      tx.verificationTier = 'TIER_1_VERIFIED';
+      tx.paymentStatus = 'PAID';
+      tx.settlementStatus = 'SETTLED';
+      tx.notes = notes;
+
+      saveLocalDatabase(db);
+      closeMatchSilentDonorModal();
+      refreshAdminData();
+
+      // Dispatch BroadcastChannel event
+      if (interTabChannel) {
+        interTabChannel.postMessage({ type: 'TRANSACTION_PAID', payload: tx });
+      }
+
+      appendTerminalLog(`[RECONCILE] Mutasi ${tx.transactionId} berhasil dicocokkan ke alumni: ${alumni.namaLengkap} (${alumni.nim}). Status: SETTLED.`, 'success');
+      showAdminToast(`Berhasil! Mutasi ${tx.transactionId} ditetapkan kepada ${alumni.namaLengkap} (SETTLED).`, 'success');
+    }
+
+    /**
+     * 10. Database Induk Alumni (View Alumni)
+     */
+    function renderAlumniDatabase(alumni, donations) {
+      const tbody = document.getElementById('alumniTableBody');
+      const countEl = document.getElementById('totalAlumniCount');
+      if (!tbody) return;
+
+      countEl.textContent = `${alumni.length} Orang`;
+
+      let filtered = [...alumni];
+
+      if (adminState.alumniSearch) {
+        const q = adminState.alumniSearch.toLowerCase();
+        filtered = filtered.filter(a => 
+          a.namaLengkap.toLowerCase().includes(q) ||
+          a.nim.toLowerCase().includes(q) ||
+          a.programStudi.toLowerCase().includes(q) ||
+          (a.email && a.email.toLowerCase().includes(q))
+        );
+      }
+
+      if (adminState.alumniFaculty !== 'ALL') {
+        filtered = filtered.filter(a => a.fakultas === adminState.alumniFaculty);
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-xs text-[#71717A]">Tidak ada data alumni yang cocok.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(a => {
+        // Hitung total donasi dari alumni ini
+        const alumniDonations = donations.filter(t => (t.nim === a.nim) && (t.paymentStatus === 'PAID' || t.paymentStatus === 'SETTLED'));
+        const totalDonated = alumniDonations.reduce((sum, t) => sum + (Number(t.totalTransferAmount) || 0), 0);
+        const waLink = a.noWA ? `https://wa.me/62${a.noWA.replace(/^0+/, '')}` : '#';
+
+        return `
+          <tr class="hover:bg-[#F9F8F4] transition-colors">
+            <td class="p-3 font-mono font-bold text-[#1B3B2B]">${a.nim}</td>
+            <td class="p-3 font-bold text-[#18181B]">${escapeHtml(a.namaLengkap)}</td>
+            <td class="p-3"><span class="px-2 py-0.5 rounded bg-[#EAF2EC] text-[#1B3B2B] font-bold text-[10px]">${a.fakultas}</span></td>
+            <td class="p-3 text-[#52525B]">${a.programStudi}</td>
+            <td class="p-3 text-center font-mono">${a.angkatan}</td>
+            <td class="p-3 font-mono text-[#52525B]">${a.email || '-'}</td>
+            <td class="p-3 font-mono text-emerald-700">${a.noWA || '-'}</td>
+            <td class="p-3 text-right font-mono font-bold ${totalDonated > 0 ? 'text-emerald-800' : 'text-slate-400'}">
+              ${totalDonated > 0 ? formatRupiah(totalDonated) : '-'}
+            </td>
+            <td class="p-3 text-center">
+              ${a.noWA ? `
+                <a href="${waLink}" target="_blank" class="px-2.5 py-1 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[10px] font-bold transition inline-flex items-center space-x-1">
+                  <i data-lucide="message-circle" class="w-3 h-3"></i>
+                  <span>Hubungi</span>
+                </a>
+              ` : '-'}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterAlumniDatabase() {
+      adminState.alumniSearch = document.getElementById('alumniSearchInput').value;
+      adminState.alumniFaculty = document.getElementById('alumniFacultySelect').value;
+      refreshAdminData();
+    }
+
+    /**
+     * 11. Simulator Webhook & Email Parser (View Simulator)
+     */
+    function renderPendingSimulator(donations) {
+      const tbody = document.getElementById('pendingSimulatorTableBody');
+      const badge = document.getElementById('pendingSimulatorBadge');
+      if (!tbody) return;
+
+      const pendingList = donations.filter(t => t.paymentStatus === 'PENDING');
+      badge.textContent = `${pendingList.length} Transaksi Pending`;
+
+      if (pendingList.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="p-6 text-center text-xs text-[#71717A]">
+              Tidak ada transaksi berstatus PENDING saat ini. Setiap donasi baru yang masuk dari formulir donatur akan langsung muncul di sini secara real-time.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = pendingList.map(t => `
+        <tr class="hover:bg-amber-50/40 transition-colors">
+          <td class="p-3 font-mono font-bold text-[#1B3B2B]">${t.transactionId}</td>
+          <td class="p-3 text-[#52525B] text-[11px]">${t.timestamp}</td>
+          <td class="p-3 font-bold text-[#18181B]">${escapeHtml(t.donorName || 'Hamba Allah')}</td>
+          <td class="p-3"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold text-[10px]">${t.paymentChannel}</span></td>
+          <td class="p-3 text-center font-mono font-bold text-amber-800">${t.uniqueCode ? '#' + String(t.uniqueCode).padStart(3, '0') : '-'}</td>
+          <td class="p-3 text-right font-mono font-bold text-[#1B3B2B]">${t.totalTransferAmount > 0 ? formatRupiah(t.totalTransferAmount) : '<span class="text-amber-800 font-semibold italic text-[11px]">Bebas / Sukarela</span>'}</td>
+          <td class="p-3 text-center space-x-1.5 whitespace-nowrap">
+            <button type="button" onclick="simulateQRISWebhook('${t.transactionId}')" class="px-2.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold shadow-xs transition inline-flex items-center space-x-1" title="Simulasi Webhook HTTP POST dari Midtrans QRIS">
+              <i data-lucide="zap" class="w-3 h-3"></i>
+              <span>Webhook QRIS</span>
+            </button>
+            <button type="button" onclick="simulateBankEmailParser('${t.transactionId}')" class="px-2.5 py-1.5 rounded-xl bg-[#1B3B2B] hover:bg-[#244F3A] text-white text-[11px] font-bold shadow-xs transition inline-flex items-center space-x-1" title="Simulasi Email Mutasi Masuk ke Gmail Resmi Bank">
+              <i data-lucide="mail" class="w-3 h-3"></i>
+              <span>Email Mutasi Bank</span>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    /**
+     * Trigger Simulasi Webhook QRIS Lunas (Zero-Touch Simulation)
+     */
+    function simulateQRISWebhook(txId) {
+      const db = getLocalDatabase();
+      const tx = (db.raw_donations || []).find(t => t.transactionId === txId);
+      if (!tx) return;
+
+      if (!tx.totalTransferAmount || tx.totalTransferAmount === 0) {
+        if (tx.baseAmount && tx.baseAmount > 0) {
+          tx.totalTransferAmount = tx.baseAmount;
+        } else {
+          tx.baseAmount = 100000;
+          tx.totalTransferAmount = tx.baseAmount;
+        }
+      }
+
+      tx.paymentStatus = 'PAID';
+      tx.settlementStatus = 'SETTLED_DANA_QRIS';
+      tx.bankSenderRaw = 'DANA QRIS (treasury-sandbox@example.org)';
+      tx.notes = (tx.notes && tx.notes !== '-' ? tx.notes + ' • ' : '') + 'Auto-approved via DANA QRIS (treasury-sandbox@example.org)';
+
+      saveLocalDatabase(db);
+      refreshAdminData();
+
+      // Dispatch Event ke BroadcastChannel agar index.html langsung berganti ke Kwitansi!
+      if (interTabChannel) {
+        interTabChannel.postMessage({ type: 'TRANSACTION_PAID', payload: tx });
+      }
+
+      // Sync status ke Google Apps Script backend
+      syncTransactionStatusToCloud(tx.transactionId, 'SETTLED_DANA_QRIS', tx.totalTransferAmount);
+
+      appendTerminalLog(`[DANA-AUTO-DETECT] Email mutasi DANA QRIS diterima: order_id "${tx.transactionId}", gross_amount: ${tx.totalTransferAmount}. Langsung diset LUNAS!`, 'success');
+      appendTerminalLog(`[BROADCAST] Event TRANSACTION_PAID dispatched ke laman donatur untuk ${tx.transactionId}.`, 'info');
+      showModernToast(`🔔 Mutasi Baru DANA: ${formatRupiah(tx.totalTransferAmount)} telah masuk otomatis ke kas!`, 'success', 6000);
+    }
+
+    /**
+     * Trigger Simulasi Email Mutasi Bank (Auto-Match Kode Unik)
+     */
+    function simulateBankEmailParser(txId) {
+      const db = getLocalDatabase();
+      const tx = (db.raw_donations || []).find(t => t.transactionId === txId);
+      if (!tx) return;
+
+      if (!tx.totalTransferAmount || tx.totalTransferAmount === 0) {
+        tx.baseAmount = 100000;
+        tx.totalTransferAmount = tx.baseAmount + (tx.uniqueCode || 0);
+      }
+
+      const bankName = (tx.paymentChannel && String(tx.paymentChannel).toUpperCase().includes('JAGO')) ? 'Bank Jago' : 'Bank Syariah Indonesia (BSI)';
+      const rawBankString = `CR TRANSFER DARI ${(tx.donorName || 'DONATUR').toUpperCase()} REK ${tx.paymentChannel} NOMINAL ${tx.totalTransferAmount}`;
+
+      tx.paymentStatus = 'PAID';
+      tx.settlementStatus = 'SETTLED'; // Langsung cair di rekening bendahara
+      tx.bankSenderRaw = rawBankString;
+      tx.notes = (tx.notes && tx.notes !== '-' ? tx.notes + ' • ' : '') + `Auto-matched via Gmail Parser (${bankName})`;
+
+      saveLocalDatabase(db);
+      refreshAdminData();
+
+      // Dispatch Event ke BroadcastChannel
+      if (interTabChannel) {
+        interTabChannel.postMessage({ type: 'TRANSACTION_PAID', payload: tx });
+      }
+
+      // Sync status ke Google Apps Script backend
+      syncTransactionStatusToCloud(tx.transactionId, 'SETTLED', tx.totalTransferAmount);
+
+      appendTerminalLog(`[GMAIL-TRIGGER] New notification email received from "${bankName}"`, 'info');
+      appendTerminalLog(`[REGEX-PARSER] Extracted Amount: ${formatRupiah(tx.totalTransferAmount)} | Unique Code: #${tx.uniqueCode || '-'} -> MATCH FOUND!`, 'success');
+      appendTerminalLog(`[RECONCILIATION] Transaction ${tx.transactionId} settled directly into Treasurer's account (${bankName}).`, 'success');
+      appendTerminalLog(`[BROADCAST] Event TRANSACTION_PAID dispatched ke laman donatur.`, 'info');
+      showModernToast(`Donasi ${tx.transactionId} (${bankName}) otomatis terverifikasi LUNAS (${formatRupiah(tx.totalTransferAmount)})!`, 'success');
+    }
+
+    function triggerSimulatePayment(txId) {
+      const db = getLocalDatabase();
+      const tx = (db.raw_donations || []).find(t => t.transactionId === txId);
+      if (tx && String(tx.paymentChannel || '').toUpperCase().includes('QRIS')) {
+        simulateQRISWebhook(txId);
+      } else {
+        simulateBankEmailParser(txId);
+      }
+    }
+
+    /**
+     * Catat Mutasi Bank Baru (Simulasi Mutasi Transfer Masuk)
+     */
+    function injectRandomSilentDonor() {
+      const db = getLocalDatabase();
+      const randomId = 'TX-MUTASI-' + Math.floor(100000 + Math.random() * 900000);
+      const amounts = [150000, 250000, 500000, 1000000, 2000000];
+      const selectedAmount = amounts[Math.floor(Math.random() * amounts.length)];
+      const banks = ['BSI_TRANSFER', 'JAGO_TRANSFER'];
+      const selectedBank = banks[Math.floor(Math.random() * banks.length)];
+      const names = ['HENDRA KURNIAWAN', 'AGUS WAHYUDI', 'RINA ANGGRAENI', 'BAMBANG HERMANTO', 'DEWI SARTIKA'];
+      const selectedName = names[Math.floor(Math.random() * names.length)];
+      
+      const now = new Date();
+      const timestamp = now.getFullYear() + '-' + 
+        String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+        String(now.getDate()).padStart(2, '0') + ' ' + 
+        String(now.getHours()).padStart(2, '0') + ':' + 
+        String(now.getMinutes()).padStart(2, '0') + ':' + 
+        String(now.getSeconds()).padStart(2, '0');
+
+      const rawBankString = `CR TRANSFER BI-FAST 009${Math.floor(1000+Math.random()*9000)} A/N ${selectedName}`;
+
+      const newTx = {
+        transactionId: randomId,
+        timestamp: timestamp,
+        inflowPath: 'DIRECT_TRANSFER_UNCLAIMED',
+        nim: '',
+        donorName: 'Hamba Allah (Silent Donor)',
+        faculty: 'NON_UPI',
+        department: '',
+        batchYear: '',
+        whatsApp: '',
+        baseAmount: selectedAmount,
+        uniqueCode: 0,
+        totalTransferAmount: selectedAmount,
+        paymentChannel: selectedBank,
+        privacyMode: 'ANONYMOUS',
+        verificationTier: 'UNCLAIMED_DIRECT_TRANSFER',
+        paymentStatus: 'PAID',
+        settlementStatus: 'SETTLED',
+        bankSenderRaw: rawBankString,
+        notes: 'Mutasi Langsung Tanpa Form Web (Menunggu Rekonsiliasi Pengelola)'
+      };
+
+      if (!db.raw_donations) db.raw_donations = [];
+      db.raw_donations.push(newTx);
+      saveLocalDatabase(db);
+
+      refreshAdminData();
+
+      if (interTabChannel) {
+        interTabChannel.postMessage({ type: 'SILENT_DONOR_ADDED', payload: newTx });
+      }
+
+      appendTerminalLog(`Mutasi baru terdeteksi di rekening ${selectedBank}: ${formatRupiah(selectedAmount)} a.n. "${selectedName}". Menunggu rekonsiliasi.`, 'warn');
+      showAdminToast(`Mutasi baru ${formatRupiah(selectedAmount)} dari "${selectedName}" berhasil dicatat ke antrean verifikasi.`, 'info', 4500);
+    }
+
+    /**
+     * Reset Database ke Data Awal
+     */
+    function resetDatabaseDemo() {
+      if (!confirm('Apakah Anda yakin ingin memulihkan database ke data awal bawaan sistem?')) {
+        return;
+      }
+
+      if (window.DEFAULT_SEED_DATABASE) {
+        localStorage.setItem(STORAGE_KEY_DB, JSON.stringify(window.DEFAULT_SEED_DATABASE));
+      }
+
+      if (interTabChannel) {
+        interTabChannel.postMessage({ type: 'DB_RESET' });
+      }
+
+      refreshAdminData();
+      appendTerminalLog('Database telah dipulihkan ke data awal bawaan.', 'warn');
+      showAdminToast('Database berhasil dipulihkan ke data awal bawaan sistem!', 'success');
+    }
+
+    /**
+     * System Activity / Audit Logging Utilities
+     */
+    function appendTerminalLog(message, type = 'info') {
+      const consoleEl = document.getElementById('terminalLogConsole');
+      if (!consoleEl) return;
+
+      const timeStr = new Date().toLocaleTimeString('id-ID', { hour12: false });
+      const row = document.createElement('div');
+
+      if (type === 'success') {
+        row.className = 'p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center justify-between';
+        row.innerHTML = `<span class="break-words">[${timeStr}] ${message}</span><span class="text-[10px] text-emerald-700 bg-white px-2 py-0.5 rounded-md border border-emerald-200 font-bold shrink-0 ml-2">SUKSES</span>`;
+      } else if (type === 'warn') {
+        row.className = 'p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 flex items-center justify-between';
+        row.innerHTML = `<span class="break-words">[${timeStr}] ${message}</span><span class="text-[10px] text-amber-700 bg-white px-2 py-0.5 rounded-md border border-amber-200 font-bold shrink-0 ml-2">PERINGATAN</span>`;
+      } else if (type === 'error') {
+        row.className = 'p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 flex items-center justify-between';
+        row.innerHTML = `<span class="break-words">[${timeStr}] ${message}</span><span class="text-[10px] text-rose-700 bg-white px-2 py-0.5 rounded-md border border-rose-200 font-bold shrink-0 ml-2">GAGAL</span>`;
+      } else {
+        row.className = 'p-2.5 rounded-xl bg-[#F9F8F4] border border-[#E4E2DD] text-[#52525B] flex items-center justify-between';
+        row.innerHTML = `<span class="break-words">[${timeStr}] ${message}</span><span class="text-[10px] text-[#71717A] bg-white px-2 py-0.5 rounded-md border border-[#E4E2DD] font-semibold shrink-0 ml-2">INFO</span>`;
+      }
+
+      consoleEl.appendChild(row);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    function clearTerminalLogs() {
+      const consoleEl = document.getElementById('terminalLogConsole');
+      if (consoleEl) {
+        consoleEl.innerHTML = '<div class="p-2.5 rounded-xl bg-[#F9F8F4] border border-[#E4E2DD] text-[#71717A]">[SISTEM] Riwayat aktivitas telah dibersihkan.</div>';
+      }
+    }
+
+    /**
+     * Direct Navigation to Google Sheets & Looker Studio
+     */
+    function openGoogleSheets() {
+      const url = localStorage.getItem('UPI_SHEETS_URL') || (window.APP_CONFIG && window.APP_CONFIG.GOOGLE_SHEETS_URL) || '';
+      if (url && url.trim() !== '') {
+        window.open(url, '_blank', 'noopener,noreferrer');
+        showAdminToast('Membuka Google Sheets Buku Kas...', 'info');
+      } else {
+        window.open('https://docs.google.com/spreadsheets/u/0/', '_blank', 'noopener,noreferrer');
+        showAdminToast('Membuka Google Sheets. Anda dapat menautkan URL spreadsheet spesifik pada menu Endpoint.', 'info');
+      }
+    }
+
+    function openLookerStudio() {
+      const url = localStorage.getItem('UPI_LOOKER_URL') || (window.APP_CONFIG && (window.APP_CONFIG.LOOKER_STUDIO_EMBED_URL || window.APP_CONFIG.LOOKER_STUDIO_URL)) || '';
+      if (url && url.trim() !== '') {
+        window.open(url, '_blank', 'noopener,noreferrer');
+        showAdminToast('Membuka Dasbor Google Looker Studio...', 'info');
+      } else {
+        window.open('https://lookerstudio.google.com/', '_blank', 'noopener,noreferrer');
+        showAdminToast('Membuka Looker Studio. Anda dapat menautkan URL laporan spesifik pada menu Endpoint.', 'info');
+      }
+    }
+
+    /**
+     * Settings Modal Functions (Clean, Robust, Interactive)
+     */
+    function openSettingsModal() {
+      const gasUrl = (window.APP_CONFIG && window.APP_CONFIG.GAS_DEPLOYMENT_URL) || localStorage.getItem('UPI_GAS_URL') || '';
+      const targetAmount = (window.APP_CONFIG && window.APP_CONFIG.TARGET_SEMESTER_AMOUNT) || Number(localStorage.getItem('UPI_TARGET_AMOUNT')) || 50000000;
+      const sheetsUrl = localStorage.getItem('UPI_SHEETS_URL') || (window.APP_CONFIG && window.APP_CONFIG.GOOGLE_SHEETS_URL) || '';
+      const lookerUrl = localStorage.getItem('UPI_LOOKER_URL') || (window.APP_CONFIG && (window.APP_CONFIG.LOOKER_STUDIO_EMBED_URL || window.APP_CONFIG.LOOKER_STUDIO_URL)) || '';
+
+      const urlInput = document.getElementById('settingGasUrlInput');
+      const targetInput = document.getElementById('settingTargetAmountInput');
+      const sheetsInput = document.getElementById('settingSheetsUrlInput');
+      const lookerInput = document.getElementById('settingLookerUrlInput');
+
+      if (urlInput) urlInput.value = gasUrl;
+      if (targetInput) targetInput.value = targetAmount;
+      if (sheetsInput) sheetsInput.value = sheetsUrl;
+      if (lookerInput) lookerInput.value = lookerUrl;
+
+      if (gasUrl && gasUrl.trim() !== '') {
+        selectSettingsMode('cloud', false);
+      } else {
+        selectSettingsMode('local', false);
+      }
+      updateTargetPreview();
+
+      const pingBox = document.getElementById('gasPingResult');
+      if (pingBox) {
+        pingBox.className = 'hidden';
+        pingBox.innerHTML = '';
+      }
+
+      const modal = document.getElementById('settingsModal');
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+    }
+
+    function closeSettingsModal() {
+      const modal = document.getElementById('settingsModal');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    }
+
+    function selectSettingsMode(mode, clearUrlIfLocal = true) {
+      const btnLocal = document.getElementById('btnModeLocal');
+      const btnCloud = document.getElementById('btnModeCloud');
+      const badge = document.getElementById('settingsActiveModeBadge');
+      const urlInput = document.getElementById('settingGasUrlInput');
+      const modeDesc = document.getElementById('settingsModeDescription');
+
+      if (mode === 'local') {
+        if (btnLocal) {
+          btnLocal.className = 'p-3 rounded-2xl border-2 text-left transition flex items-start space-x-2.5 relative border-[#1B3B2B] bg-[#EAF2EC]/70 shadow-xs';
+        }
+        if (btnCloud) {
+          btnCloud.className = 'p-3 rounded-2xl border-2 text-left transition flex items-start space-x-2.5 relative border-[#E4E2DD] bg-white hover:border-[#D1CFCA]';
+        }
+        if (badge) {
+          badge.textContent = 'Mode Demo Aktif';
+          badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200';
+        }
+        if (clearUrlIfLocal && urlInput) {
+          urlInput.value = '';
+        }
+        if (modeDesc) {
+          modeDesc.innerHTML = 'Data tersinkronisasi otomatis secara instan antara portal Donatur dan portal Pengelola via LocalStorage & BroadcastChannel.';
+        }
+      } else {
+        if (btnLocal) {
+          btnLocal.className = 'p-3 rounded-2xl border-2 text-left transition flex items-start space-x-2.5 relative border-[#E4E2DD] bg-white hover:border-[#D1CFCA]';
+        }
+        if (btnCloud) {
+          btnCloud.className = 'p-3 rounded-2xl border-2 text-left transition flex items-start space-x-2.5 relative border-[#1B3B2B] bg-[#EAF2EC]/70 shadow-xs';
+        }
+        if (badge) {
+          badge.textContent = 'Mode Cloud (GAS)';
+          badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 border border-sky-200';
+        }
+        if (modeDesc) {
+          modeDesc.innerHTML = 'Transaksi akan dikirim dan divalidasi langsung ke Google Sheets & Webhook Cloud Google Apps Script.';
+        }
+        if (urlInput && !urlInput.value) {
+          urlInput.focus();
+        }
+      }
+    }
+
+    function onGasUrlInputChange() {
+      const urlInput = document.getElementById('settingGasUrlInput');
+      const url = urlInput ? urlInput.value.trim() : '';
+      if (url) {
+        selectSettingsMode('cloud', false);
+      } else {
+        selectSettingsMode('local', false);
+      }
+    }
+
+    function setPresetTarget(amount) {
+      document.getElementById('settingTargetAmountInput').value = amount;
+      updateTargetPreview();
+    }
+
+    function updateTargetPreview() {
+      const input = document.getElementById('settingTargetAmountInput');
+      const val = input ? (Number(input.value) || 0) : 0;
+      const preview = document.getElementById('settingTargetPreviewText');
+      if (preview) {
+        preview.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val) + ' (Target Aktif)';
+      }
+    }
+
+    async function testGasConnection() {
+      const urlInput = document.getElementById('settingGasUrlInput');
+      const pingBox = document.getElementById('gasPingResult');
+      const pingBtn = document.getElementById('btnTestGasPing');
+      const url = urlInput ? urlInput.value.trim() : '';
+
+      if (!url) {
+        if (pingBox) {
+          pingBox.className = 'text-[11px] font-medium py-1.5 px-2.5 rounded-lg border bg-amber-50 text-amber-900 border-amber-200 block';
+          pingBox.innerHTML = '<span class="font-bold">Info:</span> URL masih kosong. Sistem beroperasi dalam Mode Demo Lokal interaktif.';
+        }
+        return;
+      }
+
+      if (pingBtn) pingBtn.disabled = true;
+      if (pingBox) {
+        pingBox.className = 'text-[11px] font-medium py-1.5 px-2.5 rounded-lg border bg-slate-50 text-slate-800 border-slate-200 block';
+        pingBox.innerHTML = '<span class="inline-flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></span> Menguji koneksi ke Google Apps Script...</span>';
+      }
+
+      try {
+        const testUrl = url.includes('?') ? `${url}&action=getPublicSummary` : `${url}?action=getPublicSummary`;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+        const resp = await fetch(testUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        if (resp.ok) {
+          pingBox.className = 'text-[11px] font-medium py-1.5 px-2.5 rounded-lg border bg-emerald-50 text-emerald-900 border-emerald-200 block';
+          pingBox.innerHTML = '<span class="font-bold">Koneksi Berhasil (200 OK):</span> Endpoint Google Apps Script aktif dan merespons data.';
+        } else {
+          pingBox.className = 'text-[11px] font-medium py-1.5 px-2.5 rounded-lg border bg-amber-50 text-amber-900 border-amber-200 block';
+          pingBox.innerHTML = `<span class="font-bold">Status Server (${resp.status}):</span> Server merespons tetapi mengembalikan kode status ini. Periksa izin deployment Web App.`;
+        }
+      } catch(err) {
+        pingBox.className = 'text-[11px] font-medium py-1.5 px-2.5 rounded-lg border bg-rose-50 text-rose-900 border-rose-200 block';
+        pingBox.innerHTML = '<span class="font-bold">Koneksi Terhambat:</span> Tidak dapat menjangkau endpoint (CORS atau URL tidak valid). Pastikan akses deployment diset "Anyone".';
+      } finally {
+        if (pingBtn) pingBtn.disabled = false;
+      }
+    }
+
+    function saveSettingsConfig() {
+      const gasUrl = document.getElementById('settingGasUrlInput').value.trim();
+      const targetAmount = Number(document.getElementById('settingTargetAmountInput').value) || 50000000;
+      const sheetsInput = document.getElementById('settingSheetsUrlInput');
+      const lookerInput = document.getElementById('settingLookerUrlInput');
+      const sheetsUrl = sheetsInput ? sheetsInput.value.trim() : '';
+      const lookerUrl = lookerInput ? lookerInput.value.trim() : '';
+
+      if (window.APP_CONFIG) {
+        window.APP_CONFIG.GAS_DEPLOYMENT_URL = gasUrl;
+        window.APP_CONFIG.TARGET_SEMESTER_AMOUNT = targetAmount;
+        window.APP_CONFIG.GOOGLE_SHEETS_URL = sheetsUrl;
+        window.APP_CONFIG.LOOKER_STUDIO_EMBED_URL = lookerUrl;
+      }
+      localStorage.setItem('UPI_GAS_URL', gasUrl);
+      localStorage.setItem('UPI_TARGET_AMOUNT', targetAmount.toString());
+      localStorage.setItem('UPI_SHEETS_URL', sheetsUrl);
+      localStorage.setItem('UPI_LOOKER_URL', lookerUrl);
+
+      closeSettingsModal();
+      updateConnectionBadge();
+      refreshAdminData();
+      appendTerminalLog(`[SETTINGS] Configuration updated. Mode: ${gasUrl ? 'Cloud GAS (' + gasUrl + ')' : 'Local Interactive Demo'} | Target: Rp ${targetAmount.toLocaleString('id-ID')}`, 'info');
+      showAdminToast('Pengaturan endpoint & integrasi cloud berhasil disimpan!', 'success');
+    }
+
+    /**
+     * Toast Notification Replacement for Admin
+     */
+    function showAdminToast(message, type = 'success', duration = 3500) {
+      let container = document.getElementById('adminToastContainer');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'adminToastContainer';
+        container.className = 'app-toast-container';
+        document.body.appendChild(container);
+      }
+
+      const toast = document.createElement('div');
+      const typeClass = type === 'error' ? 'app-toast-error' : (type === 'warn' ? 'app-toast-warn' : (type === 'info' ? 'app-toast-info' : 'app-toast-success'));
+      toast.className = `app-toast ${typeClass}`;
+
+      const iconName = type === 'error' ? 'alert-triangle' : (type === 'warn' ? 'alert-circle' : (type === 'info' ? 'info' : 'check-circle'));
+      toast.innerHTML = `
+        <i data-lucide="${iconName}" class="w-4 h-4 shrink-0 stroke-[2.5]"></i>
+        <span class="flex-1">${message.replace(/\n/g, '<br>')}</span>
+      `;
+
+      container.appendChild(toast);
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+
+      setTimeout(() => toast.classList.add('show'), 10);
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+          if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 300);
+      }, duration);
+    }
+
+    /**
+     * Utility Helpers
+     */
+    function formatRupiah(amount) {
+      const num = Number(amount) || 0;
+      return 'Rp ' + num.toLocaleString('id-ID');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // =========================================================================
+    // MODAL PREVIEW BUKTI SCREENSHOT PEMBAYARAN (GOOGLE DRIVE)
+    // =========================================================================
+    function openProofModal(imgUrl, txId, amountStr, donorName) {
+      const decodedUrl = decodeURIComponent(imgUrl);
+      const modal = document.getElementById('proofImageModal');
+      const imgEl = document.getElementById('proofModalImg');
+      const iframeEl = document.getElementById('proofModalIframe');
+      const authAlert = document.getElementById('proofModalDriveAuthAlert');
+      const errorBox = document.getElementById('proofModalDriveError');
+      const txEl = document.getElementById('proofModalTxId');
+      const nameEl = document.getElementById('proofModalDonorName');
+      const amtEl = document.getElementById('proofModalAmount');
+      const linkEl = document.getElementById('proofModalDirectLink');
+      const fallbackLink = document.getElementById('proofModalFallbackLink');
+
+      // Reset state elemen
+      if (authAlert) authAlert.classList.add('hidden');
+      if (errorBox) errorBox.classList.add('hidden');
+      if (iframeEl) {
+        iframeEl.classList.add('hidden');
+        iframeEl.src = '';
+      }
+      if (imgEl) {
+        imgEl.classList.remove('hidden');
+        imgEl.src = '';
+      }
+
+      if (txEl) txEl.textContent = txId || '-';
+      if (nameEl) nameEl.textContent = donorName || 'Hamba Allah';
+      if (amtEl) amtEl.textContent = amountStr || 'Rp 0';
+
+      // 1. Deteksi apakah terdapat kendala izin Google Drive pada Apps Script
+      const isDriveError = decodedUrl.startsWith('DRIVE_ERROR:') || 
+                           decodedUrl.includes('tidak memiliki izin') || 
+                           decodedUrl.includes('DriveApp');
+
+      if (isDriveError) {
+        if (imgEl) imgEl.classList.add('hidden');
+        if (authAlert) authAlert.classList.remove('hidden');
+        if (linkEl) {
+          linkEl.classList.add('opacity-40', 'pointer-events-none');
+          linkEl.removeAttribute('href');
+        }
+      } else {
+        if (linkEl) {
+          linkEl.classList.remove('opacity-40', 'pointer-events-none');
+          linkEl.href = decodedUrl;
+        }
+        if (fallbackLink) fallbackLink.href = decodedUrl;
+
+        // 2. Ekstraksi File ID Google Drive
+        const driveMatch = decodedUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || decodedUrl.match(/id=([a-zA-Z0-9_-]+)/);
+        if (driveMatch && driveMatch[1]) {
+          const fileId = driveMatch[1];
+          const standardDriveUrl = `https://drive.google.com/file/d/${fileId}/view?usp=sharing`;
+          if (linkEl) linkEl.href = standardDriveUrl;
+          if (fallbackLink) fallbackLink.href = standardDriveUrl;
+
+          // Pipeline Preview Berlapis: Googleusercontent CDN -> Thumbnail -> Native Iframe Preview
+          const lh3Src = `https://lh3.googleusercontent.com/d/${fileId}`;
+          const thumbSrc = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+          const iframeSrc = `https://drive.google.com/file/d/${fileId}/preview`;
+
+          let hasTriedThumbnail = false;
+          imgEl.onerror = function() {
+            if (!hasTriedThumbnail) {
+              hasTriedThumbnail = true;
+              this.src = thumbSrc;
+            } else {
+              // Jika direct image terblokir oleh browser cookie/policy, beralih mulus ke iframe native Drive
+              this.classList.add('hidden');
+              if (iframeEl) {
+                iframeEl.src = iframeSrc;
+                iframeEl.classList.remove('hidden');
+              } else if (errorBox) {
+                errorBox.classList.remove('hidden');
+              }
+            }
+          };
+
+          imgEl.src = lh3Src;
+        } else {
+          // Data URL base64 atau direct image link biasa
+          imgEl.onerror = function() {
+            if (errorBox) errorBox.classList.remove('hidden');
+          };
+          imgEl.src = decodedUrl;
+        }
+      }
+
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+      }
+
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+    }
+
+    function closeProofModal() {
+      const modal = document.getElementById('proofImageModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+    }
+
+    // Global Modal Accessibility: Escape Key Dismissal
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeLogoutModal();
+        closeMatchSilentDonorModal();
+        closeSettingsModal();
+        closeProofModal();
+      }
+    });
+  </script>
+
+</body>
+</html>
+

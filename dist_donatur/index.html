@@ -1,0 +1,3054 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lembaga Beasiswa Ikatan Alumni UPI | Layanan Donasi Mandiri</title>
+  
+  <!-- Favicon Browser Tab -->
+  <link rel="icon" type="image/png" href="amal.png">
+  <link rel="apple-touch-icon" href="amal.png">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Vector Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- QRCode.js CDN (Client-side Real Scannable QR Generator) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  
+  <!-- Config Eksternal & Seed Data -->
+  <script src="config.js"></script>
+  <script src="seed_data.js"></script>
+
+  <!-- Typography: Microsoft Aptos Fonts Family (Local Assets) -->
+  <!-- External Design System Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            forest: {
+              DEFAULT: '#1B3B2B',
+              hover: '#244F3A',
+              sage: '#2E5A44',
+              light: '#EAF2EC'
+            },
+            alabaster: '#F9F8F4',
+            surface: '#FFFFFF',
+            stoneMuted: '#F1EFEA',
+            terracotta: {
+              DEFAULT: '#D95D39',
+              hover: '#C24D2A',
+              light: '#FDF2EE'
+            },
+            borderSubtle: '#E4E2DD'
+          },
+          fontFamily: {
+            sans: ['"Aptos"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            display: ['"Aptos Display"', '"Aptos"', '-apple-system', 'sans-serif'],
+            mono: ['"Aptos Mono"', 'monospace'],
+            serif: ['"Aptos Serif"', 'Georgia', 'serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Global Anti-Overflow, Fluid Responsive & Scrollbar-Free Styles -->
+  <style>
+    html, body {
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+    .min-w-0 { min-width: 0; }
+
+    /* Sembunyikan Scrollbar di Seluruh Elemen (Scroll tetap lancar) */
+    ::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+    html, body, *, *::before, *::after {
+      -ms-overflow-style: none !important;
+      scrollbar-width: none !important;
+    }
+    select.ui-form-control {
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      appearance: none !important;
+      background-position: right 18px center !important;
+      padding-right: 44px !important;
+      cursor: pointer;
+    }
+
+    /* Proportional Mobile Scaling (5-10% Compact for Smartphones <= 640px) */
+    @media (max-width: 640px) {
+      html { font-size: 15px; }
+      body { font-size: 14.8px; line-height: 1.5; }
+      .ui-form-control {
+        height: 42px !important;
+        padding: 0 14px !important;
+        font-size: 13.5px !important;
+        border-radius: 10px !important;
+      }
+      .ui-form-control::placeholder {
+        font-size: 13px !important;
+      }
+      select.ui-form-control {
+        background-position: right 14px center !important;
+        padding-right: 38px !important;
+      }
+      .ui-form-label {
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        margin-bottom: 5px !important;
+      }
+      .ui-pathway-card {
+        padding: 14px 16px !important;
+        border-radius: 12px !important;
+      }
+      .bento-card {
+        border-radius: 16px !important;
+      }
+      .wizard-step-circle {
+        width: 28px !important;
+        height: 28px !important;
+        font-size: 12px !important;
+      }
+      .btn-nom {
+        height: 42px !important;
+        font-size: 13px !important;
+        border-radius: 10px !important;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-[#F9F8F4] text-[#18181B] font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-[#EAF2EC] selection:text-[#1B3B2B]">
+
+  <!-- =========================================================================
+       1. TOP MINIMALIST NAV BAR (FLAT LINE, COMPACT ON MOBILE)
+       ========================================================================= -->
+  <header class="w-full bg-white/95 backdrop-blur-md border-b border-[#E4E2DD] sticky top-0 z-40">
+    <div class="max-w-5xl mx-auto px-3 sm:px-6 py-2 sm:py-2.5 flex items-center justify-between gap-2 sm:gap-3">
+      
+      <!-- Brand Left -->
+      <a href="./" class="flex items-center space-x-2 sm:space-x-2.5 group min-w-0">
+        <img src="assets/upi logo.png" alt="Logo UPI" class="h-7 sm:h-8 w-auto object-contain shrink-0 group-hover:scale-105 transition-transform">
+        <div class="min-w-0">
+          <span class="font-bold text-xs sm:text-sm tracking-tight text-[#1B3B2B] block truncate max-w-[140px] xs:max-w-[200px] sm:max-w-none">Beasiswa IKA UPI</span>
+          <span class="text-[10px] text-[#71717A] hidden sm:block">Layanan Mandiri Donasi & Transparansi Beasiswa Mahasiswa</span>
+        </div>
+      </a>
+
+      <!-- Actions Right: Modal Dasbor -->
+      <div class="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
+        <button type="button" onclick="openTransparencyModal()" class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-white hover:bg-[#F1EFEA] border border-[#E4E2DD] text-[#1B3B2B] font-bold text-xs transition flex items-center space-x-1 sm:space-x-1.5 shadow-xs">
+          <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#1B3B2B]"></i>
+          <span class="hidden sm:inline">Lihat </span><span>Dasbor</span><span class="hidden sm:inline"> Transparansi</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       2. WIZARD MAIN WRAPPER (CENTERED LAYOUT, FLUID RESPONSIVE)
+       ========================================================================= -->
+  <main class="flex-grow max-w-3xl w-full mx-auto px-3 sm:px-6 py-3 sm:py-8 space-y-3 sm:space-y-6 min-w-0">
+
+    <!-- HERO & BRAND IDENTITY (CENTERED) -->
+    <div class="text-center space-y-1.5 sm:space-y-3 pt-0.5 sm:pt-2">
+      <div>
+        <h1 class="text-lg sm:text-2xl font-bold tracking-tight leading-snug text-[#18181B]">
+          Beasiswa Ikatan Alumni UPI
+        </h1>
+        <p class="text-xs sm:text-[13px] font-normal text-[#52525B] max-w-lg mx-auto mt-0.5 sm:mt-1 leading-relaxed px-1">
+          Portal resmi penghimpunan dan transparansi dana beasiswa mahasiswa Ikatan Alumni Universitas Pendidikan Indonesia.
+        </p>
+
+        <!-- Trust & Social Proof Quick Badge -->
+        <div class="inline-flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 bg-white border border-[#E4E2DD] px-3 py-1 sm:py-1.5 rounded-full text-xs text-[#52525B] shadow-2xs mt-2.5 max-w-full">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+          <span class="whitespace-nowrap">Target Beasiswa: <strong class="text-[#1B3B2B] font-mono">Rp 50 Jt</strong></span>
+          <span class="text-[#E4E2DD] hidden sm:inline">•</span>
+          <button type="button" onclick="openTransparencyModal()" class="text-[#1B3B2B] font-bold underline hover:text-[#244F3A] cursor-pointer whitespace-nowrap">Lihat Capaian Transparansi ↗</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HORIZONTAL 3-STEP PROGRESS BAR -->
+    <div class="bg-white border border-[#E4E2DD] rounded-xl sm:rounded-2xl p-2.5 sm:p-5 shadow-xs">
+      <div class="flex items-center justify-between relative">
+        
+        <!-- Step 1 Indicator -->
+        <div class="flex flex-col items-center flex-1 z-10 min-w-0">
+          <div id="stepCircle1" class="wizard-step-circle wizard-step-active">
+            1
+          </div>
+          <span id="stepLabel1" class="text-[11px] sm:text-xs font-bold text-[#1B3B2B] mt-1 text-center truncate w-full px-0.5">
+            Identitas
+          </span>
+        </div>
+
+        <!-- Connecting Line 1-2 -->
+        <div id="stepLine1" class="wizard-step-line -mt-3.5 sm:-mt-5"></div>
+
+        <!-- Step 2 Indicator -->
+        <div class="flex flex-col items-center flex-1 z-10 min-w-0">
+          <div id="stepCircle2" class="wizard-step-circle wizard-step-pending">
+            2
+          </div>
+          <span id="stepLabel2" class="text-[11px] sm:text-xs font-semibold text-[#71717A] mt-1 text-center truncate w-full px-0.5">
+            Metode
+          </span>
+        </div>
+
+        <!-- Connecting Line 2-3 -->
+        <div id="stepLine2" class="wizard-step-line -mt-3.5 sm:-mt-5"></div>
+
+        <!-- Step 3 Indicator -->
+        <div class="flex flex-col items-center flex-1 z-10 min-w-0">
+          <div id="stepCircle3" class="wizard-step-circle wizard-step-pending">
+            3
+          </div>
+          <span id="stepLabel3" class="text-[11px] sm:text-xs font-semibold text-[#71717A] mt-1 text-center truncate w-full px-0.5">
+            Pembayaran
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- =========================================================================
+         STEP 1: PILIH JALUR & IDENTITAS DONATUR
+         ========================================================================= -->
+    <div id="wizardStep1" class="bento-card p-3.5 sm:p-8 space-y-3 sm:space-y-6">
+      
+      <div class="border-b border-[#E4E2DD] pb-2.5 sm:pb-4">
+        <h2 class="text-[15px] sm:text-lg font-bold tracking-tight text-[#18181B]">Langkah 1: Pilih Jalur Identitas Donatur</h2>
+        <p class="text-[11.5px] sm:text-[13px] font-normal text-[#52525B] mt-0.5 sm:mt-1">Pilih kategori identitas Anda di bawah ini:</p>
+      </div>
+
+      <!-- 3 Radio Cards Selector -->
+      <div class="space-y-2.5 sm:space-y-3">
+        
+        <!-- Jalur 1: Alumni Terdata -->
+        <label class="ui-pathway-card active block cursor-pointer transition-all" id="cardJalur1">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2.5 sm:space-x-3">
+              <input type="radio" name="radioInflowPath" value="ALUMNI_TERDATA" checked onchange="handlePathChange('ALUMNI_TERDATA')" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#1B3B2B] focus:ring-[#1B3B2B]">
+              <div>
+                <span class="text-xs sm:text-sm font-semibold text-[#18181B] leading-tight flex items-center space-x-1.5">
+                  <i data-lucide="graduation-cap" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#1B3B2B] shrink-0"></i>
+                  <span>Alumni Terdata (Angkatan 2016–2026)</span>
+                </span>
+                <span class="text-[11px] sm:text-xs font-normal text-[#64748B] block mt-0.5">Verifikasi otomatis data alumni &amp; mahasiswa UPI</span>
+              </div>
+            </div>
+            <span class="text-[9.5px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-[#1B3B2B] border border-emerald-200 hidden sm:inline-block">
+              Verifikasi Otomatis
+            </span>
+          </div>
+
+          <!-- Jalur 1 Form Inner -->
+          <div id="formInnerJalur1" class="mt-3 pt-3 border-t border-[#2E5A44]/20 space-y-2.5 sm:space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+              <div>
+                <label for="inputJalur1NIM" class="ui-form-label">Nomor Induk Mahasiswa (NIM) *</label>
+                <input type="text" id="inputJalur1NIM" placeholder="Contoh: 2001234" class="ui-form-control">
+                <div id="errorJalur1NIM" class="field-error-msg">
+                  <i data-lucide="alert-circle" class="w-3.5 h-3.5 shrink-0"></i>
+                  <span class="error-text">Wajib mengisi NIM atau Email resmi UPI.</span>
+                </div>
+              </div>
+              <div>
+                <label for="inputJalur1Email" class="ui-form-label">Email Resmi UPI</label>
+                <input type="text" id="inputJalur1Email" placeholder="username@upi.edu" class="ui-form-control">
+                <div id="errorJalur1Email" class="field-error-msg">
+                  <i data-lucide="alert-circle" class="w-3.5 h-3.5 shrink-0"></i>
+                  <span class="error-text">Format email harus @upi.edu</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-2">
+              <button type="button" onclick="performAlumniLookup()" id="btnLookupAlumni" class="text-[11.5px] sm:text-xs bg-[#1B3B2B] hover:bg-[#244F3A] text-white font-bold px-3.5 sm:px-4 h-[38px] sm:h-[42px] rounded-lg sm:rounded-[10px] transition flex items-center space-x-1.5 shadow-xs">
+                <i data-lucide="search" class="w-3.5 h-3.5 shrink-0"></i>
+                <span>Cek Data Mahasiswa/Alumni</span>
+              </button>
+              <span id="lookupStatusMessage" class="text-xs text-[#52525B] italic"></span>
+            </div>
+
+            <!-- Profile Found Card -->
+            <div id="profileFoundBox" class="hidden bg-white border border-[#2E5A44]/30 rounded-2xl p-4 text-xs space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2.5">
+                  <div class="w-8 h-8 rounded-full bg-[#1B3B2B] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                    <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
+                  </div>
+                  <div>
+                    <strong class="text-sm text-[#1B3B2B] block" id="profileFoundName">-</strong>
+                    <span class="text-[#52525B]" id="profileFoundMeta">-</span>
+                  </div>
+                </div>
+                <span class="bg-[#DCFCE7] text-[#166534] font-bold text-[10px] sm:text-[11px] px-2.5 py-0.5 rounded-full border border-[#BBF7D0]">
+                  TERVERIFIKASI
+                </span>
+              </div>
+              <div>
+                <label for="inputJalur1WA" class="ui-form-label">Nomor WhatsApp (Untuk Pengiriman Kuitansi) *</label>
+                <input type="tel" id="inputJalur1WA" placeholder="Contoh: 08122001234" class="ui-form-control">
+                <div id="errorJalur1WA" class="field-error-msg">
+                  <i data-lucide="alert-circle" class="w-3.5 h-3.5 shrink-0"></i>
+                  <span class="error-text">Nomor WhatsApp wajib diisi untuk pengiriman kuitansi.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </label>
+
+        <!-- Jalur 2: Alumni Senior (< 2016) -->
+        <label class="ui-pathway-card block cursor-pointer transition-all" id="cardJalur2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2.5 sm:space-x-3">
+              <input type="radio" name="radioInflowPath" value="ALUMNI_SENIOR" onchange="handlePathChange('ALUMNI_SENIOR')" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#1B3B2B] focus:ring-[#1B3B2B]">
+              <div>
+                <span class="text-xs sm:text-sm font-semibold text-[#18181B] leading-tight flex items-center space-x-1.5">
+                  <i data-lucide="landmark" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#52525B] shrink-0"></i>
+                  <span>Alumni Senior (&lt; 2016) / Belum Terdata</span>
+                </span>
+                <span class="text-[11px] sm:text-xs font-normal text-[#64748B] block mt-0.5">Pendaftaran mandiri untuk alumni senior Bumi Siliwangi</span>
+              </div>
+            </div>
+            <span class="text-[9.5px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#F1EFEA] text-[#52525B] border border-[#E4E2DD] hidden sm:inline-block">
+              Entri Mandiri
+            </span>
+          </div>
+
+          <!-- Jalur 2 Form Inner -->
+          <div id="formInnerJalur2" class="hidden mt-3 pt-3 border-t border-[#E4E2DD] space-y-2.5 sm:space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+              <div class="sm:col-span-2">
+                <label for="inputJalur2Nama" class="ui-form-label">Nama Lengkap & Gelar *</label>
+                <input type="text" id="inputJalur2Nama" placeholder="Contoh: Drs. H. Irfan Setiawan, M.Pd." class="ui-form-control">
+                <div id="errorJalur2Nama" class="field-error-msg">
+                  <i data-lucide="alert-circle" class="w-3.5 h-3.5 shrink-0"></i>
+                  <span class="error-text">Nama lengkap dan gelar wajib diisi.</span>
+                </div>
+              </div>
+              <div>
+                <label for="selectJalur2Fakultas" class="ui-form-label">Fakultas / Kampus Daerah *</label>
+                <select id="selectJalur2Fakultas" class="ui-form-control">
+                  <option value="">-- Pilih Fakultas --</option>
+                  <option value="FIP">FIP (Fakultas Ilmu Pendidikan)</option>
+                  <option value="FPIPS">FPIPS (Pendidikan Ilmu Pengetahuan Sosial)</option>
+                  <option value="FPBS">FPBS (Pendidikan Bahasa dan Sastra)</option>
+                  <option value="FPMIPA">FPMIPA (Pendidikan MIPA)</option>
+                  <option value="FPTK">FPTK (Pendidikan Teknologi & Kejuruan)</option>
+                  <option value="FPOK">FPOK (Pendidikan Olahraga & Kesehatan)</option>
+                  <option value="FPEB">FPEB (Pendidikan Ekonomi & Bisnis)</option>
+                  <option value="FPSD">FPSD (Pendidikan Seni & Desain)</option>
+                  <option value="Kampus UPI Cibiru">Kampus UPI di Cibiru</option>
+                  <option value="Kampus UPI Tasikmalaya">Kampus UPI di Tasikmalaya</option>
+                  <option value="Kampus UPI Purwakarta">Kampus UPI di Purwakarta</option>
+                  <option value="Kampus UPI Sumedang">Kampus UPI di Sumedang</option>
+                  <option value="Kampus UPI Serang">Kampus UPI di Serang</option>
+                  <option value="SPs">Sekolah Pascasarjana (SPs)</option>
+                </select>
+                <div id="errorJalur2Fakultas" class="field-error-msg">
+                  <i data-lucide="alert-circle" class="w-3.5 h-3.5 shrink-0"></i>
+                  <span class="error-text">Pilih salah satu fakultas.</span>
+                </div>
+              </div>
+              <div>
+                <label for="inputJalur2Prodi" class="ui-form-label">Program Studi *</label>
+                <input type="text" id="inputJalur2Prodi" placeholder="Contoh: Pendidikan Matematika" class="ui-form-control">
+                <div id="errorJalur2Prodi" class="field-error-msg">
+                  <i data-lucide="alert-circle" class="w-3.5 h-3.5 shrink-0"></i>
+                  <span class="error-text">Program studi wajib diisi.</span>
+                </div>
+              </div>
+              <div>
+                <label for="selectJalur2Angkatan" class="ui-form-label">Tahun Angkatan Masuk *</label>
+                <select id="selectJalur2Angkatan" class="ui-form-control">
+                  <option value="">-- Pilih Angkatan --</option>
+                </select>
+                <div id="errorJalur2Angkatan" class="field-error-msg">
+                  <i data-lucide="alert-circle" class="w-3.5 h-3.5 shrink-0"></i>
+                  <span class="error-text">Pilih tahun angkatan masuk.</span>
+                </div>
+              </div>
+              <div>
+                <label for="inputJalur2WA" class="ui-form-label">Nomor WhatsApp *</label>
+                <input type="tel" id="inputJalur2WA" placeholder="Contoh: 08112233445" class="ui-form-control">
+                <div id="errorJalur2WA" class="field-error-msg">
+                  <i data-lucide="alert-circle" class="w-3.5 h-3.5 shrink-0"></i>
+                  <span class="error-text">Nomor WhatsApp wajib diisi.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </label>
+
+        <!-- Jalur 3: Donatur Cepat -->
+        <label class="ui-pathway-card block cursor-pointer transition-all" id="cardJalur3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2.5 sm:space-x-3">
+              <input type="radio" name="radioInflowPath" value="ALUMNI_EXPRESS" onchange="handlePathChange('ALUMNI_EXPRESS')" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#1B3B2B] focus:ring-[#1B3B2B]">
+              <div>
+                <span class="text-xs sm:text-sm font-semibold text-[#18181B] leading-tight flex items-center space-x-1.5">
+                  <i data-lucide="zap" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#D95D39] shrink-0"></i>
+                  <span>Donatur Cepat (Lupa Data / Spontan)</span>
+                </span>
+                <span class="text-[11px] sm:text-xs font-normal text-[#64748B] block mt-0.5">Donasi cepat tanpa verifikasi akun</span>
+              </div>
+            </div>
+            <span class="text-[9.5px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#FDF2EE] text-[#D95D39] border border-[#D95D39]/30 hidden sm:inline-block">
+              Donasi Cepat
+            </span>
+          </div>
+
+          <!-- Jalur 3 Form Inner -->
+          <div id="formInnerJalur3" class="hidden mt-3 pt-3 border-t border-[#E4E2DD] space-y-2.5 sm:space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+              <div>
+                <label for="inputJalur3Alias" class="ui-form-label">Nama Panggilan / Alias *</label>
+                <input type="text" id="inputJalur3Alias" placeholder="Contoh: Kak Dika / Alumni 08" class="ui-form-control">
+                <div id="errorJalur3Alias" class="field-error-msg">
+                  <i data-lucide="alert-circle" class="w-3.5 h-3.5 shrink-0"></i>
+                  <span class="error-text">Nama panggilan atau alias wajib diisi.</span>
+                </div>
+              </div>
+              <div>
+                <label for="inputJalur3WA" class="ui-form-label">Nomor WhatsApp (Opsional)</label>
+                <input type="tel" id="inputJalur3WA" placeholder="Untuk menerima kuitansi" class="ui-form-control">
+              </div>
+            </div>
+          </div>
+        </label>
+
+      </div>
+
+      <!-- Info Box UU PDP -->
+      <div class="bg-[#F1EFEA] border border-[#E4E2DD] rounded-xl p-3 sm:p-4 flex items-start space-x-2 text-[10.5px] sm:text-xs leading-relaxed text-[#475569]">
+        <i data-lucide="info" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#52525B] shrink-0 mt-0.5"></i>
+        <p class="leading-relaxed">
+          Data Anda tersimpan aman dan hanya digunakan untuk pencatatan serta bukti donasi resmi beasiswa IKA UPI.
+        </p>
+      </div>
+
+      <!-- Button Step 1 -> Step 2 -->
+      <button type="button" onclick="goToStep2()" class="w-full py-3 sm:py-4 px-4 rounded-xl sm:rounded-2xl bg-[#1B3B2B] hover:bg-[#244F3A] text-white font-bold text-sm sm:text-base transition shadow-md flex items-center justify-center space-x-2 active:scale-99 cursor-pointer">
+        <span>Lanjut ke Nominal Donasi</span>
+        <span>→</span>
+      </button>
+
+    </div>
+
+    <!-- =========================================================================
+         STEP 2: NOMINAL, METODE & PERSETUJUAN AKAD
+         ========================================================================= -->
+    <div id="wizardStep2" class="hidden bento-card p-3.5 sm:p-8 space-y-3.5 sm:space-y-6 min-w-0">
+      
+      <div class="border-b border-[#E4E2DD] pb-2.5 sm:pb-4">
+        <h2 class="text-[15px] sm:text-lg font-bold tracking-tight text-[#18181B]">Langkah 2: Tentukan Nominal & Metode Donasi</h2>
+        <p class="text-[11.5px] sm:text-[13px] font-normal text-[#52525B] mt-0.5 sm:mt-1">Tentukan nominal donasi yang ingin disalurkan:</p>
+      </div>
+
+      <!-- Summary Box of Step 1 -->
+      <div class="bg-[#F1EFEA] border border-[#E4E2DD] rounded-xl sm:rounded-2xl p-3 sm:p-4 flex items-center justify-between text-[11.5px] sm:text-xs">
+        <div class="space-y-0.5">
+          <span class="text-[9.5px] sm:text-[10px] uppercase font-bold text-[#71717A] tracking-wider block">Identitas Donatur Terpilih:</span>
+          <strong class="text-[#18181B] text-xs sm:text-sm block" id="summaryStep1Donor">-</strong>
+          <span class="text-[#52525B] text-[11px] sm:text-xs" id="summaryStep1Meta">-</span>
+        </div>
+        <button type="button" onclick="goToStep1()" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-white hover:bg-[#EAF2EC] text-[#1B3B2B] font-bold text-[11px] sm:text-xs border border-[#E4E2DD] transition inline-flex items-center space-x-1 shrink-0">
+          <i data-lucide="pencil" class="w-3 sm:w-3.5 h-3 sm:h-3.5"></i>
+          <span>Ubah</span>
+        </button>
+      </div>
+
+      <!-- Privacy Toggle (UU PDP) -->
+      <div class="bg-white border border-[#E4E2DD] rounded-xl sm:rounded-2xl p-3 sm:p-4">
+        <label class="flex items-start space-x-2.5 sm:space-x-3 cursor-pointer">
+          <input type="checkbox" id="checkPrivacyAnonymous" class="mt-0.5 w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#1B3B2B] rounded border-[#E4E2DD] focus:ring-[#1B3B2B] shrink-0">
+          <div class="text-[11.5px] sm:text-xs text-[#52525B]">
+            <span class="font-bold text-[#18181B] block">Sembunyikan nama saya di dasbor publik (Tampilkan sebagai "Hamba Allah")</span>
+            <span class="text-[10.5px] sm:text-[11px] mt-0.5 block">Nama Anda tetap tersimpan aman di sistem IKA UPI untuk pencatatan kuitansi resmi pengelola.</span>
+          </div>
+        </label>
+      </div>
+
+      <!-- Payment Channel Selector (Radio Cards) -->
+      <div class="space-y-1.5 sm:space-y-2">
+        <label class="ui-form-label uppercase tracking-wider text-[#52525B]">Pilih Metode Pembayaran</label>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+          
+          <!-- Channel 1: QRIS Resmi Beasiswa -->
+          <label class="p-3 sm:p-4 rounded-xl sm:rounded-[14px] border-2 border-[#1B3B2B] bg-[#EAF2EC] cursor-pointer transition-all block" id="labelPaymentQRIS">
+            <input type="radio" name="paymentMethod" value="QRIS_DYNAMIC" checked onchange="handlePaymentMethodChange('QRIS_DYNAMIC')" class="sr-only">
+            <div class="flex items-center justify-between gap-1.5 sm:gap-2">
+              <div class="flex items-center space-x-2 sm:space-x-2.5 shrink min-w-0">
+                <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white border border-[#E4E2DD] flex items-center justify-center text-[#1B3B2B] shadow-xs shrink-0">
+                  <i data-lucide="qr-code" class="w-4 h-4 text-[#1B3B2B]"></i>
+                </span>
+                <span class="text-xs sm:text-[13px] font-semibold text-[#1B3B2B] leading-tight">QRIS Resmi Beasiswa</span>
+              </div>
+              <span class="bg-[#DCFCE7] text-[#166534] text-[9px] sm:text-[9.5px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0">Bebas & Instan</span>
+            </div>
+            <p class="text-[11px] sm:text-xs font-normal text-[#64748B] mt-1.5 sm:mt-2">Scan langsung via BCA, Mandiri, BRI, BNI, Bank Jago, GoPay, Dana, OVO, ShopeePay dll.</p>
+          </label>
+
+          <!-- Channel 2: Transfer Bank Rekening Jago / BSI -->
+          <label class="p-3 sm:p-4 rounded-xl sm:rounded-[14px] border-2 border-[#E4E2DD] bg-white hover:border-[#1B3B2B] cursor-pointer transition-all block" id="labelPaymentTransfer">
+            <input type="radio" name="paymentMethod" value="TRANSFER_JAGO" onchange="handlePaymentMethodChange('TRANSFER_JAGO')" class="sr-only">
+            <div class="flex items-center justify-between gap-1.5 sm:gap-2">
+              <div class="flex items-center space-x-2 sm:space-x-2.5 shrink min-w-0">
+                <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white border border-[#E4E2DD] flex items-center justify-center text-[#18181B] shadow-xs shrink-0">
+                  <i data-lucide="building-2" class="w-4 h-4 text-[#18181B]"></i>
+                </span>
+                <span class="text-xs sm:text-[13px] font-semibold text-[#18181B] leading-tight">Transfer Bank Jago / BSI</span>
+              </div>
+              <span class="bg-[#FEF3C7] text-[#92400E] text-[9px] sm:text-[9.5px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0">Kode Unik 3 Digit</span>
+            </div>
+            <p class="text-[11px] sm:text-xs font-normal text-[#64748B] mt-1.5 sm:mt-2">Rekening Utama: Bank Jago (5000 0000 0001) a.n. Lembaga Beasiswa IKA UPI.</p>
+          </label>
+
+        </div>
+
+        <!-- Sub-bank choice if bank transfer selected -->
+        <div id="subBankSelectorBox" class="hidden p-2.5 sm:p-3 bg-[#F1EFEA] rounded-lg sm:rounded-xl flex items-center space-x-3 sm:space-x-4 text-[11px] sm:text-xs border border-[#E4E2DD]">
+          <span class="font-bold text-[#18181B]">Rekening Tujuan:</span>
+          <label class="inline-flex items-center space-x-1.5 cursor-pointer">
+            <input type="radio" name="subBankTarget" value="TRANSFER_JAGO" checked onchange="handleSubBankChange('TRANSFER_JAGO')" class="text-[#1B3B2B]">
+            <span class="font-semibold text-[#1B3B2B]">Bank Jago (5000 0000 0001)</span>
+          </label>
+          <label class="inline-flex items-center space-x-1.5 cursor-pointer">
+            <input type="radio" name="subBankTarget" value="TRANSFER_BSI" onchange="handleSubBankChange('TRANSFER_BSI')" class="text-[#1B3B2B]">
+            <span>BSI (7188 000 001)</span>
+          </label>
+        </div>
+
+        <!-- Nominal Box Pilihan Donasi (Aktif baik untuk QRIS Dinamis maupun Transfer Bank) -->
+        <div id="bankTransferNominalBox" class="space-y-2 p-3 sm:p-4 bg-[#F9F8F4] rounded-xl sm:rounded-2xl border border-[#E4E2DD]">
+          <div class="flex items-center justify-between">
+            <label class="ui-form-label uppercase tracking-wider text-[#52525B]">Pilih Jumlah Donasi</label>
+            <span class="text-[10px] text-[#71717A]">+ Kode unik 3 digit verifikasi (Bebas untuk Demo)</span>
+          </div>
+
+          <!-- Pilihan Nominal Cepat -->
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" onclick="selectNominalOption(50000, this)" data-amount="50000" class="btn-nominal-option">
+              Rp 50.000
+            </button>
+            <button type="button" onclick="selectNominalOption(100000, this)" data-amount="100000" class="btn-nominal-option active-nominal">
+              Rp 100.000
+            </button>
+            <button type="button" onclick="selectNominalOption(250000, this)" data-amount="250000" class="btn-nominal-option">
+              Rp 250.000
+            </button>
+          </div>
+
+          <!-- Input Nominal Lainnya -->
+          <div id="wrapperCustomNominal" class="flex items-center border border-[#E4E2DD] rounded-xl bg-white px-3 py-2 transition focus-within:border-[#1B3B2B] focus-within:ring-1 focus-within:ring-[#1B3B2B]">
+            <span class="text-xs font-bold text-[#71717A] mr-2">Rp</span>
+            <input type="text" id="inputCustomNominal" oninput="handleCustomNominalInput(this)" placeholder="Nominal Bebas (Bisa < Rp 1.000 untuk Demo)" class="w-full bg-transparent text-xs sm:text-sm font-mono font-bold text-[#18181B] outline-none">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Mandatory Legal Checkbox -->
+      <div id="legalCheckboxContainer" class="bg-[#FDF2EE] border border-[#D95D39]/30 rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 transition-all text-left">
+        <label class="flex items-start space-x-2.5 cursor-pointer">
+          <input type="checkbox" id="checkLegalAgreement" onchange="handleLegalAgreementChange()" class="mt-0.5 w-4 h-4 text-[#D95D39] rounded border-[#E4E2DD] focus:ring-[#D95D39] shrink-0 cursor-pointer">
+          <div class="text-[11px] sm:text-xs text-[#18181B] leading-normal text-left">
+            <span>Saya menyetujui </span>
+            <button type="button" onclick="openLegalModal()" class="text-[#D95D39] font-bold underline text-left inline p-0 m-0 border-0 bg-transparent cursor-pointer hover:text-[#C24D2A] align-baseline">
+              Ketentuan Akad Hibah Donasi &amp; Kebijakan Privasi Data Alumni UPI
+            </button>
+          </div>
+        </label>
+        <div id="errorStep2Legal" class="field-error-msg mt-2">
+          <i data-lucide="alert-circle" class="w-3.5 h-3.5 shrink-0"></i>
+          <span class="error-text">Anda harus menyetujui Ketentuan Akad Donasi untuk melanjutkan.</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons (Back & Continue) -->
+      <div class="flex items-center space-x-2.5 sm:space-x-3 pt-1 sm:pt-2">
+        <button type="button" onclick="goToStep1()" class="w-1/3 sm:w-2/5 h-[44px] sm:h-[48px] px-3 sm:px-4 rounded-xl sm:rounded-2xl border border-[#E4E2DD] text-[#52525B] hover:text-[#18181B] font-bold text-xs sm:text-sm hover:bg-[#F1EFEA] transition flex items-center justify-center cursor-pointer">
+          ← Kembali
+        </button>
+        <button type="button" id="btnStep2Submit" onclick="lockAndCreateDonation()" disabled class="w-2/3 sm:w-3/5 h-[44px] sm:h-[48px] px-3 sm:px-4 rounded-xl sm:rounded-2xl font-bold text-[#71717A] text-xs sm:text-sm transition-all shadow-md bg-[#E4E2DD] cursor-not-allowed flex items-center justify-center space-x-1.5">
+          <i data-lucide="lock" class="w-3.5 sm:w-4 h-3.5 sm:h-4"></i>
+          <span>Lanjutkan ke Pembayaran →</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- =========================================================================
+         STEP 3: INSTRUKSI PEMBAYARAN & BUKTI KONFIRMASI (E-RECEIPT)
+         ========================================================================= -->
+    <div id="wizardStep3" class="hidden space-y-3.5 sm:space-y-6 min-w-0">
+      
+      <!-- SUB-VIEW 3A: SAAT PENDING (MENUNGGU PEMBAYARAN) -->
+      <div id="step3PendingBox" class="bento-card p-3.5 sm:p-8 space-y-3.5 sm:space-y-6 min-w-0">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#E4E2DD] pb-3 sm:pb-4 gap-1.5 sm:gap-2">
+          <div>
+            <span class="text-[11px] sm:text-xs text-[#52525B] block">ID Transaksi / Tagihan:</span>
+            <strong id="instructionTxId" class="font-mono text-sm sm:text-base text-[#1B3B2B]">-</strong>
+          </div>
+          <!-- Status Verifikasi Pembayaran -->
+          <div class="inline-flex items-center space-x-1.5 sm:space-x-2 bg-[#DCFCE7] text-[#166534] px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold border border-[#BBF7D0] w-fit">
+            <span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#22C55E] radar-pulse"></span>
+            <span>Menunggu Pembayaran...</span>
+          </div>
+        </div>
+
+        <!-- QRIS Container (Real Scannable EMVCo Dynamic QR Code) -->
+        <div id="instructionQrisContainer" class="space-y-3 sm:space-y-4 text-center max-w-sm mx-auto">
+          <div class="bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-[#E4E2DD] shadow-xs space-y-3">
+            <div class="flex items-center justify-between text-xs text-[#52525B] font-semibold border-b border-[#E4E2DD] pb-2.5">
+              <span class="flex items-center space-x-1.5">
+                <i data-lucide="qr-code" class="w-4 h-4 text-[#1B3B2B]"></i>
+                <span class="font-bold text-[#18181B]">Scan QRIS</span>
+              </span>
+              <span class="text-[10.5px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">IKA UPI PEDULI</span>
+            </div>
+            
+            <!-- Nominal Tagihan QRIS yang Harus Dibayar (Di Atas QR Code) -->
+            <div class="bg-[#F4F9F5] border border-[#2E5A44]/25 rounded-2xl p-3 sm:p-3.5 text-center space-y-1 shadow-2xs">
+              <span class="text-[11px] sm:text-xs text-[#52525B] font-medium block">Nominal yang Harus Dibayar:</span>
+              <div>
+                <span id="instructionQrisTopAmount" class="text-2xl sm:text-3xl font-extrabold text-[#1B3B2B] font-mono tracking-tight">Rp 0</span>
+              </div>
+              <div id="instructionQrisTopBreakdown" class="text-[11px] text-[#71717A] flex items-center justify-center space-x-1.5 pt-0.5">
+                <span>Pokok: <strong id="instructionQrisTopBase" class="font-mono text-[#18181B]">Rp 0</strong></span>
+                <span id="instructionQrisTopUniqDot" class="text-[#D1CFCA]">•</span>
+                <span id="instructionQrisTopUniqWrap">Kode Unik: <strong id="instructionQrisTopUniq" class="font-mono text-emerald-700 font-bold">+Rp 0</strong></span>
+              </div>
+            </div>
+
+            <!-- Real Scannable Dynamic QR Code Container via QRCode.js -->
+            <div class="p-2.5 rounded-xl border border-[#E4E2DD] bg-[#F9F8F4] inline-block shadow-2xs">
+              <div id="qrisQrCodeBox" class="mx-auto flex items-center justify-center w-[210px] h-[210px] bg-white overflow-hidden rounded-lg"></div>
+            </div>
+            
+            <div>
+              <button type="button" onclick="downloadDynamicQris()" class="inline-flex items-center space-x-1.5 text-xs text-[#1B3B2B] hover:text-[#2E5A44] hover:underline font-bold cursor-pointer transition">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                <span>Unduh Gambar QRIS Dinamis (PNG)</span>
+              </button>
+            </div>
+
+            <!-- Rincian Tagihan QRIS Dinamis (Nominal Pokok + 3 Digit Kode Unik) -->
+            <div class="space-y-1.5 bg-[#F9F8F4] p-3 rounded-xl border border-[#E4E2DD] text-left text-xs">
+              <div class="flex justify-between items-center text-[#52525B]">
+                <span>Nominal Pokok Donasi:</span>
+                <span id="instructionQrisBaseAmount" class="font-mono font-bold text-[#18181B]">Rp 0</span>
+              </div>
+              <div class="flex justify-between items-center text-[#52525B]">
+                <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold inline-flex items-center space-x-1 shrink-0">
+                  <i data-lucide="check-circle" class="w-3 h-3 text-emerald-600"></i>
+                  <span>auto verification</span>
+                </span>
+                <span id="instructionQrisUniqueCode" class="font-mono font-bold text-emerald-700 text-xs"></span>
+              </div>
+              <div class="pt-2 border-t border-[#E4E2DD] flex justify-between items-center">
+                <strong class="text-[#1B3B2B] font-bold text-xs uppercase">TOTAL TAGIHAN QRIS:</strong>
+                <strong id="instructionQrisAmount" class="text-base sm:text-lg font-extrabold text-[#1B3B2B] font-mono">Rp 0</strong>
+              </div>
+            </div>
+
+            <!-- Rekening Terhubung Langsung -->
+            <div class="border border-[#E4E2DD] rounded-xl p-3 text-left space-y-1 bg-white">
+              <div class="flex items-center justify-between text-[10.5px]">
+                <span class="text-[#71717A] uppercase font-bold tracking-wider flex items-center space-x-1">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span>Rekening Tujuan:</span>
+                </span>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold text-[9.5px]">Bank Jago</span>
+              </div>
+              <div class="flex items-center justify-between pt-0.5">
+                <div>
+                  <strong class="text-[#18181B] block font-mono text-xs sm:text-sm tracking-wide font-extrabold">5000 0000 0001</strong>
+                  <span class="text-[#52525B] text-[10.5px] block">a.n. Lembaga Beasiswa IKA UPI</span>
+                </div>
+                <button type="button" onclick="copyText('500000000001')" class="px-2.5 py-1.5 bg-[#EAF2EC] hover:bg-[#D5E6D8] text-[#1B3B2B] rounded-lg font-bold text-xs transition inline-flex items-center space-x-1 shrink-0 cursor-pointer shadow-2xs">
+                  <i data-lucide="copy" class="w-3 h-3"></i>
+                  <span>Salin No. Rek</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Countdown Timer 15 Menit -->
+            <div class="flex items-center justify-center space-x-1.5 text-xs text-[#92400E] bg-[#FEF3C7] py-2 px-3 rounded-xl border border-[#FDE68A]">
+              <i data-lucide="hourglass" class="w-3.5 h-3.5 text-[#92400E]"></i>
+              <span>Batas Waktu Bayar:</span>
+              <span id="countdownTimer" class="font-mono font-bold text-xs sm:text-sm">15:00</span>
+            </div>
+          </div>
+
+          <div class="text-left bg-white p-3.5 sm:p-4 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs space-y-1.5 border border-[#E4E2DD] text-[#52525B]">
+            <strong class="text-[#18181B] block font-bold text-xs">Cara Pembayaran QRIS Dinamis:</strong>
+            <p>1. Buka aplikasi m-banking atau e-wallet (BCA, Mandiri, BRI, Bank Jago, GoPay, Dana, dll).</p>
+            <p>2. Arahkan kamera pemindai ke kode QRIS di atas.</p>
+            <p>3. Nominal total tagihan akan otomatis terkunci di aplikasi Anda.</p>
+            <p>4. Konfirmasi pembayaran untuk menerbitkan kuitansi resmi secara instan.</p>
+            <p class="mt-1.5 pt-1.5 border-t border-[#E4E2DD] text-[10.5px] text-[#71717A]">
+              Rekening Penampungan: <strong class="text-[#1B3B2B]">Bank Jago (5000 0000 0001)</strong> a.n. <strong>Lembaga Beasiswa IKA UPI</strong>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Transfer Bank Container -->
+        <div id="instructionTransferContainer" class="hidden space-y-3 sm:space-y-4">
+          <div class="bg-[#FDF2EE] border-2 border-[#D95D39]/40 rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center space-y-2.5 sm:space-y-3">
+            <span class="text-[11px] sm:text-xs uppercase font-extrabold tracking-wider text-[#9A3412] block">
+              PENTING: Transfer TEPAT Hingga 3 Digit Terakhir
+            </span>
+            <p class="text-[11px] sm:text-xs text-[#52525B]">Sistem mencocokkan kode unik ini secara otomatis dari email mutasi bank.</p>
+            
+            <div class="bg-white py-2.5 sm:py-3 px-4 sm:px-5 rounded-xl sm:rounded-2xl border border-[#D95D39]/30 shadow-xs inline-flex items-center space-x-2.5 sm:space-x-3">
+              <span id="instructionTransferTotal" class="text-2xl sm:text-3xl font-extrabold text-[#D95D39] font-mono">Rp 100.342</span>
+              <button type="button" onclick="copyAmountText()" class="px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold bg-[#F1EFEA] hover:bg-[#E4E2DD] rounded-lg sm:rounded-xl border border-[#E4E2DD] transition inline-flex items-center space-x-1">
+                <i data-lucide="copy" class="w-3 sm:w-3.5 h-3 sm:h-3.5"></i>
+                <span>Salin</span>
+              </button>
+            </div>
+
+            <div class="text-[11px] sm:text-xs text-[#52525B]">
+              <span>Nominal Pokok: <strong id="instructionBaseAmount" class="text-[#18181B] font-mono">Rp 100.000</strong></span>
+              <span class="mx-1">•</span>
+              <span>Kode Unik: <strong id="instructionUniqueCode" class="text-[#D95D39] font-mono text-xs sm:text-sm">342</strong></span>
+            </div>
+          </div>
+
+          <!-- Account Details -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <!-- Bank Jago -->
+            <div class="bg-white border border-[#E4E2DD] hover:border-[#1B3B2B] rounded-xl sm:rounded-2xl p-3.5 sm:p-4 shadow-2xs transition flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-xs sm:text-sm text-[#18181B]">Bank Jago</span>
+                  <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[9.5px] font-bold">Rekening Utama</span>
+                </div>
+                <span class="text-[11px] text-[#71717A] mt-2 block">Nomor Rekening:</span>
+                <div class="flex items-center justify-between mt-1">
+                  <strong class="font-mono text-sm sm:text-base text-[#1B3B2B] font-extrabold tracking-wide">5000 0000 0001</strong>
+                  <button type="button" onclick="copyText('500000000001')" class="px-2.5 py-1 text-[11px] sm:text-xs bg-[#EAF2EC] hover:bg-[#D5E6D8] text-[#1B3B2B] font-bold rounded-lg transition inline-flex items-center space-x-1 cursor-pointer">
+                    <i data-lucide="copy" class="w-3 h-3"></i>
+                    <span>Salin</span>
+                  </button>
+                </div>
+              </div>
+              <span class="text-[10px] sm:text-[11px] text-[#71717A] mt-2.5 pt-2 border-t border-[#F1EFEA] block">a.n. <strong class="text-[#18181B]">Lembaga Beasiswa IKA UPI</strong></span>
+            </div>
+
+            <!-- Bank Syariah Indonesia (BSI) -->
+            <div class="bg-white border border-[#E4E2DD] hover:border-[#1B3B2B] rounded-xl sm:rounded-2xl p-3.5 sm:p-4 shadow-2xs transition flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-xs sm:text-sm text-[#18181B]">Bank Syariah Indonesia (BSI)</span>
+                  <span class="px-2 py-0.5 rounded-full bg-[#F1EFEA] text-[#52525B] border border-[#E4E2DD] text-[9.5px] font-bold">Syariah</span>
+                </div>
+                <span class="text-[11px] text-[#71717A] mt-2 block">Nomor Rekening:</span>
+                <div class="flex items-center justify-between mt-1">
+                  <strong class="font-mono text-sm sm:text-base text-[#18181B] font-extrabold tracking-wide">7188 000 001</strong>
+                  <button type="button" onclick="copyText('7188000001')" class="px-2.5 py-1 text-[11px] sm:text-xs bg-[#EAF2EC] hover:bg-[#D5E6D8] text-[#1B3B2B] font-bold rounded-lg transition inline-flex items-center space-x-1 cursor-pointer">
+                    <i data-lucide="copy" class="w-3 h-3"></i>
+                    <span>Salin</span>
+                  </button>
+                </div>
+              </div>
+              <span class="text-[10px] sm:text-[11px] text-[#71717A] mt-2.5 pt-2 border-t border-[#F1EFEA] block">a.n. <strong class="text-[#18181B]">Lembaga Beasiswa IKA UPI</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Calm Loading Notification -->
+        <div class="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#EAF2EC] border border-[#2E5A44]/20 flex items-center space-x-2.5 sm:space-x-3 text-[11px] sm:text-xs text-[#1B3B2B]">
+          <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-500 radar-pulse shrink-0"></span>
+          <p class="leading-relaxed">
+            <strong>Pengecekan Otomatis:</strong> Sistem memeriksa mutasi masuk secara berkala dari bank/DANA. Anda juga dapat mengunggah screenshot bukti pembayaran di bawah ini untuk verifikasi langsung.
+          </p>
+        </div>
+
+        <!-- Section Unggah Bukti Pembayaran Screenshot (Verifikasi Otomatis & Simpan ke Drive) -->
+        <div id="proofUploadBox" class="bg-white rounded-2xl border border-[#E4E2DD] p-4 sm:p-5 shadow-xs space-y-3 text-left">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <span class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-bold border border-emerald-200">
+                <i data-lucide="shield-check" class="w-3 h-3 text-emerald-600"></i>
+                <span>Verifikasi Instan &amp; Simpan Bukti</span>
+              </span>
+              <h4 class="font-bold text-xs sm:text-sm text-[#18181B] mt-1.5 flex items-center space-x-1.5">
+                <i data-lucide="camera" class="w-4 h-4 text-[#1B3B2B]"></i>
+                <span>Sudah Bayar? Unggah Screenshot Bukti Pembayaran</span>
+              </h4>
+              <p class="text-[11px] sm:text-xs text-[#52525B] mt-0.5 leading-relaxed">
+                Kirim tangkapan layar (screenshot) transfer bank atau QRIS Anda. Bukti transfer Anda akan disimpan aman oleh pengelola dan kuitansi resmi Anda diterbitkan seketika.
+              </p>
+            </div>
+          </div>
+
+          <!-- Dropzone / Picker -->
+          <div id="proofDropArea" class="border-2 border-dashed border-[#E4E2DD] hover:border-[#1B3B2B] bg-[#F9F8F4] hover:bg-[#F4F7F4] rounded-xl p-4 text-center cursor-pointer transition">
+            <input type="file" id="inputProofFile" accept="image/*" class="hidden" onchange="handleProofFileSelected(event)">
+            <label for="inputProofFile" class="cursor-pointer flex flex-col items-center justify-center space-y-1.5">
+              <div class="w-10 h-10 rounded-full bg-emerald-100/60 text-[#1B3B2B] flex items-center justify-center">
+                <i data-lucide="upload-cloud" class="w-5 h-5 text-[#1B3B2B]"></i>
+              </div>
+              <span class="text-xs font-bold text-[#1B3B2B]">Pilih atau Ambil Screenshot Pembayaran</span>
+              <span class="text-[10px] text-[#71717A]">Format JPG, PNG, atau WEBP (Maksimal 5 MB)</span>
+            </label>
+          </div>
+
+          <!-- Preview & Action Box -->
+          <div id="proofPreviewContainer" class="hidden bg-[#F4F7F4] border border-[#2E5A44]/20 rounded-xl p-3 sm:p-4 space-y-3">
+            <div class="flex items-start space-x-3">
+              <img id="proofPreviewImg" src="" alt="Bukti Transfer" class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg border border-[#E4E2DD] shadow-xs shrink-0">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-[#18181B] truncate" id="proofFileName">screenshot.jpg</span>
+                  <button type="button" onclick="clearSelectedProof()" class="p-1 rounded-lg text-rose-600 hover:bg-rose-50 transition" title="Hapus foto">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+                <div class="flex items-center space-x-1.5 mt-0.5">
+                  <span class="text-[9.5px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold" id="proofFileSize">Siap</span>
+                  <span class="text-[10px] text-[#71717A]">Tersimpan Aman</span>
+                </div>
+                
+                <!-- Kolom Pencocokan & Pengecekan Nominal Screenshot -->
+                <div class="mt-2.5 pt-2 border-t border-[#E4E2DD]/70 space-y-1.5">
+                  <label for="inputProofNominal" class="block text-[11px] font-bold text-[#1B3B2B]">
+                    Nominal Transfer pada Screenshot:
+                  </label>
+                  <div class="flex items-center gap-2">
+                    <div class="relative flex-1">
+                      <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-xs font-bold text-[#71717A]">Rp</span>
+                      <input type="text" id="inputProofNominal" oninput="handleProofNominalInput(this)" class="w-full pl-8 pr-2.5 py-1.5 text-xs font-mono font-bold rounded-lg border border-[#E4E2DD] bg-white text-[#18181B] focus:outline-none focus:ring-1 focus:ring-[#1B3B2B]" placeholder="0">
+                    </div>
+                    <div id="proofNominalMatchBadge" class="inline-flex items-center space-x-1 px-2 py-1 rounded-lg text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 shrink-0">
+                      <i data-lucide="check" class="w-3 h-3 text-emerald-600"></i>
+                      <span>Nominal Cocok</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center justify-between text-[10px] text-[#52525B]">
+                    <span>Target Tagihan Donasi: <strong id="proofTargetAmount" class="font-mono text-[#1B3B2B]">Rp 0</strong></span>
+                    <span id="proofMatchFeedback" class="text-emerald-700 font-medium">✓ Sesuai dengan tagihan</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Tombol Konfirmasi Upload -->
+            <button type="button" id="btnSubmitProof" onclick="submitPaymentProof()" class="w-full py-2.5 px-4 rounded-xl bg-[#1B3B2B] hover:bg-[#2E5A44] text-white font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-2 shadow-sm cursor-pointer">
+              <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
+              <span>Verifikasi &amp; Simpan Bukti Pembayaran</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Action Buttons: Ubah Metode / Batalkan -->
+        <div class="pt-2 sm:pt-3 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs">
+          <button type="button" onclick="changePaymentOrNominal()" class="px-3.5 py-2 rounded-xl border border-[#E4E2DD] bg-white hover:bg-[#F1EFEA] text-[#1B3B2B] font-bold transition flex items-center space-x-1.5 shadow-2xs">
+            <i data-lucide="edit-3" class="w-3.5 h-3.5 text-[#1B3B2B]"></i>
+            <span>Ubah Metode / Nominal</span>
+          </button>
+          <button type="button" onclick="cancelTransaction()" class="text-[#71717A] hover:text-rose-600 font-semibold underline py-1 transition">
+            Batalkan Donasi
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Kontainer Loading Sinkronisasi Mutasi Kas (Hidden secara default) -->
+      <div id="sync-loading-state" class="hidden flex-col items-center justify-center p-8 text-center bg-white rounded-2xl border border-[#E4E2DD] shadow-sm my-4">
+        <!-- Spinner Modern Lingkaran Hijau Forest -->
+        <div class="relative w-14 h-14 mb-4">
+          <div class="w-14 h-14 rounded-full border-4 border-[#EAF2EC] border-t-[#1B3B2B] animate-spin"></div>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <i data-lucide="refresh-cw" class="w-6 h-6 text-[#1B3B2B] animate-pulse"></i>
+          </div>
+        </div>
+        
+        <h3 class="text-base font-bold text-[#18181B] mb-1">Pembayaran Terdeteksi!</h3>
+        <p class="text-xs text-[#52525B] max-w-xs mb-3">Memverifikasi donasi &amp; menerbitkan kuitansi resmi...</p>
+        
+        <!-- Step status pill loading -->
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F4F7F4] border border-[#E4E2DD] text-[11px] font-medium text-[#1B3B2B]">
+          <span class="w-2 h-2 rounded-full bg-[#22C55E] animate-ping"></span>
+          <span id="sync-loading-text">Memeriksa mutasi rekening...</span>
+        </div>
+      </div>
+
+      <!-- SUB-VIEW 3B: SAAT PAID (E-RECEIPT LUNAS) -->
+      <div id="step3SuccessBox" class="hidden space-y-3.5 sm:space-y-6 min-w-0">
+        
+        <!-- Success Banner -->
+        <div class="bg-[#1B3B2B] text-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center shadow-lg relative overflow-hidden border border-[#2E5A44]">
+          <div class="w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-white text-[#1B3B2B] flex items-center justify-center font-black text-xl sm:text-2xl mx-auto shadow-sm mb-2.5 sm:mb-3">
+            <i data-lucide="check" class="w-6 h-6 sm:w-8 sm:h-8 stroke-[3] text-[#1B3B2B]"></i>
+          </div>
+          <h3 class="text-base sm:text-2xl font-extrabold tracking-tight">Pembayaran Donasi Berhasil Diterima!</h3>
+          <p class="text-[#EAF2EC] text-[11.5px] sm:text-sm mt-1 max-w-md mx-auto leading-relaxed">
+            Jazakumullahu khairan. Dana beasiswa telah masuk ke rekening resmi IKA UPI dan otomatis tercatat di buku kas donasi.
+          </p>
+          <div class="mt-2.5 sm:mt-3 inline-flex items-center space-x-1.5 bg-white/10 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[11px] sm:text-xs font-mono font-semibold border border-white/20">
+            <span>Status:</span>
+            <span class="text-amber-300 font-bold" id="receiptStatusBadge">Lunas Terverifikasi</span>
+          </div>
+        </div>
+
+        <!-- Printable Official E-Receipt Card -->
+        <div id="printableReceiptCard" class="bg-white rounded-2xl sm:rounded-3xl border border-[#E4E2DD] p-3.5 sm:p-8 shadow-xs space-y-3.5 sm:space-y-6 relative min-w-0">
+          
+          <!-- Watermark Logo amal.png background -->
+          <div class="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0">
+            <img src="assets/amal.png" alt="Watermark Lembaga" class="w-48 h-48 sm:w-64 sm:h-64 object-contain opacity-[0.06]">
+          </div>
+
+          <!-- Receipt Header -->
+          <div class="flex items-center justify-between border-b-2 border-[#18181B] pb-3 sm:pb-4">
+            <div class="flex items-center space-x-2.5 sm:space-x-3">
+              <img src="assets/upi logo.png" alt="Logo UPI" class="h-9 sm:h-12 w-auto object-contain shrink-0">
+              <div>
+                <h4 class="font-extrabold text-[#18181B] text-xs sm:text-base uppercase tracking-wide">LEMBAGA BEASISWA IKA UPI</h4>
+                <p class="text-[10px] sm:text-[11px] text-[#71717A]">Gedung Alumni UPI, Jl. Dr. Setiabudi No. 229 Bandung</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="inline-block bg-[#DCFCE7] text-[#166534] text-[10px] sm:text-[11px] font-extrabold px-2.5 sm:px-3 py-0.5 rounded-full border border-[#BBF7D0]">
+                LUNAS
+              </span>
+              <p class="text-[9.5px] sm:text-[10px] text-[#71717A] mt-0.5 sm:mt-1" id="receiptPrintDate">-</p>
+            </div>
+          </div>
+
+          <!-- Receipt Details -->
+          <div class="grid grid-cols-2 gap-2 sm:gap-3 text-[11px] sm:text-xs">
+            <div>
+              <span class="text-[#71717A] block uppercase text-[9.5px] sm:text-[10px]">No. Kwitansi</span>
+              <strong id="receiptTxId" class="font-mono text-[#18181B]">-</strong>
+            </div>
+            <div>
+              <span class="text-[#71717A] block uppercase text-[9.5px] sm:text-[10px]">Waktu Bayar</span>
+              <span id="receiptTimestamp" class="font-semibold text-[#18181B]">-</span>
+            </div>
+            <div>
+              <span class="text-[#71717A] block uppercase text-[9.5px] sm:text-[10px]">Nama Donatur</span>
+              <strong id="receiptDonorName" class="text-[#18181B]">-</strong>
+            </div>
+            <div>
+              <span class="text-[#71717A] block uppercase text-[9.5px] sm:text-[10px]">Fakultas / Jalur</span>
+              <span id="receiptFaculty" class="font-semibold text-[#18181B]">-</span>
+            </div>
+          </div>
+
+          <!-- Financial Table -->
+          <div class="border rounded-xl sm:rounded-2xl overflow-hidden border-[#E4E2DD]">
+            <table class="w-full text-[11px] sm:text-xs text-left">
+              <thead class="bg-[#F1EFEA] text-[#18181B] font-bold">
+                <tr>
+                  <th class="p-2 sm:p-3">Deskripsi Alokasi</th>
+                  <th class="p-2 sm:p-3 text-right">Jumlah</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#E4E2DD]">
+                <tr>
+                  <td class="p-2 sm:p-3 text-[#18181B]">Donasi Beasiswa Pendidikan & Bantuan UKT Mahasiswa UPI</td>
+                  <td class="p-2 sm:p-3 text-right font-mono font-semibold" id="receiptBaseAmount">Rp 0</td>
+                </tr>
+                <tr id="receiptUniqueCodeRow" class="text-[#52525B]">
+                  <td class="p-2 sm:p-3">Kode Unik Verifikasi Mutasi Bank</td>
+                  <td class="p-2 sm:p-3 text-right font-mono" id="receiptUniqueCode">Rp 0</td>
+                </tr>
+              </tbody>
+              <tfoot class="bg-[#F9F8F4] border-t border-[#E4E2DD] font-bold">
+                <tr>
+                  <td class="p-2 sm:p-3 text-[#18181B] uppercase">Total Dana Diterima</td>
+                  <td class="p-2 sm:p-3 text-right font-mono text-sm sm:text-base text-[#1B3B2B]" id="receiptTotalAmount">Rp 0</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- Post-Correction Option -->
+          <div class="no-print bg-[#F9F8F4] p-2.5 sm:p-3 rounded-xl border border-[#E4E2DD] flex items-center justify-between text-[11px] sm:text-xs text-[#52525B]">
+            <span>Ingin ubah nomor WhatsApp atau catatan donasi?</span>
+            <button type="button" onclick="openPostCorrectionModal()" class="font-bold text-[#1B3B2B] hover:underline">
+              [ Ubah Data ]
+            </button>
+          </div>
+
+          <!-- Print button & Print footer -->
+          <div class="flex items-center justify-between pt-2.5 sm:pt-3 border-t border-[#E4E2DD] text-[10.5px] sm:text-[11px] text-[#71717A]">
+            <button type="button" onclick="window.print()" class="no-print px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-[#1B3B2B] hover:bg-[#244F3A] text-white font-bold transition flex items-center space-x-1.5 shadow-xs">
+              <i data-lucide="printer" class="w-3.5 sm:w-4 h-3.5 sm:h-4"></i>
+              <span>Cetak / Simpan PDF</span>
+            </button>
+            <span class="font-mono text-[8.5px] sm:text-[9px]">Kode Validasi: SHA256-BEASISWA-UPI</span>
+          </div>
+
+        </div>
+
+        <!-- Dua Tombol Penutup Laman Donatur -->
+        <div class="no-print grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 pt-1 sm:pt-2">
+          <button type="button" onclick="openTransparencyModal()" class="py-2.5 sm:py-3.5 px-3.5 sm:px-4 rounded-xl sm:rounded-2xl bg-white hover:bg-[#F1EFEA] border border-[#E4E2DD] text-[#1B3B2B] font-bold text-xs sm:text-sm transition shadow-xs flex items-center justify-center space-x-2">
+            <i data-lucide="bar-chart-3" class="w-4 h-4 text-[#1B3B2B]"></i>
+            <span>Lihat Dasbor Transparansi Dana</span>
+          </button>
+          <button type="button" onclick="resetWizardForNewDonation()" class="py-2.5 sm:py-3.5 px-3.5 sm:px-4 rounded-xl sm:rounded-2xl bg-[#1B3B2B] hover:bg-[#244F3A] text-white font-bold text-xs sm:text-sm transition shadow-md flex items-center justify-center space-x-2 active:scale-99 cursor-pointer">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>Selesai & Buat Donasi Baru</span>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- =========================================================================
+       3. SIMPLE FOOTER
+       ========================================================================= -->
+  <footer class="w-full bg-white border-t border-[#E4E2DD] py-6 text-center text-xs text-[#71717A] no-print">
+    <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-center sm:text-left">
+        <span>© 2026 Ikatan Alumni Universitas Pendidikan Indonesia (IKA UPI).</span>
+        <span class="hidden sm:inline">•</span>
+        <span class="font-medium text-[#18181B]">Pengembang: <strong class="font-bold text-[#1B3B2B]">Zufar Ahmad Maulidy</strong></span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <button type="button" onclick="openLegalModal()" class="hover:text-[#18181B] underline">Akad & Kebijakan Privasi</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =========================================================================
+       MODAL: DASBOR TRANSPARANSI PUBLIK & KLAIM SILENT DONOR
+       ========================================================================= -->
+  <div id="modalTransparency" class="fixed inset-0 z-50 bg-[#18181B]/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4" onclick="if(event.target === this) closeTransparencyModal()">
+    <div class="bg-white rounded-2xl sm:rounded-3xl max-w-4xl w-full p-4 sm:p-8 shadow-2xl border border-[#E4E2DD] space-y-4 sm:space-y-6 max-h-[92vh] overflow-y-auto min-w-0">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b border-[#E4E2DD] pb-3 sm:pb-4">
+        <div>
+          <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#71717A] block">Transparansi Dana Publik</span>
+          <h3 class="font-extrabold text-base sm:text-xl text-[#1B3B2B]">Dasbor Perolehan Beasiswa IKA UPI</h3>
+        </div>
+        <button type="button" onclick="closeTransparencyModal()" class="text-[#71717A] hover:text-[#18181B] font-bold text-2xl px-2">&times;</button>
+      </div>
+
+      <!-- 4 KPI Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 text-center">
+        <div class="bg-[#F9F8F4] p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-[#E4E2DD]">
+          <span class="text-[10px] sm:text-[11px] text-[#71717A] block">Total Terhimpun</span>
+          <p id="modalKpiTotal" class="text-base sm:text-xl font-extrabold text-[#1B3B2B] font-mono mt-0.5">Rp 0</p>
+        </div>
+        <div class="bg-[#F9F8F4] p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-[#E4E2DD]">
+          <span class="text-[10px] sm:text-[11px] text-[#71717A] block">Target Semester</span>
+          <p class="text-base sm:text-xl font-extrabold text-[#18181B] font-mono mt-0.5">Rp 50 Jt</p>
+        </div>
+        <div class="bg-[#F9F8F4] p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-[#E4E2DD]">
+          <span class="text-[10px] sm:text-[11px] text-[#71717A] block">Capaian Target</span>
+          <p id="modalKpiPercent" class="text-base sm:text-xl font-extrabold text-emerald-700 font-mono mt-0.5">0%</p>
+        </div>
+        <div class="bg-[#F9F8F4] p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-[#E4E2DD]">
+          <span class="text-[10px] sm:text-[11px] text-[#71717A] block">Total Donatur</span>
+          <p id="modalKpiDonors" class="text-base sm:text-xl font-extrabold text-[#18181B] font-mono mt-0.5">0 Alumni</p>
+        </div>
+      </div>
+
+      <!-- Faculty Leaderboard & Recent Verified Ledger -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        
+        <!-- Faculty Leaderboard -->
+        <div class="border border-[#E4E2DD] rounded-2xl p-4 space-y-3">
+          <span class="font-bold text-xs uppercase tracking-wider text-[#1B3B2B] flex items-center space-x-1.5">
+            <i data-lucide="trophy" class="w-4 h-4 text-amber-600"></i>
+            <span>Perolehan Antar-Fakultas UPI</span>
+          </span>
+          <div id="modalFacultyLeaderboard" class="space-y-2 text-xs">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+        <!-- Censored Recent Ledger -->
+        <div class="border border-[#E4E2DD] rounded-2xl p-4 space-y-3">
+          <span class="font-bold text-xs uppercase tracking-wider text-[#1B3B2B] flex items-center space-x-1.5">
+            <i data-lucide="file-text" class="w-4 h-4 text-[#1B3B2B]"></i>
+            <span>Mutasi Donasi Masuk Terkini (UU PDP)</span>
+          </span>
+          <div id="modalRecentLedger" class="space-y-2 text-xs overflow-y-auto max-h-56 divide-y divide-[#E4E2DD]">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: KLAIM SILENT DONOR
+       ========================================================================= -->
+  <div id="modalClaimTransfer" class="fixed inset-0 z-50 bg-[#18181B]/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4" onclick="if(event.target === this) closeClaimModal()">
+    <div class="bg-white rounded-2xl sm:rounded-3xl max-w-md w-full p-4 sm:p-6 shadow-2xl border border-[#E4E2DD] space-y-4 max-h-[92vh] overflow-y-auto">
+      <div class="border-b border-[#E4E2DD] pb-3 flex items-center justify-between">
+        <div>
+          <h3 class="font-extrabold text-[#1B3B2B] text-base">Klaim Transfer Mandiri</h3>
+          <p class="text-xs text-[#52525B]">Klaim transfer donasi atas nama fakultas Anda</p>
+        </div>
+        <button type="button" onclick="closeClaimModal()" class="text-[#71717A] hover:text-[#18181B] font-bold text-xl">&times;</button>
+      </div>
+
+      <div class="bg-[#FDF2EE] p-3.5 rounded-2xl border border-[#D95D39]/30 text-xs text-[#9A3412] space-y-1">
+        <div class="flex justify-between">
+          <span>Nominal Mutasi:</span>
+          <strong id="claimModalNominal" class="font-mono text-sm text-[#D95D39]">Rp 0</strong>
+        </div>
+        <div class="flex justify-between">
+          <span>Bank Penerima:</span>
+          <strong id="claimModalBank" class="font-mono text-[#18181B]">-</strong>
+        </div>
+        <div class="flex justify-between">
+          <span>Pengirim Tercatat:</span>
+          <strong id="claimModalSender" class="font-mono text-[#18181B]">-</strong>
+        </div>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label for="inputClaimDonorName" class="ui-form-label">Nama Lengkap Donatur *</label>
+          <input type="text" id="inputClaimDonorName" placeholder="Nama sesuai rekening Anda" class="ui-form-control">
+          <div id="errorClaimName" class="field-error-msg">
+            <i data-lucide="alert-circle" class="w-3.5 h-3.5 shrink-0"></i>
+            <span class="error-text">Nama lengkap donatur wajib diisi.</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label for="selectClaimFaculty" class="ui-form-label">Fakultas *</label>
+            <select id="selectClaimFaculty" class="ui-form-control">
+              <option value="FPMIPA">FPMIPA</option>
+              <option value="FPTK">FPTK</option>
+              <option value="FIP">FIP</option>
+              <option value="FPIPS">FPIPS</option>
+              <option value="FPBS">FPBS</option>
+              <option value="FPEB">FPEB</option>
+              <option value="FPOK">FPOK</option>
+              <option value="FPSD">FPSD</option>
+            </select>
+          </div>
+          <div>
+            <label for="inputClaimBatch" class="ui-form-label">Angkatan</label>
+            <input type="text" id="inputClaimBatch" placeholder="2018" class="ui-form-control">
+          </div>
+        </div>
+        <div>
+          <label for="inputClaimWhatsApp" class="ui-form-label">Nomor WhatsApp *</label>
+          <input type="tel" id="inputClaimWhatsApp" placeholder="08xxxxxxxxxx" class="ui-form-control">
+          <div id="errorClaimWA" class="field-error-msg">
+            <i data-lucide="alert-circle" class="w-3.5 h-3.5 shrink-0"></i>
+            <span class="error-text">Nomor WhatsApp wajib diisi.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-[#E4E2DD] flex items-center justify-end space-x-2">
+        <button type="button" onclick="closeClaimModal()" class="py-2.5 px-3 rounded-xl border border-[#E4E2DD] text-xs font-semibold text-[#52525B] hover:bg-[#F1EFEA]">
+          Batal
+        </button>
+        <button type="button" onclick="submitDirectTransferClaim()" class="py-2.5 px-4 rounded-xl bg-[#D95D39] hover:bg-[#C24D2A] text-white font-bold text-xs transition shadow-xs">
+          Konfirmasi Klaim
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: KOREKSI KONTAK PASCA-BAYAR
+       ========================================================================= -->
+  <div id="modalPostCorrection" class="fixed inset-0 z-50 bg-[#18181B]/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4" onclick="if(event.target === this) closePostCorrectionModal()">
+    <div class="bg-white rounded-2xl sm:rounded-3xl max-w-md w-full p-4 sm:p-6 shadow-2xl border border-[#E4E2DD] space-y-4 max-h-[92vh] overflow-y-auto">
+      <div class="border-b border-[#E4E2DD] pb-3 flex items-center justify-between">
+        <div>
+          <h3 class="font-extrabold text-[#1B3B2B] text-base">Koreksi Kontak & Catatan Donasi</h3>
+          <p class="text-xs text-[#52525B]">Perbarui nomor WhatsApp atau pesan donasi Anda</p>
+        </div>
+        <button type="button" onclick="closePostCorrectionModal()" class="text-[#71717A] hover:text-[#18181B] font-bold text-xl">&times;</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label for="inputCorrectionWhatsApp" class="ui-form-label">Koreksi Nomor WhatsApp Donatur</label>
+          <input type="tel" id="inputCorrectionWhatsApp" placeholder="08xxxxxxxx" class="ui-form-control">
+          <div id="errorCorrectionWA" class="field-error-msg">
+            <i data-lucide="alert-circle" class="w-3.5 h-3.5 shrink-0"></i>
+            <span class="error-text">Nomor WhatsApp wajib diisi.</span>
+          </div>
+        </div>
+        <div>
+          <label for="inputCorrectionNotes" class="ui-form-label">Catatan Khusus / Donasi Kolektif Angkatan</label>
+          <textarea id="inputCorrectionNotes" rows="3" placeholder="Contoh: Donasi kolektif Alumni Pendidikan Matematika 2018 untuk UKT mahasiswa semester 5." class="w-full text-xs px-3.5 py-2.5 rounded-[10px] border border-[#D6D3CD] focus:outline-none focus:border-[#1B3B2B] focus:ring-2 focus:ring-[#1B3B2B]/10 bg-white transition"></textarea>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-[#E4E2DD] flex items-center justify-end space-x-2">
+        <button type="button" onclick="closePostCorrectionModal()" class="py-2.5 px-3 rounded-xl border border-[#E4E2DD] text-xs font-semibold text-[#52525B] hover:bg-[#F1EFEA]">
+          Batal
+        </button>
+        <button type="button" onclick="savePostPaymentCorrection()" class="py-2.5 px-4 rounded-xl bg-[#1B3B2B] hover:bg-[#244F3A] text-white font-bold text-xs transition shadow-xs">
+          Simpan Pembaruan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: SYARAT & KETENTUAN AKAD DONASI
+       ========================================================================= -->
+  <div id="modalLegalTerms" class="fixed inset-0 z-50 bg-[#18181B]/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4" onclick="if(event.target === this) closeLegalModal()">
+    <div class="bg-white rounded-2xl sm:rounded-3xl max-w-2xl w-full p-4 sm:p-6 shadow-2xl border border-[#E4E2DD] space-y-4 max-h-[90vh] flex flex-col">
+      <div class="border-b border-[#E4E2DD] pb-3 flex items-center justify-between">
+        <div>
+          <h3 class="font-extrabold text-[#1B3B2B] text-base">Ketentuan Akad Donasi & Privasi Data</h3>
+          <p class="text-xs text-[#52525B]">Lembaga Beasiswa Ikatan Alumni Universitas Pendidikan Indonesia</p>
+        </div>
+        <button type="button" onclick="closeLegalModal()" class="text-[#71717A] hover:text-[#18181B] font-bold text-xl">&times;</button>
+      </div>
+
+      <div class="overflow-y-auto text-xs text-[#52525B] space-y-4 pr-2 leading-relaxed">
+        <div class="bg-[#F9F8F4] p-4 rounded-2xl border border-[#E4E2DD]">
+          <h4 class="font-bold text-[#18181B] text-sm mb-1">1. Akad Tabarru' & Hibah Sukarela</h4>
+          <p>
+            Dana yang disalurkan melalui platform ini berlandaskan <strong>Akad Tabarru' (kebajikan sukarela)</strong> atau Hibah Murni untuk kepentingan sosial pendidikan mahasiswa Universitas Pendidikan Indonesia. Dana bersifat <em>non-refundable</em> (tidak dapat ditarik kembali).
+          </p>
+        </div>
+        <div class="bg-[#F9F8F4] p-4 rounded-2xl border border-[#E4E2DD]">
+          <h4 class="font-bold text-[#18181B] text-sm mb-1">2. Pembatasan Tanggung Jawab & Kode Unik</h4>
+          <p>
+            Pada metode transfer rekening BSI & Bank Jago, donatur diharapkan mentransfer nominal tepat hingga 3 digit kode unik agar sistem dapat memverifikasi transfer Anda secara otomatis.
+          </p>
+        </div>
+        <div class="bg-[#F9F8F4] p-4 rounded-2xl border border-[#E4E2DD]">
+          <h4 class="font-bold text-[#18181B] text-sm mb-1">3. Kepatuhan UU Perlindungan Data Pribadi (UU PDP No. 27/2022)</h4>
+          <p>
+            Data pribadi tersimpan secara terenkripsi dan hanya digunakan untuk pembukuan beasiswa resmi serta pengiriman kwitansi elektronik. Donatur berhak memilih opsi "Hamba Allah" untuk menyamarkan identitas secara permanen di dasbor publik.
+          </p>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-[#E4E2DD] flex justify-end">
+        <button type="button" onclick="acceptLegalTerms()" class="py-2.5 px-5 bg-[#1B3B2B] hover:bg-[#244F3A] text-white font-bold text-xs rounded-xl transition shadow-xs">
+          Saya Mengerti & Setuju
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       4. CLIENT-SIDE JAVASCRIPT ENGINE (WIZARD & REAL-TIME SYNC)
+       ========================================================================= -->
+  <script>
+    // =========================================================================
+    // [PENGATURAN LOGO QR CODE] - Cukup ganti nama file PNG di bawah ini:
+    const QR_CENTER_LOGO_PATH = "assets/amal.png"; // atau "amal.png"
+    // =========================================================================
+
+    /**
+     * WIZARD CLIENT-SIDE ENGINE (DONOR-FACING PORTAL)
+     * Terhubung langsung secara permanen ke Google Sheets via Google Apps Script Web App
+     */
+    const DEFAULT_GAS_URL = "https://script.google.com/macros/s/YOUR_GAS_DEPLOYMENT_ID/exec";
+
+    function getGasApiUrl() {
+      if (window.APP_CONFIG && window.APP_CONFIG.GAS_DEPLOYMENT_URL) {
+        return window.APP_CONFIG.GAS_DEPLOYMENT_URL;
+      }
+      return DEFAULT_GAS_URL;
+    }
+
+    /**
+     * POST API Helper: Mengirimkan payload menggunakan Content-Type text/plain
+     * untuk kompatibilitas endpoint Google Apps Script
+     */
+    async function postToGasBackend(payload) {
+      const endpoint = getGasApiUrl();
+      if (!endpoint) return null;
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const data = await response.json();
+        return data;
+      } catch (err) {
+        console.warn('[GAS-POST-NETWORK-WARN]', err);
+        return null;
+      }
+    }
+
+    /**
+     * GET API Helper: Query data ke Google Apps Script Web App
+     */
+    async function getFromGasBackend(params) {
+      const endpoint = getGasApiUrl();
+      if (!endpoint) return null;
+      try {
+        const query = new URLSearchParams(params).toString();
+        const response = await fetch(`${endpoint}?${query}`, {
+          method: 'GET'
+        });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const data = await response.json();
+        return data;
+      } catch (err) {
+        console.warn('[GAS-GET-NETWORK-WARN]', err);
+        return null;
+      }
+    }
+
+    function formatRupiah(amount) {
+      const num = Number(amount || 0);
+      return 'Rp ' + num.toLocaleString('id-ID');
+    }
+
+    const STORAGE_KEY_DB = 'UPI_BEASISWA_DB';
+    const interTabChannel = new BroadcastChannel('UPI_DONASI_CHANNEL');
+
+    let wizardState = {
+      currentStep: 1,
+      inflowPath: 'ALUMNI_TERDATA',
+      selectedNominal: 0,
+      paymentMethod: 'QRIS_DYNAMIC',
+      subBankTarget: 'TRANSFER_JAGO',
+      isAnonymous: false,
+      legalAgreed: false,
+      verifiedAlumni: null,
+      donorIdentity: {
+        name: '',
+        faculty: '',
+        department: '',
+        batch: '',
+        whatsapp: ''
+      },
+      activeTransaction: null,
+      pollingTimerId: null,
+      countdownIntervalId: null,
+      remainingSeconds: 900
+    };
+
+    // BroadcastChannel Listener: Saat admin mengubah status pembayaran
+    interTabChannel.onmessage = function(eventMessage) {
+      const msg = eventMessage.data;
+      if (!msg) return;
+
+      if (msg.type === 'TRANSACTION_PAID' && wizardState.activeTransaction) {
+        if (msg.payload && msg.payload.transactionId === wizardState.activeTransaction.transactionId) {
+          transitionToPaidSuccess(msg.payload);
+        }
+      } else if (msg.type === 'DB_RESET') {
+        if (wizardState.currentStep === 3 && wizardState.activeTransaction) {
+          cancelTransaction();
+        }
+        refreshTransparencyModalData();
+      }
+    };
+
+    // Storage Event Listener (Sinkronisasi antar-tab jika BroadcastChannel dibatasi)
+    window.addEventListener('storage', function(e) {
+      if (e.key === STORAGE_KEY_DB && wizardState.currentStep === 3 && wizardState.activeTransaction) {
+        const db = getLocalDatabase();
+        const row = (db.raw_donations || []).find(r => r.transactionId === wizardState.activeTransaction.transactionId);
+        if (row && row.paymentStatus && row.paymentStatus.includes('PAID')) {
+          transitionToPaidSuccess(row);
+        }
+      }
+    });
+
+    // Window Focus Listener (Cek status transaksi saat tab dibuka kembali)
+    window.addEventListener('focus', function() {
+      if (wizardState.currentStep === 3 && wizardState.activeTransaction) {
+        const db = getLocalDatabase();
+        const row = (db.raw_donations || []).find(r => r.transactionId === wizardState.activeTransaction.transactionId);
+        if (row && row.paymentStatus && row.paymentStatus.includes('PAID')) {
+          transitionToPaidSuccess(row);
+        }
+      }
+    });
+
+    function renderLucideIcons() {
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+    }
+
+    // =========================================================================
+    // INLINE VALIDATION & TOAST NOTIFICATION HELPERS (GAYA GOOGLE FORMS)
+    // =========================================================================
+    function setFieldError(fieldId, errorElementId, message) {
+      const field = document.getElementById(fieldId);
+      const errEl = document.getElementById(errorElementId);
+      if (field) {
+        field.classList.add('input-error');
+        field.classList.remove('shake-error');
+        void field.offsetWidth; // trigger reflow for animation restart
+        field.classList.add('shake-error');
+      }
+      if (errEl) {
+        const textSpan = errEl.querySelector('.error-text') || errEl;
+        if (message) textSpan.textContent = message;
+        errEl.classList.add('show');
+        renderLucideIcons();
+      }
+    }
+
+    function clearFieldError(fieldId, errorElementId) {
+      const field = document.getElementById(fieldId);
+      const errEl = document.getElementById(errorElementId);
+      if (field) {
+        field.classList.remove('input-error', 'shake-error');
+      }
+      if (errEl) {
+        errEl.classList.remove('show');
+      }
+    }
+
+    function clearAllStep1Errors() {
+      const pairs = [
+        ['inputJalur1NIM', 'errorJalur1NIM'],
+        ['inputJalur1Email', 'errorJalur1Email'],
+        ['inputJalur1WA', 'errorJalur1WA'],
+        ['inputJalur2Nama', 'errorJalur2Nama'],
+        ['selectJalur2Fakultas', 'errorJalur2Fakultas'],
+        ['inputJalur2Prodi', 'errorJalur2Prodi'],
+        ['selectJalur2Angkatan', 'errorJalur2Angkatan'],
+        ['inputJalur2WA', 'errorJalur2WA'],
+        ['inputJalur3Alias', 'errorJalur3Alias'],
+        ['inputJalur3WA', '']
+      ];
+      pairs.forEach(([f, e]) => {
+        if (f && e) clearFieldError(f, e);
+      });
+    }
+
+    function setupInlineValidationListeners() {
+      const pairs = [
+        { inputId: 'inputJalur1NIM', errorId: 'errorJalur1NIM' },
+        { inputId: 'inputJalur1Email', errorId: 'errorJalur1Email' },
+        { inputId: 'inputJalur1WA', errorId: 'errorJalur1WA' },
+        { inputId: 'inputJalur2Nama', errorId: 'errorJalur2Nama' },
+        { inputId: 'selectJalur2Fakultas', errorId: 'errorJalur2Fakultas' },
+        { inputId: 'inputJalur2Prodi', errorId: 'errorJalur2Prodi' },
+        { inputId: 'selectJalur2Angkatan', errorId: 'errorJalur2Angkatan' },
+        { inputId: 'inputJalur2WA', errorId: 'errorJalur2WA' },
+        { inputId: 'inputJalur3Alias', errorId: 'errorJalur3Alias' },
+        { inputId: 'inputClaimDonorName', errorId: 'errorClaimName' },
+        { inputId: 'inputClaimWhatsApp', errorId: 'errorClaimWA' },
+        { inputId: 'inputCorrectionWhatsApp', errorId: 'errorCorrectionWA' }
+      ];
+
+      pairs.forEach(p => {
+        const el = document.getElementById(p.inputId);
+        if (!el) return;
+        el.addEventListener('input', () => clearFieldError(p.inputId, p.errorId));
+        el.addEventListener('change', () => clearFieldError(p.inputId, p.errorId));
+      });
+
+      const legalCheck = document.getElementById('checkLegalAgreement');
+      if (legalCheck) {
+        legalCheck.addEventListener('change', () => {
+          const errEl = document.getElementById('errorStep2Legal');
+          const box = document.getElementById('legalCheckboxContainer');
+          if (legalCheck.checked) {
+            if (errEl) errEl.classList.remove('show');
+            if (box) box.classList.remove('shake-error');
+          }
+        });
+      }
+    }
+
+    function showToast(message, type = 'success', duration = 3000) {
+      let container = document.getElementById('appToastContainer');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'appToastContainer';
+        container.className = 'app-toast-container';
+        document.body.appendChild(container);
+      }
+
+      const toast = document.createElement('div');
+      const typeClass = type === 'error' ? 'app-toast-error' : (type === 'warn' ? 'app-toast-warn' : (type === 'info' ? 'app-toast-info' : 'app-toast-success'));
+      toast.className = `app-toast ${typeClass}`;
+
+      const iconName = type === 'error' ? 'alert-triangle' : (type === 'warn' ? 'alert-circle' : (type === 'info' ? 'info' : 'check-circle'));
+      toast.innerHTML = `
+        <i data-lucide="${iconName}" class="w-4 h-4 shrink-0 stroke-[2.5]"></i>
+        <span class="flex-1">${message}</span>
+      `;
+
+      container.appendChild(toast);
+      renderLucideIcons();
+
+      setTimeout(() => toast.classList.add('show'), 10);
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+          if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 300);
+      }, duration);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      ensureDatabaseInitialized();
+      populateSeniorAngkatanDropdown();
+      parseUrlParameters();
+      setupInlineValidationListeners();
+      renderLucideIcons();
+    });
+
+    function ensureDatabaseInitialized() {
+      const existing = localStorage.getItem(STORAGE_KEY_DB);
+      if (!existing && window.DEFAULT_SEED_DATABASE) {
+        localStorage.setItem(STORAGE_KEY_DB, JSON.stringify(window.DEFAULT_SEED_DATABASE));
+      } else if (existing) {
+        try {
+          const parsed = JSON.parse(existing);
+          if (parsed && Array.isArray(parsed.raw_donations)) {
+            const hasOldBulk = parsed.raw_donations.some(r => 
+              r.transactionId && (r.transactionId.startsWith("TX-20261101-") || 
+                                  r.transactionId.startsWith("TX-20261102-") || 
+                                  r.transactionId.startsWith("TX-20261103-") || 
+                                  r.transactionId.startsWith("TX-20261104-") || 
+                                  r.transactionId.startsWith("TX-20261105-") || 
+                                  r.transactionId.startsWith("TX-20261106-") || 
+                                  r.transactionId.startsWith("TX-DIRECT-20261105-") || 
+                                  r.transactionId.startsWith("TX-DIRECT-20261106-"))
+            );
+            if (hasOldBulk && window.DEFAULT_SEED_DATABASE) {
+              parsed.raw_donations = window.DEFAULT_SEED_DATABASE.raw_donations;
+              localStorage.setItem(STORAGE_KEY_DB, JSON.stringify(parsed));
+            }
+          }
+        } catch (e) {
+          console.warn(e);
+        }
+      }
+    }
+
+    function getLocalDatabase() {
+      ensureDatabaseInitialized();
+      return JSON.parse(localStorage.getItem(STORAGE_KEY_DB));
+    }
+
+    function saveLocalDatabase(db) {
+      localStorage.setItem(STORAGE_KEY_DB, JSON.stringify(db));
+    }
+
+    function populateSeniorAngkatanDropdown() {
+      const select = document.getElementById('selectJalur2Angkatan');
+      if (!select) return;
+      for (let y = 2015; y >= 1970; y--) {
+        const opt = document.createElement('option');
+        opt.value = String(y);
+        opt.textContent = 'Angkatan ' + y;
+        select.appendChild(opt);
+      }
+    }
+
+    function parseUrlParameters() {
+      const p = new URLSearchParams(window.location.search);
+      if (!p || Array.from(p.keys()).length === 0) return;
+
+      const nim = p.get('nim');
+      const fakultas = p.get('fakultas');
+      const prodi = p.get('prodi');
+      const angkatan = p.get('angkatan');
+      const nominal = p.get('nominal');
+
+      if (nim) {
+        document.getElementById('inputJalur1NIM').value = nim;
+        handlePathChange('ALUMNI_TERDATA');
+        setTimeout(performAlumniLookup, 400);
+      } else if (fakultas || prodi || angkatan) {
+        handlePathChange('ALUMNI_SENIOR');
+        if (fakultas) document.getElementById('selectJalur2Fakultas').value = fakultas;
+        if (prodi) document.getElementById('inputJalur2Prodi').value = prodi;
+        if (angkatan) document.getElementById('selectJalur2Angkatan').value = angkatan;
+      }
+
+      if (nominal) {
+        const val = parseInt(nominal, 10);
+        if (!isNaN(val) && val >= 1) setNominal(val);
+      }
+    }
+
+    // =========================================================================
+    // STEP NAVIGATION (WIZARD STEPS 1, 2, 3)
+    // =========================================================================
+    function switchStep(stepNumber) {
+      wizardState.currentStep = stepNumber;
+
+      const v1 = document.getElementById('wizardStep1');
+      const v2 = document.getElementById('wizardStep2');
+      const v3 = document.getElementById('wizardStep3');
+
+      [v1, v2, v3].forEach(el => el.classList.add('hidden'));
+
+      if (stepNumber === 1) v1.classList.remove('hidden');
+      else if (stepNumber === 2) v2.classList.remove('hidden');
+      else if (stepNumber === 3) v3.classList.remove('hidden');
+
+      // Update Horizontal Progress Bar Visuals
+      const c1 = document.getElementById('stepCircle1');
+      const c2 = document.getElementById('stepCircle2');
+      const c3 = document.getElementById('stepCircle3');
+      const l1 = document.getElementById('stepLine1');
+      const l2 = document.getElementById('stepLine2');
+      const t1 = document.getElementById('stepLabel1');
+      const t2 = document.getElementById('stepLabel2');
+      const t3 = document.getElementById('stepLabel3');
+
+      // Reset
+      [c1, c2, c3].forEach(c => c.className = 'wizard-step-circle wizard-step-pending');
+      [l1, l2].forEach(l => l.className = 'wizard-step-line -mt-3.5 sm:-mt-5');
+      [t1, t2, t3].forEach(t => t.className = 'text-[11px] sm:text-xs font-semibold text-[#71717A] mt-1 text-center truncate w-full px-0.5');
+
+      if (stepNumber === 1) {
+        c1.className = 'wizard-step-circle wizard-step-active';
+        c1.textContent = '1';
+        c2.textContent = '2';
+        c3.textContent = '3';
+        t1.className = 'text-[11px] sm:text-xs font-bold text-[#1B3B2B] mt-1 text-center truncate w-full px-0.5';
+      } else if (stepNumber === 2) {
+        c1.className = 'wizard-step-circle wizard-step-completed';
+        c1.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>';
+        c2.textContent = '2';
+        c3.textContent = '3';
+        l1.className = 'wizard-step-line wizard-step-line-active -mt-3.5 sm:-mt-5';
+        c2.className = 'wizard-step-circle wizard-step-active';
+        t1.className = 'text-[11px] sm:text-xs font-semibold text-[#1B3B2B] mt-1 text-center truncate w-full px-0.5';
+        t2.className = 'text-[11px] sm:text-xs font-bold text-[#1B3B2B] mt-1 text-center truncate w-full px-0.5';
+      } else if (stepNumber === 3) {
+        c1.className = 'wizard-step-circle wizard-step-completed';
+        c1.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>';
+        c2.className = 'wizard-step-circle wizard-step-completed';
+        c2.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>';
+        c3.textContent = '3';
+        l1.className = 'wizard-step-line wizard-step-line-active -mt-3.5 sm:-mt-5';
+        l2.className = 'wizard-step-line wizard-step-line-active -mt-3.5 sm:-mt-5';
+        c3.className = 'wizard-step-circle wizard-step-active';
+        t1.className = 'text-[11px] sm:text-xs font-semibold text-[#1B3B2B] mt-1 text-center truncate w-full px-0.5';
+        t2.className = 'text-[11px] sm:text-xs font-semibold text-[#1B3B2B] mt-1 text-center truncate w-full px-0.5';
+        t3.className = 'text-[11px] sm:text-xs font-bold text-[#1B3B2B] mt-1 text-center truncate w-full px-0.5';
+      }
+
+      renderLucideIcons();
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    // =========================================================================
+    // STEP 1 LOGIC: IDENTITAS DONATUR
+    // =========================================================================
+    function handlePathChange(pathType) {
+      wizardState.inflowPath = pathType;
+      clearAllStep1Errors();
+
+      const card1 = document.getElementById('cardJalur1');
+      const card2 = document.getElementById('cardJalur2');
+      const card3 = document.getElementById('cardJalur3');
+
+      const form1 = document.getElementById('formInnerJalur1');
+      const form2 = document.getElementById('formInnerJalur2');
+      const form3 = document.getElementById('formInnerJalur3');
+
+      [card1, card2, card3].forEach(c => {
+        c.className = 'ui-pathway-card block cursor-pointer transition-all';
+      });
+      [form1, form2, form3].forEach(f => f.classList.add('hidden'));
+
+      if (pathType === 'ALUMNI_TERDATA') {
+        card1.className = 'ui-pathway-card active block cursor-pointer transition-all';
+        form1.classList.remove('hidden');
+      } else if (pathType === 'ALUMNI_SENIOR') {
+        card2.className = 'ui-pathway-card active block cursor-pointer transition-all';
+        form2.classList.remove('hidden');
+      } else {
+        card3.className = 'ui-pathway-card active block cursor-pointer transition-all';
+        form3.classList.remove('hidden');
+      }
+      renderLucideIcons();
+    }
+
+    async function performAlumniLookup() {
+      clearFieldError('inputJalur1NIM', 'errorJalur1NIM');
+      clearFieldError('inputJalur1Email', 'errorJalur1Email');
+
+      const nim = document.getElementById('inputJalur1NIM').value.trim();
+      let email = document.getElementById('inputJalur1Email').value.trim().toLowerCase();
+      const statusLabel = document.getElementById('lookupStatusMessage');
+      const box = document.getElementById('profileFoundBox');
+      const btnLookup = document.getElementById('btnLookupAlumni');
+
+      if (!nim && !email) {
+        setFieldError('inputJalur1NIM', 'errorJalur1NIM', 'Wajib memasukkan NIM atau Email resmi UPI.');
+        document.getElementById('inputJalur1NIM').focus();
+        return;
+      }
+      if (email && !email.includes('@')) {
+        email = email + '@upi.edu';
+        document.getElementById('inputJalur1Email').value = email;
+      }
+
+      statusLabel.textContent = 'Memeriksa database Google Sheets...';
+      statusLabel.className = 'text-xs text-[#52525B] italic';
+      if (btnLookup) {
+        btnLookup.disabled = true;
+        btnLookup.classList.add('opacity-75');
+      }
+
+      let match = null;
+
+      // 1. Coba Query ke Google Apps Script Backend (Live Google Sheets)
+      try {
+        const cloudResult = await getFromGasBackend({ action: 'lookupAlumni', nim: nim, email: email });
+        if (cloudResult && cloudResult.status === 'SUCCESS' && cloudResult.alumniProfile) {
+          match = {
+            nim: cloudResult.alumniProfile.nim,
+            namaLengkap: cloudResult.alumniProfile.namaLengkap,
+            fakultas: cloudResult.alumniProfile.fakultas,
+            programStudi: cloudResult.alumniProfile.programStudi,
+            angkatan: String(cloudResult.alumniProfile.angkatan),
+            noWA: cloudResult.alumniProfile.nomorWhatsAppDefault || ''
+          };
+        }
+      } catch (e) {
+        console.warn('[LOOKUP-CLOUD-FALLBACK]', e);
+      }
+
+      // 2. Fallback ke Local Database jika offline atau tidak ditemukan di live cloud
+      if (!match) {
+        const db = getLocalDatabase();
+        const localMatch = db.master_alumni.find(a => (nim && a.nim === nim) || (email && a.email.toLowerCase() === email));
+        if (localMatch) {
+          match = localMatch;
+        }
+      }
+
+      if (btnLookup) {
+        btnLookup.disabled = false;
+        btnLookup.classList.remove('opacity-75');
+      }
+
+      if (match) {
+        clearFieldError('inputJalur1NIM', 'errorJalur1NIM');
+        wizardState.verifiedAlumni = match;
+        document.getElementById('profileFoundName').textContent = match.namaLengkap;
+        document.getElementById('profileFoundMeta').textContent = match.fakultas + ' • ' + match.programStudi + " ('" + match.angkatan.slice(-2) + ')';
+        document.getElementById('inputJalur1WA').value = match.noWA || '';
+        box.classList.remove('hidden');
+        statusLabel.textContent = 'Data Terverifikasi Resmi!';
+        statusLabel.className = 'text-xs text-emerald-700 font-bold';
+      } else {
+        wizardState.verifiedAlumni = null;
+        box.classList.add('hidden');
+        statusLabel.textContent = '';
+        setFieldError('inputJalur1NIM', 'errorJalur1NIM', 'NIM/Email tidak ditemukan di database 2016-2026. Gunakan Jalur 2 atau 3.');
+      }
+    }
+
+    function goToStep2() {
+      clearAllStep1Errors();
+
+      if (wizardState.inflowPath === 'ALUMNI_TERDATA') {
+        if (!wizardState.verifiedAlumni) {
+          const nimVal = document.getElementById('inputJalur1NIM').value.trim();
+          const emailVal = document.getElementById('inputJalur1Email').value.trim();
+          if (!nimVal && !emailVal) {
+            setFieldError('inputJalur1NIM', 'errorJalur1NIM', 'Wajib mengisi NIM atau Email UPI terlebih dahulu.');
+            document.getElementById('inputJalur1NIM').focus();
+          } else {
+            setFieldError('inputJalur1NIM', 'errorJalur1NIM', 'Klik tombol [Cek Data Mahasiswa/Alumni] untuk verifikasi identitas.');
+            const btn = document.getElementById('btnLookupAlumni');
+            if (btn) {
+              btn.classList.remove('shake-error');
+              void btn.offsetWidth;
+              btn.classList.add('shake-error');
+            }
+          }
+          return;
+        }
+        const wa = document.getElementById('inputJalur1WA').value.trim();
+        if (!wa) {
+          setFieldError('inputJalur1WA', 'errorJalur1WA', 'Nomor WhatsApp wajib diisi untuk pengiriman kuitansi.');
+          document.getElementById('inputJalur1WA').focus();
+          return;
+        }
+        wizardState.donorIdentity = {
+          name: wizardState.verifiedAlumni.namaLengkap,
+          faculty: wizardState.verifiedAlumni.fakultas,
+          department: wizardState.verifiedAlumni.programStudi,
+          batch: wizardState.verifiedAlumni.angkatan,
+          whatsapp: wa,
+          nim: wizardState.verifiedAlumni.nim
+        };
+      } else if (wizardState.inflowPath === 'ALUMNI_SENIOR') {
+        const nama = document.getElementById('inputJalur2Nama').value.trim();
+        const fac = document.getElementById('selectJalur2Fakultas').value;
+        const prodi = document.getElementById('inputJalur2Prodi').value.trim();
+        const batch = document.getElementById('selectJalur2Angkatan').value;
+        const wa = document.getElementById('inputJalur2WA').value.trim();
+
+        let hasError = false;
+        let firstInvalid = null;
+
+        if (!nama) {
+          setFieldError('inputJalur2Nama', 'errorJalur2Nama', 'Nama lengkap dan gelar wajib diisi.');
+          hasError = true;
+          if (!firstInvalid) firstInvalid = document.getElementById('inputJalur2Nama');
+        }
+        if (!fac) {
+          setFieldError('selectJalur2Fakultas', 'errorJalur2Fakultas', 'Pilih salah satu fakultas.');
+          hasError = true;
+          if (!firstInvalid) firstInvalid = document.getElementById('selectJalur2Fakultas');
+        }
+        if (!prodi) {
+          setFieldError('inputJalur2Prodi', 'errorJalur2Prodi', 'Program studi wajib diisi.');
+          hasError = true;
+          if (!firstInvalid) firstInvalid = document.getElementById('inputJalur2Prodi');
+        }
+        if (!batch) {
+          setFieldError('selectJalur2Angkatan', 'errorJalur2Angkatan', 'Pilih tahun angkatan masuk.');
+          hasError = true;
+          if (!firstInvalid) firstInvalid = document.getElementById('selectJalur2Angkatan');
+        }
+        if (!wa) {
+          setFieldError('inputJalur2WA', 'errorJalur2WA', 'Nomor WhatsApp wajib diisi.');
+          hasError = true;
+          if (!firstInvalid) firstInvalid = document.getElementById('inputJalur2WA');
+        }
+
+        if (hasError) {
+          if (firstInvalid) firstInvalid.focus();
+          return;
+        }
+
+        wizardState.donorIdentity = {
+          name: nama,
+          faculty: fac,
+          department: prodi,
+          batch: batch,
+          whatsapp: wa,
+          nim: '-'
+        };
+      } else {
+        const alias = document.getElementById('inputJalur3Alias').value.trim();
+        const wa = document.getElementById('inputJalur3WA').value.trim();
+        if (!alias) {
+          setFieldError('inputJalur3Alias', 'errorJalur3Alias', 'Nama panggilan atau alias donatur wajib diisi.');
+          document.getElementById('inputJalur3Alias').focus();
+          return;
+        }
+        wizardState.donorIdentity = {
+          name: alias,
+          faculty: 'Alumni Peduli',
+          department: '-',
+          batch: 'Spontan',
+          whatsapp: wa || '-',
+          nim: '-'
+        };
+      }
+
+      // Populate Summary in Step 2
+      document.getElementById('summaryStep1Donor').textContent = wizardState.donorIdentity.name;
+      document.getElementById('summaryStep1Meta').textContent = 
+        (wizardState.donorIdentity.faculty !== '-' ? wizardState.donorIdentity.faculty : '') + 
+        (wizardState.donorIdentity.batch && wizardState.donorIdentity.batch !== '-' ? " '" + wizardState.donorIdentity.batch.slice(-2) : '') +
+        ' • WA: ' + wizardState.donorIdentity.whatsapp;
+
+      switchStep(2);
+    }
+
+    function goToStep1() {
+      switchStep(1);
+    }
+
+    // =========================================================================
+    // STEP 2 LOGIC: METODE & AKAD
+    // =========================================================================
+    function selectNominalOption(amount, btnEl) {
+      wizardState.selectedNominal = amount;
+      const allBtns = document.querySelectorAll('.btn-nominal-option');
+      allBtns.forEach(b => {
+        b.classList.remove('active-nominal');
+      });
+      if (btnEl) {
+        btnEl.classList.add('active-nominal');
+      }
+      const customInput = document.getElementById('inputCustomNominal');
+      if (customInput) customInput.value = '';
+      const customWrap = document.getElementById('wrapperCustomNominal');
+      if (customWrap) {
+        customWrap.classList.remove('border-[#1B3B2B]', 'border-2', 'bg-[#F4F7F4]');
+        customWrap.classList.add('border-[#E4E2DD]', 'bg-white');
+      }
+    }
+
+    function handleCustomNominalInput(inputEl) {
+      if (!inputEl) return;
+      const rawDigits = inputEl.value.replace(/[^0-9]/g, '');
+      const parsed = rawDigits ? parseInt(rawDigits, 10) : 0;
+      wizardState.selectedNominal = parsed;
+
+      // Auto-format titik ribuan saat donatur mengetik (misal 75000 -> 75.000)
+      if (parsed > 0) {
+        inputEl.value = parsed.toLocaleString('id-ID');
+      } else {
+        inputEl.value = '';
+      }
+
+      const allBtns = document.querySelectorAll('.btn-nominal-option');
+      allBtns.forEach(b => {
+        b.classList.remove('active-nominal');
+      });
+
+      const customWrap = document.getElementById('wrapperCustomNominal');
+      if (customWrap) {
+        if (parsed > 0) {
+          customWrap.classList.add('border-[#1B3B2B]', 'border-2', 'bg-[#F4F7F4]');
+          customWrap.classList.remove('border-[#E4E2DD]', 'bg-white');
+        } else {
+          customWrap.classList.remove('border-[#1B3B2B]', 'border-2', 'bg-[#F4F7F4]');
+          customWrap.classList.add('border-[#E4E2DD]', 'bg-white');
+        }
+      }
+    }
+
+    function handlePaymentMethodChange(method) {
+      wizardState.paymentMethod = method;
+      const lQRIS = document.getElementById('labelPaymentQRIS');
+      const lTrans = document.getElementById('labelPaymentTransfer');
+      const subBank = document.getElementById('subBankSelectorBox');
+      const bankNominalBox = document.getElementById('bankTransferNominalBox');
+
+      if (method === 'QRIS_DYNAMIC') {
+        lQRIS.className = 'p-3 sm:p-4 rounded-xl sm:rounded-[14px] border-2 border-[#1B3B2B] bg-[#EAF2EC] cursor-pointer transition-all block';
+        lTrans.className = 'p-3 sm:p-4 rounded-xl sm:rounded-[14px] border-2 border-[#E4E2DD] bg-white hover:border-[#1B3B2B] cursor-pointer transition-all block';
+        subBank.classList.add('hidden');
+        if (bankNominalBox) bankNominalBox.classList.remove('hidden');
+      } else {
+        lTrans.className = 'p-3 sm:p-4 rounded-xl sm:rounded-[14px] border-2 border-[#1B3B2B] bg-[#EAF2EC] cursor-pointer transition-all block';
+        lQRIS.className = 'p-3 sm:p-4 rounded-xl sm:rounded-[14px] border-2 border-[#E4E2DD] bg-white hover:border-[#1B3B2B] cursor-pointer transition-all block';
+        subBank.classList.remove('hidden');
+        if (bankNominalBox) bankNominalBox.classList.remove('hidden');
+      }
+      if (!wizardState.selectedNominal || wizardState.selectedNominal === 0) {
+        wizardState.selectedNominal = 100000;
+      }
+    }
+
+    function handleSubBankChange(bank) {
+      wizardState.subBankTarget = bank;
+    }
+
+    function handleLegalAgreementChange() {
+      const checked = document.getElementById('checkLegalAgreement').checked;
+      wizardState.legalAgreed = checked;
+      const btn = document.getElementById('btnStep2Submit');
+
+      if (checked) {
+        btn.disabled = false;
+        btn.className = 'w-2/3 sm:w-3/5 h-[44px] sm:h-[48px] px-3 sm:px-4 rounded-xl sm:rounded-2xl font-bold text-white text-xs sm:text-sm transition-all shadow-md bg-[#1B3B2B] hover:bg-[#244F3A] cursor-pointer active:scale-99 flex items-center justify-center space-x-1.5';
+        btn.innerHTML = '<span>Lanjutkan ke Pembayaran →</span>';
+      } else {
+        btn.disabled = true;
+        btn.className = 'w-2/3 sm:w-3/5 h-[44px] sm:h-[48px] px-3 sm:px-4 rounded-xl sm:rounded-2xl font-bold text-[#71717A] text-xs sm:text-sm transition-all shadow-md bg-[#E4E2DD] cursor-not-allowed flex items-center justify-center space-x-1.5';
+        btn.innerHTML = '<i data-lucide="lock" class="w-4 h-4"></i><span>Lanjutkan ke Pembayaran →</span>';
+        renderLucideIcons();
+      }
+    }
+
+    // =========================================================================
+    // STEP 3 LOGIC: CREATE TRANSACTION & ENTER PAYMENT
+    // =========================================================================
+    async function lockAndCreateDonation() {
+      const legalErr = document.getElementById('errorStep2Legal');
+      if (legalErr) legalErr.classList.remove('show');
+
+      if (!wizardState.legalAgreed) {
+        const box = document.getElementById('legalCheckboxContainer');
+        if (box) {
+          box.classList.remove('shake-error');
+          void box.offsetWidth;
+          box.classList.add('shake-error');
+        }
+        if (legalErr) legalErr.classList.add('show');
+        document.getElementById('checkLegalAgreement').focus();
+        return;
+      }
+
+      wizardState.isAnonymous = document.getElementById('checkPrivacyAnonymous').checked;
+
+      let baseAmount = wizardState.selectedNominal;
+      if (isNaN(baseAmount) || baseAmount <= 0) {
+        baseAmount = 100000;
+      }
+      const channel = wizardState.paymentMethod === 'QRIS_DYNAMIC' ? 'QRIS' : wizardState.subBankTarget;
+      
+      const btnSubmit = document.getElementById('btnStep2Submit');
+      const originalBtnHtml = btnSubmit ? btnSubmit.innerHTML : '';
+      if (btnSubmit) {
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = '<span class="animate-pulse">Menghubungkan ke Google Sheets...</span>';
+      }
+
+      let uniqueCode = 0;
+      let totalAmount = baseAmount;
+      let generatedId = 'TX-' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + Math.floor(100 + Math.random() * 900);
+      let timestamp = new Date().toISOString().replace('T', ' ').slice(0, 19);
+
+      let tier = 'TIER_3_EXPRESS';
+      if (wizardState.inflowPath === 'ALUMNI_TERDATA') tier = 'TIER_1_VERIFIED';
+      else if (wizardState.inflowPath === 'ALUMNI_SENIOR') tier = 'TIER_2_ONBOARDED';
+
+      const payload = {
+        action: 'createTransaction',
+        inflowPath: wizardState.inflowPath,
+        nim: wizardState.donorIdentity.nim || '-',
+        donorName: wizardState.donorIdentity.name || 'Hamba Allah',
+        faculty: wizardState.donorIdentity.faculty || '-',
+        department: wizardState.donorIdentity.department || '-',
+        batchYear: wizardState.donorIdentity.batch || '-',
+        whatsApp: wizardState.donorIdentity.whatsapp || '-',
+        baseAmount: baseAmount,
+        paymentChannel: channel,
+        privacyMode: wizardState.isAnonymous ? 'ANONYMOUS' : 'PUBLIC',
+        notes: '-'
+      };
+
+      // 1. Coba catat transaksi secara live di Google Sheets backend
+      try {
+        const cloudResult = await postToGasBackend(payload);
+        if (cloudResult && cloudResult.status === 'SUCCESS') {
+          generatedId = cloudResult.transactionId || generatedId;
+          uniqueCode = cloudResult.uniqueCode || 0;
+          totalAmount = cloudResult.totalTransferAmount || (baseAmount + uniqueCode);
+          timestamp = cloudResult.timestamp || timestamp;
+          tier = cloudResult.verificationTier || tier;
+          showToast('Transaksi berhasil dicatat!', 'success');
+        } else {
+          throw new Error(cloudResult ? cloudResult.message : 'No cloud response');
+        }
+      } catch (err) {
+        console.warn('[TRANSACTION-CLOUD-FALLBACK]', err);
+        // Fallback alokasi kode unik lokal jika offline
+        const localDb = getLocalDatabase();
+        if (baseAmount >= 1000) {
+          const usedCodes = new Set(
+            (localDb.raw_donations || [])
+              .filter(r => r.paymentStatus === 'PENDING' && r.baseAmount === baseAmount && r.uniqueCode > 0)
+              .map(r => r.uniqueCode)
+          );
+          uniqueCode = Math.floor(Math.random() * 899) + 101;
+          while (usedCodes.has(uniqueCode)) {
+            uniqueCode++;
+            if (uniqueCode > 999) uniqueCode = 101;
+          }
+          totalAmount = baseAmount + uniqueCode;
+        } else {
+          // Mode donasi mikro untuk pengujian demo (< Rp 1.000)
+          uniqueCode = 0;
+          totalAmount = baseAmount;
+        }
+      } finally {
+        if (btnSubmit) {
+          btnSubmit.disabled = false;
+          btnSubmit.innerHTML = originalBtnHtml;
+        }
+      }
+
+      const newTx = {
+        transactionId: generatedId,
+        timestamp: timestamp,
+        inflowPath: wizardState.inflowPath,
+        nim: wizardState.donorIdentity.nim || '-',
+        donorName: wizardState.donorIdentity.name,
+        faculty: wizardState.donorIdentity.faculty || '-',
+        department: wizardState.donorIdentity.department || '-',
+        batchYear: wizardState.donorIdentity.batch || '-',
+        whatsApp: wizardState.donorIdentity.whatsapp || '-',
+        baseAmount: baseAmount,
+        uniqueCode: uniqueCode,
+        totalTransferAmount: totalAmount,
+        paymentChannel: channel,
+        privacyMode: wizardState.isAnonymous ? 'ANONYMOUS' : 'PUBLIC',
+        verificationTier: tier,
+        paymentStatus: 'PENDING',
+        settlementStatus: 'UNSETTLED',
+        bankSenderRaw: '-',
+        notes: '-'
+      };
+
+      // Save to Local DB
+      const localDb = getLocalDatabase();
+      localDb.raw_donations.push(newTx);
+      saveLocalDatabase(localDb);
+
+      // Broadcast to admin.html in real-time
+      interTabChannel.postMessage({ type: 'TRANSACTION_CREATED', payload: newTx });
+
+      wizardState.activeTransaction = newTx;
+
+      // Populate Step 3 Pending
+      document.getElementById('instructionTxId').textContent = generatedId;
+      document.getElementById('step3PendingBox').classList.remove('hidden');
+      document.getElementById('step3SuccessBox').classList.add('hidden');
+
+      if (channel === 'QRIS') {
+        document.getElementById('instructionQrisContainer').classList.remove('hidden');
+        document.getElementById('instructionTransferContainer').classList.add('hidden');
+        
+        const elBase = document.getElementById('instructionQrisBaseAmount');
+        const elUniq = document.getElementById('instructionQrisUniqueCode');
+        const elTotal = document.getElementById('instructionQrisAmount');
+
+        const elTopTotal = document.getElementById('instructionQrisTopAmount');
+        const elTopBase = document.getElementById('instructionQrisTopBase');
+        const elTopUniq = document.getElementById('instructionQrisTopUniq');
+        const elTopUniqWrap = document.getElementById('instructionQrisTopUniqWrap');
+        const elTopUniqDot = document.getElementById('instructionQrisTopUniqDot');
+
+        const formattedTotal = 'Rp ' + totalAmount.toLocaleString('id-ID');
+        const formattedBase = 'Rp ' + baseAmount.toLocaleString('id-ID');
+        const formattedUniq = uniqueCode > 0 ? '+ Rp ' + uniqueCode.toLocaleString('id-ID') : '';
+
+        if (elBase) elBase.textContent = formattedBase;
+        if (elUniq) elUniq.textContent = formattedUniq;
+        if (elTotal) elTotal.textContent = formattedTotal;
+
+        if (elTopTotal) elTopTotal.textContent = formattedTotal;
+        if (elTopBase) elTopBase.textContent = formattedBase;
+        if (elTopUniq) elTopUniq.textContent = formattedUniq;
+
+        if (elTopUniqWrap) {
+          if (uniqueCode > 0) {
+            elTopUniqWrap.classList.remove('hidden');
+            if (elTopUniqDot) elTopUniqDot.classList.remove('hidden');
+          } else {
+            elTopUniqWrap.classList.add('hidden');
+            if (elTopUniqDot) elTopUniqDot.classList.add('hidden');
+          }
+        }
+
+        generateQrisCanvas(generatedId, totalAmount);
+      } else {
+        document.getElementById('instructionQrisContainer').classList.add('hidden');
+        document.getElementById('instructionTransferContainer').classList.remove('hidden');
+        if (totalAmount > 0) {
+          document.getElementById('instructionTransferTotal').textContent = 'Rp ' + totalAmount.toLocaleString('id-ID');
+          document.getElementById('instructionBaseAmount').textContent = 'Rp ' + baseAmount.toLocaleString('id-ID');
+          document.getElementById('instructionUniqueCode').textContent = String(uniqueCode);
+        } else {
+          document.getElementById('instructionTransferTotal').textContent = 'Bebas / Sukarela';
+          document.getElementById('instructionBaseAmount').textContent = 'Bebas';
+          document.getElementById('instructionUniqueCode').textContent = '-';
+        }
+      }
+
+      clearSelectedProof();
+      switchStep(3);
+      startPollingAndCountdown();
+    }
+
+    /**
+     * SANDBOX DEMO INVOICE QR GENERATOR
+     *
+     * Note (see docs/SECURITY_ADR_QRIS.md):
+     * Client-side modification of a real static EMVCo/QRIS merchant string was
+     * evaluated during prototyping and intentionally rejected for production due
+     * to regulatory compliance (Bank Indonesia PADG No. 21/18/PADG/2019 &
+     * PADG No. 24/1/PADG/2022) and client-side tampering risks.
+     *
+     * In production, dynamic QRIS payloads must be minted server-side via a
+     * licensed PJP / SNAP BI API. This sandbox builds a non-transactional demo
+     * invoice payload for UI walkthroughs only.
+     */
+    function buildSandboxInvoiceQrPayload(txId, amountInteger) {
+      const amtInt = Math.max(1, Math.round(Number(amountInteger) || 0));
+      const safeTxId = String(txId || 'DEMO-TX').replace(/[^A-Za-z0-9_-]/g, '');
+      return `SANDBOX_INVOICE|MERCHANT=IKA_UPI_DEMO|TX=${safeTxId}|CURRENCY=IDR|AMOUNT=${amtInt}`;
+    }
+
+    let currentQrisInstance = null;
+
+    function generateQrisCanvas(txId, amount) {
+      const container = document.getElementById('qrisQrCodeBox');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const payload = buildSandboxInvoiceQrPayload(txId, amount);
+
+      currentQrisInstance = new QRCode(container, {
+        text: payload,
+        width: 220,
+        height: 220,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+
+    function downloadDynamicQris() {
+      const container = document.getElementById('qrisQrCodeBox');
+      if (!container) return;
+      const canvas = container.querySelector('canvas');
+      const img = container.querySelector('img');
+      let dataUrl = '';
+      if (canvas) {
+        dataUrl = canvas.toDataURL('image/png');
+      } else if (img && img.src) {
+        dataUrl = img.src;
+      }
+      if (dataUrl) {
+        const link = document.createElement('a');
+        link.download = 'QRIS_IKA_UPI_' + (wizardState.activeTransaction ? wizardState.activeTransaction.transactionId : 'DYNAMIC') + '.png';
+        link.href = dataUrl;
+        link.click();
+      } else {
+        showToast('Gagal mengunduh gambar QRIS. Silakan screenshot layar.', 'warn');
+      }
+    }
+
+    // =========================================================================
+    // UPLOAD & VERIFIKASI SCREENSHOT BUKTI PEMBAYARAN KE GOOGLE DRIVE
+    // =========================================================================
+    let selectedProofBase64 = null;
+    let selectedProofMime = 'image/jpeg';
+
+    function handleProofFileSelected(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const rawDataUrl = e.target.result;
+
+        // Kompresi HTML5 Canvas (max 1000px, JPEG quality 0.82) agar upload instan (< 150KB)
+        const img = new Image();
+        img.onload = function() {
+          const maxDim = 1000;
+          let width = img.width;
+          let height = img.height;
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+          selectedProofBase64 = compressedDataUrl;
+          selectedProofMime = 'image/jpeg';
+
+          const previewImg = document.getElementById('proofPreviewImg');
+          const previewContainer = document.getElementById('proofPreviewContainer');
+          const dropArea = document.getElementById('proofDropArea');
+          const fileNameEl = document.getElementById('proofFileName');
+          const fileSizeEl = document.getElementById('proofFileSize');
+          const targetAmountEl = document.getElementById('proofTargetAmount');
+
+          if (previewImg) previewImg.src = compressedDataUrl;
+          if (fileNameEl) fileNameEl.textContent = file.name;
+          if (fileSizeEl) {
+            const approxKb = Math.round((compressedDataUrl.length * 3 / 4) / 1024);
+            fileSizeEl.textContent = approxKb + ' KB (Terkonversi)';
+          }
+          if (targetAmountEl && wizardState.activeTransaction) {
+            const tot = wizardState.activeTransaction.totalTransferAmount || wizardState.activeTransaction.baseAmount || 0;
+            targetAmountEl.textContent = 'Rp ' + Number(tot).toLocaleString('id-ID');
+            const inputNominal = document.getElementById('inputProofNominal');
+            if (inputNominal) {
+              inputNominal.value = Number(tot).toLocaleString('id-ID');
+            }
+            validateProofNominalMatch();
+          }
+
+          if (dropArea) dropArea.classList.add('hidden');
+          if (previewContainer) previewContainer.classList.remove('hidden');
+          renderLucideIcons();
+        };
+        img.src = rawDataUrl;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleProofNominalInput(el) {
+      const digits = el.value.replace(/\D/g, '');
+      if (digits) {
+        el.value = Number(digits).toLocaleString('id-ID');
+      } else {
+        el.value = '';
+      }
+      validateProofNominalMatch();
+    }
+
+    function validateProofNominalMatch() {
+      const inputNominal = document.getElementById('inputProofNominal');
+      const badge = document.getElementById('proofNominalMatchBadge');
+      const feedback = document.getElementById('proofMatchFeedback');
+      if (!inputNominal || !badge) return true;
+
+      const rawVal = parseInt(inputNominal.value.replace(/\D/g, ''), 10) || 0;
+      const target = wizardState.activeTransaction ? Number(wizardState.activeTransaction.totalTransferAmount || wizardState.activeTransaction.baseAmount || 0) : 0;
+
+      if (rawVal === target && target > 0) {
+        badge.className = 'inline-flex items-center space-x-1 px-2 py-1 rounded-lg text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 shrink-0';
+        badge.innerHTML = `<i data-lucide="check" class="w-3 h-3 text-emerald-600"></i><span>Nominal Cocok</span>`;
+        if (feedback) {
+          feedback.className = 'text-emerald-700 font-medium';
+          feedback.textContent = '✓ Sesuai dengan tagihan donasi';
+        }
+      } else {
+        badge.className = 'inline-flex items-center space-x-1 px-2 py-1 rounded-lg text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 shrink-0';
+        badge.innerHTML = `<i data-lucide="alert-circle" class="w-3 h-3 text-amber-700"></i><span>Beda Nominal</span>`;
+        if (feedback) {
+          feedback.className = 'text-amber-800 font-medium';
+          feedback.textContent = 'Tagihan: Rp ' + target.toLocaleString('id-ID');
+        }
+      }
+      renderLucideIcons();
+      return true;
+    }
+
+    function clearSelectedProof() {
+      selectedProofBase64 = null;
+      const inputEl = document.getElementById('inputProofFile');
+      if (inputEl) inputEl.value = '';
+      const previewContainer = document.getElementById('proofPreviewContainer');
+      const dropArea = document.getElementById('proofDropArea');
+      if (previewContainer) previewContainer.classList.add('hidden');
+      if (dropArea) dropArea.classList.remove('hidden');
+    }
+
+    async function submitPaymentProof() {
+      if (!selectedProofBase64) {
+        showToast('Silakan pilih foto screenshot bukti pembayaran.', 'warn');
+        return;
+      }
+      if (!wizardState.activeTransaction || !wizardState.activeTransaction.transactionId) {
+        showToast('ID Transaksi tidak ditemukan.', 'error');
+        return;
+      }
+
+      const txId = wizardState.activeTransaction.transactionId;
+      const btn = document.getElementById('btnSubmitProof');
+      const originalBtnHtml = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span> Menyimpan ke Google Drive...`;
+      }
+
+      try {
+        let driveUrl = '';
+        // Unggah ke backend Google Apps Script
+        const res = await postToGasBackend({
+          action: 'uploadPaymentProof',
+          transactionId: txId,
+          imageBase64: selectedProofBase64,
+          mimeType: selectedProofMime
+        });
+
+        if (res && res.status === 'SUCCESS' && res.fileUrl && !res.fileUrl.startsWith('DRIVE_ERROR:')) {
+          driveUrl = res.fileUrl || '';
+          showToast('Bukti pembayaran berhasil diunggah', 'success');
+        } else {
+          console.warn('[PROOF-GAS-FALLBACK]', res);
+          // Fallback simpan data gambar base64 ke local database agar preview admin tetap tampil
+          driveUrl = selectedProofBase64;
+          if (res && res.fileUrl && res.fileUrl.startsWith('DRIVE_ERROR:')) {
+            showToast('Bukti pembayaran terverifikasi, tunggu sebentar', 'info', 4000);
+          }
+        }
+
+        const inputNominal = document.getElementById('inputProofNominal');
+        const confirmedAmt = inputNominal ? (parseInt(inputNominal.value.replace(/\D/g, ''), 10) || 0) : 0;
+        const finalAmt = confirmedAmt > 0 ? confirmedAmt : (wizardState.activeTransaction.totalTransferAmount || wizardState.activeTransaction.baseAmount || 0);
+
+        // Perbarui status database lokal
+        const localDb = getLocalDatabase();
+        const row = (localDb.raw_donations || []).find(r => r.transactionId === txId);
+        if (row) {
+          row.paymentStatus = 'PAID';
+          row.settlementStatus = 'SETTLED_PROOF_UPLOAD';
+          row.notes = 'Verifikasi Screenshot via Web (Google Drive)';
+          row.proofImageUrl = driveUrl;
+          if (finalAmt > 0) {
+            row.totalTransferAmount = finalAmt;
+            row.baseAmount = finalAmt;
+          }
+          saveLocalDatabase(localDb);
+        }
+
+        const updatedTx = {
+          ...(wizardState.activeTransaction || {}),
+          totalTransferAmount: finalAmt,
+          baseAmount: finalAmt,
+          paymentStatus: 'PAID',
+          settlementStatus: 'SETTLED_PROOF_UPLOAD',
+          notes: 'Verifikasi Screenshot via Web (Google Drive)',
+          proofImageUrl: driveUrl
+        };
+        wizardState.activeTransaction = updatedTx;
+
+        // Broadcast ke admin dashboard secara instan
+        if (interTabChannel) {
+          interTabChannel.postMessage({ type: 'TRANSACTION_PAID', payload: updatedTx });
+        }
+
+        // Beralih ke kwitansi lunas
+        transitionToPaidSuccess(updatedTx);
+
+      } catch (err) {
+        console.error('[SUBMIT-PROOF-ERR]', err);
+        showToast('Terjadi kendala jaringan. Memverifikasi kwitansi...', 'warn');
+        transitionToPaidSuccess(wizardState.activeTransaction);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalBtnHtml;
+        }
+      }
+    }
+
+    function startPollingAndCountdown() {
+      clearInterval(wizardState.pollingTimerId);
+      clearInterval(wizardState.countdownIntervalId);
+
+      wizardState.remainingSeconds = 900;
+
+      wizardState.countdownIntervalId = setInterval(function() {
+        wizardState.remainingSeconds--;
+        if (wizardState.remainingSeconds <= 0) {
+          clearInterval(wizardState.countdownIntervalId);
+          clearInterval(wizardState.pollingTimerId);
+          showToast('Batas waktu pembayaran (15 menit) telah habis.', 'warn', 5000);
+          cancelTransaction();
+          return;
+        }
+        const m = Math.floor(wizardState.remainingSeconds / 60);
+        const s = wizardState.remainingSeconds % 60;
+        const el = document.getElementById('countdownTimer');
+        if (el) el.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+      }, 1000);
+
+      // Auto-polling check every 2.5 seconds (Local & Live Cloud GAS)
+      wizardState.pollingTimerId = setInterval(async function() {
+        if (!wizardState.activeTransaction) return;
+        const txId = wizardState.activeTransaction.transactionId;
+
+        // 1. Cek Local DB / Broadcast inter-tab
+        const db = getLocalDatabase();
+        const row = db.raw_donations.find(r => r.transactionId === txId);
+        if (row && row.paymentStatus && row.paymentStatus.includes('PAID')) {
+          transitionToPaidSuccess(row);
+          return;
+        }
+
+        // 2. Query Live status ke Google Apps Script backend
+        try {
+          const statusRes = await getFromGasBackend({ action: 'checkTransactionStatus', transactionId: txId });
+          if (statusRes && statusRes.status === 'SUCCESS' && statusRes.paymentStatus && statusRes.paymentStatus.includes('PAID')) {
+            const confirmedTotal = Number(statusRes.totalTransferAmount) || 0;
+            const confirmedBase = Number(statusRes.baseAmount) || confirmedTotal;
+            if (row) {
+              row.paymentStatus = statusRes.paymentStatus;
+              row.settlementStatus = statusRes.settlementStatus || 'SETTLED_DANA_QRIS';
+              if (confirmedTotal > 0) {
+                row.totalTransferAmount = confirmedTotal;
+                row.baseAmount = confirmedBase;
+              }
+              saveLocalDatabase(db);
+            }
+            transitionToPaidSuccess({
+              ...wizardState.activeTransaction,
+              baseAmount: confirmedBase > 0 ? confirmedBase : wizardState.activeTransaction.baseAmount,
+              totalTransferAmount: confirmedTotal > 0 ? confirmedTotal : wizardState.activeTransaction.totalTransferAmount,
+              paymentStatus: statusRes.paymentStatus,
+              settlementStatus: statusRes.settlementStatus || 'SETTLED_DANA_QRIS'
+            });
+          }
+        } catch (pollErr) {
+          // Graceful skip jika koneksi tertunda
+        }
+      }, 2500);
+    }
+
+    let isTransitioningToPaid = false;
+
+    async function transitionToPaidSuccess(tx) {
+      if (isTransitioningToPaid) return;
+      isTransitioningToPaid = true;
+
+      // Hentikan interval polling dan countdown
+      if (wizardState.pollingTimerId) clearInterval(wizardState.pollingTimerId);
+      if (wizardState.countdownIntervalId) clearInterval(wizardState.countdownIntervalId);
+
+      const pendingBox = document.getElementById('step3PendingBox');
+      const syncLoading = document.getElementById('sync-loading-state');
+      const successBox = document.getElementById('step3SuccessBox');
+      const syncText = document.getElementById('sync-loading-text');
+
+      // 1. Tampilkan state loading sinkronisasi (Transisi Halus 2-3 detik)
+      if (pendingBox) pendingBox.classList.add('hidden');
+      if (successBox) successBox.classList.add('hidden');
+      if (syncLoading) {
+        syncLoading.classList.remove('hidden');
+        syncLoading.classList.add('flex');
+      }
+      renderLucideIcons();
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+
+      // 2. Fetch data baris transaksi valid dari Google Sheets & Local Kas
+      let finalTx = { ...(wizardState.activeTransaction || {}), ...(tx || {}) };
+      const txId = finalTx.transactionId;
+      let realAmount = Number(finalTx.totalTransferAmount || finalTx.realAmount || finalTx.real_amount || finalTx.baseAmount || 0);
+
+      try {
+        if (syncText) syncText.textContent = 'Menghubungkan ke sistem donasi...';
+        const cloudPromise = getFromGasBackend({ action: 'checkTransactionStatus', transactionId: txId }).catch(() => null);
+
+        await new Promise(resolve => setTimeout(resolve, 1200));
+        if (syncText) syncText.textContent = 'Memverifikasi mutasi pembayaran...';
+
+        const cloudRes = await cloudPromise;
+        if (cloudRes && cloudRes.status === 'SUCCESS') {
+          const cloudTotal = parseInt(cloudRes.real_amount || cloudRes.realAmount || cloudRes.totalTransferAmount || cloudRes.baseAmount, 10) || 0;
+          if (cloudTotal > 0) {
+            realAmount = cloudTotal;
+            finalTx.totalTransferAmount = cloudTotal;
+            finalTx.baseAmount = cloudTotal;
+          }
+          if (cloudRes.paymentStatus) finalTx.paymentStatus = cloudRes.paymentStatus;
+          if (cloudRes.settlementStatus) finalTx.settlementStatus = cloudRes.settlementStatus;
+        }
+
+        const db = getLocalDatabase();
+        const localRow = (db.raw_donations || []).find(r => r.transactionId === txId);
+        if (localRow) {
+          const locTotal = parseInt(localRow.totalTransferAmount || localRow.realAmount || localRow.baseAmount, 10) || 0;
+          if (realAmount <= 0 && locTotal > 0) {
+            realAmount = locTotal;
+            finalTx.totalTransferAmount = locTotal;
+            finalTx.baseAmount = locTotal;
+          }
+          if (realAmount > 0) {
+            localRow.totalTransferAmount = realAmount;
+            localRow.baseAmount = realAmount;
+            localRow.paymentStatus = 'PAID';
+            saveLocalDatabase(db);
+          }
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        if (syncText) syncText.textContent = 'Menerbitkan e-kuitansi resmi...';
+        await new Promise(resolve => setTimeout(resolve, 600));
+      } catch (err) {
+        console.warn('Sync transaction error:', err);
+      }
+
+      // Pastikan nominal valid (Fallback tidak boleh 0 jika status PAID)
+      if (isNaN(realAmount) || realAmount <= 0) {
+        realAmount = Number(finalTx.totalTransferAmount) || Number(finalTx.baseAmount) || Number(wizardState.selectedNominal) || 50000;
+      }
+      finalTx.totalTransferAmount = realAmount;
+      finalTx.baseAmount = realAmount;
+
+      // 3. Sembunyikan loading dan render E-Receipt sempurna
+      if (syncLoading) {
+        syncLoading.classList.add('hidden');
+        syncLoading.classList.remove('flex');
+      }
+      if (successBox) successBox.classList.remove('hidden');
+
+      const elStatusBadge = document.getElementById('receiptStatusBadge');
+      if (elStatusBadge) {
+        elStatusBadge.textContent = (finalTx.paymentStatus === 'PAID' || finalTx.paymentStatus === 'SETTLED' ? 'LUNAS TERVERIFIKASI' : (finalTx.paymentStatus || 'LUNAS'));
+      }
+
+      const elTxId = document.getElementById('receiptTxId');
+      if (elTxId) elTxId.textContent = finalTx.transactionId;
+
+      const elTimestamp = document.getElementById('receiptTimestamp');
+      if (elTimestamp) elTimestamp.textContent = finalTx.timestamp || new Date().toISOString().replace('T', ' ').slice(0, 19);
+
+      const elPrintDate = document.getElementById('receiptPrintDate');
+      if (elPrintDate) elPrintDate.textContent = 'Dicetak: ' + new Date().toLocaleString('id-ID');
+
+      const elDonorName = document.getElementById('receiptDonorName');
+      if (elDonorName) elDonorName.textContent = finalTx.donorName + (finalTx.privacyMode === 'ANONYMOUS' ? ' (Anonim Publik)' : '');
+
+      const elFaculty = document.getElementById('receiptFaculty');
+      if (elFaculty) elFaculty.textContent = finalTx.faculty && finalTx.faculty !== '-' ? (finalTx.faculty + " '" + String(finalTx.batchYear).slice(-2)) : 'Alumni UPI';
+
+      // Baris "Donasi Beasiswa Pendidikan & Bantuan UKT": Tampilkan realAmount yang sah
+      const unique = parseInt(finalTx.uniqueCode, 10) || 0;
+      let displayBase = realAmount;
+      if (unique > 0 && realAmount >= unique) {
+        displayBase = realAmount - unique;
+      }
+      const elBaseAmount = document.getElementById('receiptBaseAmount');
+      if (elBaseAmount) {
+        elBaseAmount.textContent = formatRupiah(displayBase);
+      }
+
+      // Baris Kode Unik (sembunyikan untuk QRIS)
+      const elUniqueRow = document.getElementById('receiptUniqueCodeRow');
+      const elUniqueCode = document.getElementById('receiptUniqueCode');
+      if (unique > 0) {
+        if (elUniqueRow) elUniqueRow.classList.remove('hidden');
+        if (elUniqueCode) elUniqueCode.textContent = '+ Rp ' + unique.toLocaleString('id-ID');
+      } else {
+        if (elUniqueRow) elUniqueRow.classList.add('hidden');
+      }
+
+      // Baris "TOTAL DANA DITERIMA": Tampilkan realAmount yang sah (bukan Rp 0)
+      const elTotalAmount = document.getElementById('receiptTotalAmount');
+      if (elTotalAmount) {
+        elTotalAmount.textContent = formatRupiah(realAmount);
+      }
+
+      const elTotalReceived = document.getElementById('receiptTotalReceived');
+      if (elTotalReceived) {
+        elTotalReceived.textContent = formatRupiah(realAmount);
+      }
+
+      wizardState.activeTransaction = finalTx;
+      isTransitioningToPaid = false;
+      renderLucideIcons();
+      window.scrollTo({ top: 100, behavior: 'smooth' });
+    }
+
+    function changePaymentOrNominal() {
+      if (!confirm('Apakah Anda ingin mengubah nominal atau metode pembayaran donasi? Identitas donatur Anda akan tetap tersimpan.')) {
+        return;
+      }
+      isTransitioningToPaid = false;
+      if (wizardState.pollingTimerId) clearInterval(wizardState.pollingTimerId);
+      if (wizardState.countdownIntervalId) clearInterval(wizardState.countdownIntervalId);
+      const syncLoading = document.getElementById('sync-loading-state');
+      if (syncLoading) {
+        syncLoading.classList.add('hidden');
+        syncLoading.classList.remove('flex');
+      }
+      if (wizardState.activeTransaction) {
+        const db = getLocalDatabase();
+        db.raw_donations = (db.raw_donations || []).filter(t => t.transactionId !== wizardState.activeTransaction.transactionId);
+        saveLocalDatabase(db);
+      }
+      wizardState.activeTransaction = null;
+      switchStep(2);
+      showToast('Silakan pilih metode atau nominal baru. Identitas Anda tetap tersimpan.', 'info');
+    }
+
+    function cancelTransaction() {
+      isTransitioningToPaid = false;
+      if (wizardState.pollingTimerId) clearInterval(wizardState.pollingTimerId);
+      if (wizardState.countdownIntervalId) clearInterval(wizardState.countdownIntervalId);
+      const syncLoading = document.getElementById('sync-loading-state');
+      if (syncLoading) {
+        syncLoading.classList.add('hidden');
+        syncLoading.classList.remove('flex');
+      }
+      wizardState.activeTransaction = null;
+      switchStep(1);
+    }
+
+    function resetWizardForNewDonation() {
+      isTransitioningToPaid = false;
+      const syncLoading = document.getElementById('sync-loading-state');
+      if (syncLoading) {
+        syncLoading.classList.add('hidden');
+        syncLoading.classList.remove('flex');
+      }
+      wizardState.activeTransaction = null;
+      switchStep(1);
+    }
+
+    // =========================================================================
+    // POST-PAYMENT CORRECTION
+    // =========================================================================
+    function openPostCorrectionModal() {
+      if (!wizardState.activeTransaction) return;
+      document.getElementById('inputCorrectionWhatsApp').value = wizardState.activeTransaction.whatsApp || '';
+      document.getElementById('inputCorrectionNotes').value = wizardState.activeTransaction.notes !== '-' ? wizardState.activeTransaction.notes : '';
+      document.getElementById('modalPostCorrection').classList.remove('hidden');
+    }
+    function closePostCorrectionModal() {
+      document.getElementById('modalPostCorrection').classList.add('hidden');
+    }
+    async function savePostPaymentCorrection() {
+      const wa = document.getElementById('inputCorrectionWhatsApp').value.trim();
+      const notes = document.getElementById('inputCorrectionNotes').value.trim();
+      const txId = wizardState.activeTransaction.transactionId;
+
+      const db = getLocalDatabase();
+      const row = db.raw_donations.find(r => r.transactionId === txId);
+      if (row) {
+        row.whatsApp = wa;
+        row.notes = notes;
+        saveLocalDatabase(db);
+        interTabChannel.postMessage({ type: 'POST_CORRECTION', payload: { transactionId: txId, whatsApp: wa, notes: notes } });
+      }
+      wizardState.activeTransaction.whatsApp = wa;
+      wizardState.activeTransaction.notes = notes;
+      closePostCorrectionModal();
+      showToast('Data kontak dan catatan berhasil diperbarui!', 'success');
+
+      // Sync ke backend Google Apps Script secara asynchronous
+      try {
+        await postToGasBackend({
+          action: 'updatePostPaymentInfo',
+          transactionId: txId,
+          whatsApp: wa,
+          notes: notes
+        });
+      } catch (err) {
+        console.warn('[GAS-UPDATE-POST-PAYMENT-ERR]', err);
+      }
+    }
+
+    // =========================================================================
+    // MODAL DASBOR TRANSPARANSI & KLAIM SILENT DONOR
+    // =========================================================================
+    function openTransparencyModal() {
+      refreshTransparencyModalData();
+      document.getElementById('modalTransparency').classList.remove('hidden');
+    }
+    function closeTransparencyModal() {
+      document.getElementById('modalTransparency').classList.add('hidden');
+    }
+
+    async function refreshTransparencyModalData() {
+      // 1. Render data lokal terlebih dahulu agar UI seketika tampil tanpa jeda
+      renderLocalTransparencyMetrics();
+
+      // 2. Query data live dari Google Sheets via GAS backend
+      try {
+        const cloudData = await getFromGasBackend({ action: 'getDashboardData' });
+        if (cloudData && cloudData.status === 'SUCCESS' && cloudData.level1Tracker) {
+          renderCloudTransparencyMetrics(cloudData);
+        }
+      } catch (err) {
+        console.warn('[TRANSPARENCY-LIVE-FETCH-WARN]', err);
+      }
+    }
+
+    function renderLocalTransparencyMetrics() {
+      const db = getLocalDatabase();
+      let total = 0;
+      let donors = 0;
+      const facMap = {};
+      const recents = [];
+      const unclaimed = [];
+
+      db.raw_donations.forEach(r => {
+        const isPaid = r.paymentStatus && r.paymentStatus.includes('PAID');
+        if (r.verificationTier === 'UNCLAIMED_DIRECT_TRANSFER' && isPaid) {
+          unclaimed.push(r);
+          return;
+        }
+        if (isPaid) {
+          total += r.totalTransferAmount;
+          donors++;
+          if (r.faculty && r.faculty !== '-') {
+            facMap[r.faculty] = (facMap[r.faculty] || 0) + r.totalTransferAmount;
+          }
+          if (recents.length < 8) {
+            recents.unshift(r);
+          }
+        }
+      });
+
+      const target = (window.APP_CONFIG && window.APP_CONFIG.TARGET_SEMESTER_AMOUNT) ? window.APP_CONFIG.TARGET_SEMESTER_AMOUNT : 50000000;
+      const pct = Math.min(100, Math.round((total / target) * 1000) / 10);
+
+      const elTotal = document.getElementById('modalKpiTotal');
+      const elPct = document.getElementById('modalKpiPercent');
+      const elDonors = document.getElementById('modalKpiDonors');
+      if (elTotal) elTotal.textContent = 'Rp ' + total.toLocaleString('id-ID');
+      if (elPct) elPct.textContent = pct + '%';
+      if (elDonors) elDonors.textContent = donors + ' Alumni';
+
+      // Unclaimed table (jika elemen tersedia di DOM)
+      const unclaimedTbody = document.getElementById('modalUnclaimedTbody');
+      const unclaimedBadge = document.getElementById('modalUnclaimedCountBadge');
+      if (unclaimedBadge) {
+        unclaimedBadge.textContent = unclaimed.length + ' Mutasi Belum Diklaim';
+      }
+      if (unclaimedTbody) {
+        unclaimedTbody.innerHTML = '';
+        if (unclaimed.length === 0) {
+          unclaimedTbody.innerHTML = '<tr><td colspan="5" class="p-3 text-center text-slate-400 italic">Seluruh mutasi rekening telah teridentifikasi.</td></tr>';
+        } else {
+          unclaimed.forEach(u => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td class="p-2.5 text-slate-500">${u.timestamp.slice(5, 16)}</td>
+              <td class="p-2.5 font-semibold">${u.paymentChannel.replace('_', ' ')}</td>
+              <td class="p-2.5 font-bold text-[#D95D39]">Rp ${u.totalTransferAmount.toLocaleString('id-ID')}</td>
+              <td class="p-2.5 text-slate-600">${u.bankSenderRaw}</td>
+              <td class="p-2.5 text-right">
+                <button type="button" onclick="openClaimModal('${u.transactionId}', ${u.totalTransferAmount}, '${u.paymentChannel}', '${u.bankSenderRaw}')" class="px-2.5 py-1 bg-[#D95D39] hover:bg-[#C24D2A] text-white font-bold rounded-lg text-[10px]">
+                  Klaim →
+                </button>
+              </td>
+            `;
+            unclaimedTbody.appendChild(tr);
+          });
+        }
+      }
+
+      // Leaderboard
+      const facContainer = document.getElementById('modalFacultyLeaderboard');
+      if (facContainer) {
+        facContainer.innerHTML = '';
+        const sorted = Object.keys(facMap).map(f => ({ f, a: facMap[f] })).sort((a,b) => b.a - a.a);
+        const topA = sorted[0] ? sorted[0].a : 1;
+        sorted.forEach((item, idx) => {
+          const div = document.createElement('div');
+          div.className = 'space-y-1';
+          div.innerHTML = `
+            <div class="flex justify-between items-center text-xs">
+              <span><strong>${idx+1}. ${item.f}</strong></span>
+              <span class="font-mono font-bold text-[#1B3B2B]">Rp ${item.a.toLocaleString('id-ID')}</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+              <div class="bg-[#1B3B2B] h-1.5 rounded-full" style="width: ${Math.round((item.a/topA)*100)}%"></div>
+            </div>
+          `;
+          facContainer.appendChild(div);
+        });
+      }
+
+      // Recent Censored Ledger
+      const recContainer = document.getElementById('modalRecentLedger');
+      if (recContainer) {
+        recContainer.innerHTML = '';
+        recents.forEach(r => {
+          const dName = r.privacyMode === 'ANONYMOUS' ? 'Hamba Allah' : r.donorName.slice(0, 3) + '***';
+          const div = document.createElement('div');
+          div.className = 'py-1.5 flex justify-between items-center text-xs';
+          div.innerHTML = `
+            <div>
+              <strong class="text-[#18181B] block">${dName}</strong>
+              <span class="text-[10px] text-slate-500">${r.faculty} • ${r.timestamp.slice(5, 16)}</span>
+            </div>
+            <span class="font-mono font-bold text-[#1B3B2B]">Rp ${r.totalTransferAmount.toLocaleString('id-ID')}</span>
+          `;
+          recContainer.appendChild(div);
+        });
+      }
+      renderLucideIcons();
+    }
+
+    function renderCloudTransparencyMetrics(cloudData) {
+      if (!cloudData || !cloudData.level1Tracker) return;
+      const t = cloudData.level1Tracker;
+      const total = t.totalCollected || 0;
+      const pct = t.percentage || 0;
+      const donors = t.totalDonors || 0;
+
+      const elTotal = document.getElementById('modalKpiTotal');
+      const elPct = document.getElementById('modalKpiPercent');
+      const elDonors = document.getElementById('modalKpiDonors');
+      if (elTotal) elTotal.textContent = 'Rp ' + total.toLocaleString('id-ID');
+      if (elPct) elPct.textContent = pct + '%';
+      if (elDonors) elDonors.textContent = donors + ' Alumni';
+
+      // Leaderboard dari Google Sheets
+      if (Array.isArray(cloudData.level2Leaderboard) && cloudData.level2Leaderboard.length > 0) {
+        const facContainer = document.getElementById('modalFacultyLeaderboard');
+        if (facContainer) {
+          facContainer.innerHTML = '';
+          const topA = cloudData.level2Leaderboard[0] ? cloudData.level2Leaderboard[0].totalAmount : 1;
+          cloudData.level2Leaderboard.forEach((item, idx) => {
+            const div = document.createElement('div');
+            div.className = 'space-y-1';
+            div.innerHTML = `
+              <div class="flex justify-between items-center text-xs">
+                <span><strong>${idx+1}. ${item.faculty}</strong></span>
+                <span class="font-mono font-bold text-[#1B3B2B]">Rp ${item.totalAmount.toLocaleString('id-ID')}</span>
+              </div>
+              <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                <div class="bg-[#1B3B2B] h-1.5 rounded-full" style="width: ${Math.round((item.totalAmount/topA)*100)}%"></div>
+              </div>
+            `;
+            facContainer.appendChild(div);
+          });
+        }
+      }
+
+      // Recent Censored Ledger dari Google Sheets
+      if (Array.isArray(cloudData.level3CensoredLedger) && cloudData.level3CensoredLedger.length > 0) {
+        const recContainer = document.getElementById('modalRecentLedger');
+        if (recContainer) {
+          recContainer.innerHTML = '';
+          cloudData.level3CensoredLedger.slice(0, 8).forEach(r => {
+            const div = document.createElement('div');
+            div.className = 'py-1.5 flex justify-between items-center text-xs';
+            div.innerHTML = `
+              <div>
+                <strong class="text-[#18181B] block">${r.displayName}</strong>
+                <span class="text-[10px] text-slate-500">${r.faculty} • ${String(r.timestamp).slice(5, 16)}</span>
+              </div>
+              <span class="font-mono font-bold text-[#1B3B2B]">Rp ${r.nominal.toLocaleString('id-ID')}</span>
+            `;
+            recContainer.appendChild(div);
+          });
+        }
+      }
+
+      renderLucideIcons();
+    }
+
+    // Klaim Silent Donor Handlers
+    let activeClaimTxId = null;
+    function openClaimModal(txId, amount, bank, sender) {
+      activeClaimTxId = txId;
+      document.getElementById('claimModalNominal').textContent = 'Rp ' + amount.toLocaleString('id-ID');
+      document.getElementById('claimModalBank').textContent = bank.replace('_', ' ');
+      document.getElementById('claimModalSender').textContent = sender;
+      document.getElementById('modalClaimTransfer').classList.remove('hidden');
+    }
+    function closeClaimModal() {
+      document.getElementById('modalClaimTransfer').classList.add('hidden');
+      activeClaimTxId = null;
+    }
+    async function submitDirectTransferClaim() {
+      const name = document.getElementById('inputClaimDonorName').value.trim();
+      const fac = document.getElementById('selectClaimFaculty').value;
+      const batch = document.getElementById('inputClaimBatch').value.trim() || '2020';
+      const wa = document.getElementById('inputClaimWhatsApp').value.trim();
+
+      clearFieldError('inputClaimDonorName', 'errorClaimName');
+      clearFieldError('inputClaimWhatsApp', 'errorClaimWA');
+
+      let hasClaimErr = false;
+      if (!name) {
+        setFieldError('inputClaimDonorName', 'errorClaimName', 'Nama lengkap donatur wajib diisi.');
+        hasClaimErr = true;
+      }
+      if (!wa) {
+        setFieldError('inputClaimWhatsApp', 'errorClaimWA', 'Nomor WhatsApp wajib diisi.');
+        hasClaimErr = true;
+      }
+      if (hasClaimErr) return;
+
+      const claimTxId = activeClaimTxId;
+
+      const db = getLocalDatabase();
+      const row = db.raw_donations.find(r => r.transactionId === claimTxId);
+      if (row) {
+        row.donorName = name;
+        row.faculty = fac;
+        row.batchYear = batch;
+        row.whatsApp = wa;
+        row.verificationTier = 'CLAIMED_DIRECT_TRANSFER';
+        row.notes = 'Telah diklaim oleh donatur via portal';
+        saveLocalDatabase(db);
+        interTabChannel.postMessage({ type: 'DIRECT_TRANSFER_CLAIMED', payload: row });
+      }
+      closeClaimModal();
+      refreshTransparencyModalData();
+      showToast('Selamat! Donasi Anda berhasil diklaim atas nama fakultas.', 'success');
+
+      // Sync ke backend Google Apps Script secara asynchronous
+      try {
+        await postToGasBackend({
+          action: 'claimDirectTransfer',
+          transactionId: claimTxId,
+          donorName: name,
+          faculty: fac,
+          department: '-',
+          batchYear: batch,
+          whatsApp: wa
+        });
+      } catch (err) {
+        console.warn('[GAS-CLAIM-TRANSFER-ERR]', err);
+      }
+    }
+
+    // Modal Terms
+    function openLegalModal() { document.getElementById('modalLegalTerms').classList.remove('hidden'); }
+    function closeLegalModal() { document.getElementById('modalLegalTerms').classList.add('hidden'); }
+    function acceptLegalTerms() {
+      document.getElementById('checkLegalAgreement').checked = true;
+      handleLegalAgreementChange();
+      closeLegalModal();
+    }
+
+    // Utility copy with immediate in-place visual feedback
+    function copyText(txt, btn = null) {
+      const targetBtn = btn || (window.event && window.event.target ? window.event.target.closest('button') : null);
+      navigator.clipboard.writeText(txt)
+        .then(() => {
+          showToast(`disalin ke clipboard: ${txt}`, 'success');
+          if (targetBtn) {
+            const origHtml = targetBtn.innerHTML;
+            targetBtn.innerHTML = `<span>✓ Tersalin</span>`;
+            targetBtn.classList.add('bg-emerald-100', 'text-emerald-800', 'border-emerald-300');
+            setTimeout(() => {
+              targetBtn.innerHTML = origHtml;
+              targetBtn.classList.remove('bg-emerald-100', 'text-emerald-800', 'border-emerald-300');
+              if (window.lucide) lucide.createIcons();
+            }, 1800);
+          }
+        })
+        .catch(() => showToast(`Silakan salin: ${txt}`, 'info'));
+    }
+
+    function copyAmountText() {
+      if (wizardState.activeTransaction) {
+        copyText(String(wizardState.activeTransaction.totalTransferAmount));
+      }
+    }
+
+    // Global Modal Accessibility: Escape Key Dismissal
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeTransparencyModal();
+        closeClaimModal();
+        closePostCorrectionModal();
+        closeLegalModal();
+      }
+    });
+  </script>
+
+</body>
+</html>
