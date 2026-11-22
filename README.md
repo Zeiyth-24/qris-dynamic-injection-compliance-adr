@@ -4,6 +4,12 @@ A serverless data management, reconciliation, and public transparency platform f
 
 > **Core Engineering Takeaway:** This repository documents both **how** client-side static-to-dynamic EMVCo/QRIS payload transformation works at the TLV/CRC-16 level and **why we deliberately chose NOT to ship it to production** after conducting a security threat model and Indonesian payment-regulation audit. The runnable web app uses a safe, non-transactional sandbox invoice QR (`DEFAULT_DEMO_MODE: true`) with zero live credentials or merchant identifiers.
 
+### Visual Architecture & Security Overview
+
+![EMVCo / QRIS Protocol Study: How Dynamic Injection Works](assets/01_qris_protocol_and_prototype.png)
+
+![EMVCo / QRIS Security ADR: Why Client Mutation Was Rejected](assets/02_qris_threat_model_and_adr.png)
+
 ---
 
 ## 1. Problem Statement & Why the QR Prototype Was Built
