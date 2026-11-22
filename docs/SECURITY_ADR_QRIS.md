@@ -1,65 +1,93 @@
 # ADR-001: Rejecting Client-Side Static-to-Dynamic QRIS Modification in Production
 
-- **Status:** Accepted (Client-side QRIS mutation disabled; replaced with sandbox invoice QR in public repo)
+- **Status:** Accepted (Client-side QRIS mutation disabled; replaced with non-transactional sandbox invoice QR)
 - **Context:** Alumni Scholarship Data Management Platform (Data Management Course Project, UPI)
-- **Domain:** Payment Security, Threat Modeling, Bank Indonesia Regulatory Compliance
+- **Domain:** Payment Protocol Engineering (EMVCo MPM), Threat Modeling, Indonesian Financial Compliance
 
 ---
 
-## 1. Context & Original Prototype
+## 1. Motivation: Why the Prototype Was Built
 
-To reduce friction for donors scanning a foundation QRIS code, the initial academic prototype explored converting a static **EMVCo Merchant-Presented Mode (MPM)** QRIS string into an amount-locked dynamic QR code directly in the browser:
+During early development of the university alumni scholarship platform, we needed to solve two practical problems without a paid commercial payment gateway:
 
-1. Parse the static QRIS TLV (Tag-Length-Value) string (`000201010211...`).
-2. Change Tag `01` (Point of Initiation Method) from `11` (static) to `12` (dynamic).
-3. Insert Tag `54` (Transaction Amount) containing the exact donation amount plus a 3-digit unique reconciliation code.
-4. Recompute Tag `63` (4-character **CRC-16/CCITT-FALSE** checksum, polynomial `0x1021`, init `0xFFFF`).
+1. **Zero-Friction Donation UX:** Donors scanning a static QRIS code often mistype donation amounts or omit the 3-digit unique reconciliation code (e.g., `Rp 100,000` + `342` = `Rp 100,342`), breaking automated ledger matching.
+2. **Cross-Division Transparency:** Non-treasury divisions needed live visibility into collected funds without asking the treasurer to manually check bank mutations.
 
-Because banking and e-wallet apps validate the EMVCo TLV structure and the trailing CRC-16 checksum before displaying the merchant name and pre-filled amount, a client-modified payload is technically scannable.
+To test whether amount-locked QR codes could be generated without a gateway API, we implemented a client-side **EMVCo Merchant-Presented Mode (MPM)** TLV parser and **CRC-16/CCITT-FALSE** calculator.
 
 ---
 
-## 2. Threat Model & Why It Fails Security Review
+## 2. Technical Mechanism: EMVCo MPM TLV & CRC-16/CCITT-FALSE
 
-### 2.1 CRC-16 Is Error Detection, Not Cryptographic Integrity
-EMVCo MPM QRIS strings are not signed with a private key. The trailing Tag `63` CRC-16 only detects accidental bit corruption during optical scanning. It does **not** prove that the merchant or acquiring bank generated the string.
+Indonesian QRIS is built on the public **EMVCo QR Code Specification (MPM)**. Each field is encoded as `Tag (2 digits) + Length (2 digits) + Value`:
 
-### 2.2 Merchant-Swap / Silent Fund Redirection Attack (XSS & Supply Chain)
-Because the QR payload is assembled in client-side JavaScript:
-- Any attacker who achieves XSS, compromises a third-party CDN script, or tampers with the static bundle can replace Tags `26-51` (Merchant Account Information / NMID / Acquirer Routing) with their own merchant identifier.
-- Crucially, the attacker can keep **Tag `59` (Merchant Name)** set to `"Lembaga Beasiswa Alumni"` or a visually similar label, recompute CRC-16, and render a valid QR code.
-- Donors scanning the QR code may not notice the discrepancy before confirming payment, silently redirecting scholarship funds to an attacker's account.
+### 2.1 Verified Synthetic Example (100% Dummy Merchant)
 
-### 2.3 Missing Server-Side Lifecycle Controls
-Legitimate dynamic QRIS invoices minted by an acquiring **PJP (Penyedia Jasa Pembayaran)** bind the QR payload to a server-side invoice record with:
-- A unique **Reference ID / External ID** tracked by the acquirer.
-- A strict **expiration timestamp** (TTL).
-- **Single-use enforcement** (preventing duplicate payments on an already-settled invoice).
+Static dummy payload (`Tag 01 = 11`, no `Tag 54`, `Tag 63 = 1295`):
+```text
+00020101021126440018ID.EXAMPLE.SANDBOX01189999000000000000015204599953033605802ID5919SANDBOX SCHOLARSHIP6007BANDUNG61054015463041295
+```
 
-A client-mutated static QRIS payload has none of these guarantees: the same QR can be replayed indefinitely, and the acquirer has no knowledge of the expected invoice ID.
+Dynamic dummy payload for `Rp 100,342` (`Tag 01 = 12`, inserted `Tag 54 = 5406100342`, recomputed `Tag 63 = 8031`):
+```text
+00020101021226440018ID.EXAMPLE.SANDBOX011899990000000000000152045999530336054061003425802ID5919SANDBOX SCHOLARSHIP6007BANDUNG61054015463048031
+```
 
-### 2.4 Email Notification Scraping Fragility
+### 2.2 Why Banking Apps Accept a Client-Modified Payload
+Payment apps validate:
+1. Valid TLV length boundaries across all tags.
+2. Expected ISO codes (`5303360` for IDR, `5802ID` for Indonesia).
+3. Valid trailing **CRC-16/CCITT-FALSE** checksum (polynomial `0x1021`, initial value `0xFFFF`) computed over all characters up to and including `6304`.
+
+Because EMVCo MPM strings carry **no asymmetric cryptographic signature**, any client can recompute a valid checksum after modifying fields.
+
+---
+
+## 3. Security Threat Model (Why It Fails Production Review)
+
+### 3.1 CRC-16 Is Error Detection, Not Authentication
+CRC-16 was designed strictly to catch optical scanning corruption (scratched stickers, poor camera focus). It provides zero proof of origin or tamper resistance.
+
+### 3.2 Merchant-Swap / Silent Fund Redirection (XSS & Supply Chain Risk)
+Because the QR payload is assembled in browser JavaScript:
+- Any attacker who achieves XSS, compromises a third-party script, or injects code into the static bundle can overwrite **Tags `26-51`** (Merchant Account Information / NMID / Acquirer routing) with an attacker-controlled account.
+- Crucially, the attacker can keep **Tag `59` (Merchant Name)** identical or visually deceptive (`"Lembaga Beasiswa Alumni"`), recompute CRC-16, and render a valid QR code.
+- Donors scanning the QR code see a plausible merchant label and pre-filled amount, silently redirecting scholarship funds to the attacker.
+
+### 3.3 Missing Server-Side Invoice Lifecycle Controls
+Legitimate dynamic QRIS invoices issued by a licensed **PJP (Penyedia Jasa Pembayaran)** bind the QR payload to a server-side invoice record with:
+- A unique **External Reference ID** tracked by the acquirer.
+- A strict **expiration timestamp (TTL)**.
+- **Single-use enforcement** preventing duplicate charges on an already-settled invoice.
+
+A client-mutated static QRIS payload has none of these controls and can be replayed indefinitely.
+
+### 3.4 Email Notification Scraping Fragility
 Pairing client-side QRIS mutation with automated Gmail regex parsing (`Code.gs`) introduces additional failure modes:
-- Email template changes by the e-wallet provider silently break reconciliation.
-- Unauthenticated or spoofed inbound emails matching regex heuristics risk false-positive settlement approvals unless strictly filtered by DKIM/SPF and sender identity.
+- Provider email template changes silently break amount extraction.
+- Unauthenticated or spoofed inbound emails matching regex heuristics risk false-positive settlement approvals without cryptographic webhook verification.
 
 ---
 
-## 3. Regulatory & Compliance Analysis (Indonesia)
+## 4. Indonesian Legal & Regulatory Compliance Analysis
 
-Under Bank Indonesia's payment system framework:
-- **PADG No. 21/18/PADG/2019** (Implementation of the National Standard Quick Response Code for Payments / QRIS) and its amendment **PADG No. 24/1/PADG/2022** govern QRIS issuance, transaction limits (Rp 10,000,000 per transaction), and dynamic QRIS generation through licensed **PJP** entities.
-- **PBI No. 23/6/PBI/2021** (Payment Service Providers) requires payment initiation and merchant onboarding to operate under licensed PJP oversight and consumer protection controls.
-- **Acquirer Terms of Service:** Re-encoding or programmatically altering a static merchant QRIS payload issued by a PJP (e.g., DANA Bisnis, GoPay Merchant, bank acquirers) without an authorized merchant API violates standard merchant agreements and can lead to account suspension or frozen settlement funds.
+| Regulation | Relevant Provisions & Compliance Impact |
+| :--- | :--- |
+| **PADG BI No. 21/18/PADG/2019** | *Pasal 3, 6, 10, 24* establish national QRIS governance: QRIS issuance, routing, and dynamic QRIS generation are regulated operations performed by licensed **PJP** and switching institutions under Bank Indonesia oversight. |
+| **PADG BI No. 24/1/PADG/2022** | *Pasal 8* amends QRIS implementation rules, including the maximum Rp 10,000,000 per-transaction limit and acquirer compliance responsibilities. |
+| **PBI No. 23/6/PBI/2021** | Regulates Payment Service Providers (PJP), mandating licensing, security controls, and consumer protection for payment initiation systems. |
+| **UU ITE (UU No. 11/2008 jo. UU No. 1/2024)** | *Pasal 15-16* require Electronic System Operators (PSE) to guarantee reliability, security, and transaction integrity. Client-side payment payload tampering weakens transaction integrity and shifts liability onto the operator. |
+| **UU PDP (UU No. 27 Tahun 2022)** | Mandates protection of personal data. Addressed in this repository by masking donor names, student IDs, and phone numbers before exposing records to public views or Looker Studio dashboards. |
+| **PJP / Acquirer Terms of Service** | Acquirers (e.g., DANA Bisnis, GoPay Merchant, bank acquirers) prohibit altering issued static QRIS strings outside authorized merchant APIs; violations risk account suspension or frozen settlement funds. |
 
 ---
 
-## 4. Decision & Target Production Architecture
+## 5. Decision & Compliant Production Blueprint
 
 ### Decision
-1. **Remove** all real static merchant QRIS strings, QRIS images, and client-side EMVCo mutation code from this repository.
-2. **Replace** the browser QR renderer with a clearly labeled, non-transactional sandbox invoice QR (`SANDBOX_INVOICE|...`) for UI demonstration only.
-3. **Document** the compliant production architecture below.
+1. **Exclude** all real static merchant QRIS strings, QRIS images, and client-side EMVCo mutation code from this repository.
+2. **Replace** the browser QR renderer with a non-transactional sandbox invoice payload (`SANDBOX_INVOICE|...`) for UI walkthroughs only.
+3. **Adopt** the server-side PJP / SNAP BI architecture below for any production deployment.
 
 ### Production Target Architecture
 
@@ -83,8 +111,8 @@ Licensed PJP -> Webhook (HTTPS POST + HMAC-SHA256 / RSA Signature) -> Backend AP
 Ledger Database (Marked SETTLED) -> Masked Public Transparency View & Looker Studio
 ```
 
-### Required Security Controls for Production
-- **Server-Minted Dynamic QRIS:** Obtain QR strings exclusively from a licensed PJP API (e.g., Midtrans, Xendit, DOKU, or direct **SNAP BI** integration).
+### Mandatory Production Controls
+- **Server-Minted Dynamic QRIS:** Obtain QR strings exclusively from a licensed PJP API or direct **SNAP BI** integration.
 - **Cryptographically Signed Webhooks:** Verify HMAC-SHA256 or asymmetric RSA signatures and enforce idempotency before updating ledger status.
-- **Strict Content Security Policy (CSP) & SRI:** Pin frontend scripts with Subresource Integrity hashes and restrict script execution origins to prevent DOM/QR tampering.
-- **Server-Side Authentication:** Replace demo login checks with OAuth 2.0 / OIDC (e.g., Google Workspace SSO with role-based access control) for the internal admin portal.
+- **Strict CSP & SRI:** Pin third-party frontend scripts with Subresource Integrity hashes and lock down script origins via Content-Security-Policy.
+- **Server-Side Admin Auth:** Replace demo login checks with OAuth 2.0 / OIDC (e.g., Google Workspace SSO with RBAC) for the internal reconciliation portal.
