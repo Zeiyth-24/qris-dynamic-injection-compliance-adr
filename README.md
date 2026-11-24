@@ -1,6 +1,6 @@
-# Alumni Scholarship Data Management & QRIS Security Case Study
+# Dynamic QRIS Injection Dynamics & Regulatory Compliance ADR
 
-A serverless data management, reconciliation, and public transparency platform for university alumni scholarship funds (IKA UPI case study), featuring an in-depth **EMVCo / QRIS Protocol Engineering & Security Architecture Decision Record (ADR)**.
+An **EMVCo / QRIS Protocol Engineering & Security Architecture Decision Record (ADR)** examining client-side static-to-dynamic QR payload injection (TLV mutation & CRC-16/CCITT-FALSE), why it was deliberately **NOT implemented in production due to Indonesian payment regulations**, and the accompanying IKA UPI scholarship sandbox platform.
 
 > **Core Engineering Takeaway:** This repository documents both **how** client-side static-to-dynamic EMVCo/QRIS payload transformation works at the TLV/CRC-16 level and **why we deliberately chose NOT to ship it to production** after conducting a security threat model and Indonesian payment-regulation audit. The runnable web app uses a safe, non-transactional sandbox invoice QR (`DEFAULT_DEMO_MODE: true`) with zero live credentials or merchant identifiers.
 
@@ -164,7 +164,7 @@ Beyond the QRIS ADR, the repository includes the complete dual-portal data manag
 ## Repository Structure
 
 ```text
-alumni-scholarship-data-platform/
+qris-dynamic-injection-compliance-adr/
 ├── dist_donatur/              # Public donor & transparency portal (sandbox invoice QR)
 │   └── index.html
 ├── dist_admin/                # Internal governance & reconciliation portal
